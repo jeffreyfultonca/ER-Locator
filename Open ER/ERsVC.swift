@@ -21,6 +21,9 @@ class ERsVC: UIViewController,
     @IBOutlet var mapView: MKMapView!
     @IBOutlet var tableView: UITableView!
     
+    @IBOutlet var toolbarView: UIView!
+    @IBOutlet var toolbarLabel: UILabel!
+    
     // MARK: - Properties
     let locationManager = CLLocationManager()
     var shouldUpdateMapAnnotationsOnUserLocationUpdate = true
@@ -35,17 +38,28 @@ class ERsVC: UIViewController,
         locationManager.requestWhenInUseAuthorization()
         
         setupTableView()
+    }
+    
+    override func viewDidAppear(animated: Bool) {
+        super.viewDidAppear(animated)
+        
         setupMapView()
     }
     
     // MARK: - Helpers
     
     func setupTableView() {
+        // Blur tableView background
+        let visualEffect = UIBlurEffect(style: .ExtraLight)
+        let visualEffectView = UIVisualEffectView(effect: visualEffect)
+        tableView.backgroundView = visualEffectView
+        
         tableView.delegate = self
         tableView.dataSource = self
     }
     
     func setupMapView() {
+        mapView.layoutMargins.bottom = tableView.frame.height + toolbarView.frame.height
         mapView.delegate = self
     }
     

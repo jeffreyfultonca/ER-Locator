@@ -381,6 +381,7 @@
 				00611C111CB080FA00C08B07 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

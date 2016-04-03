@@ -3,9 +3,11 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
+        <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
-        <!--RsVC-->
+        <!--Open ERs-->
         <scene sceneID="tne-QT-ifu">
             <objects>
                 <viewController id="BYZ-38-t0r" customClass="ERsVC" customModule="Open_ER" customModuleProvider="target" sceneMemberID="viewController">
@@ -14,40 +16,67 @@
                         <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <rect key="frame" x="0.0" y="64" width="600" height="536"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
+                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" rotateEnabled="NO" pitchEnabled="NO" showsUserLocation="YES" showsBuildings="NO" showsPointsOfInterest="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mEY-Zk-EPh">
+                                <rect key="frame" x="0.0" y="0.0" width="600" height="536"/>
+                            </mapView>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="LKu-2g-jSI">
+                                <rect key="frame" x="0.0" y="238" width="600" height="30"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Hide List" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9nM-pq-XfG">
+                                        <rect key="frame" x="8" y="8" width="584" height="14"/>
+                                        <fontDescription key="fontDescription" style="UICTFontTextStyleCaption1"/>
+                                        <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                                <color key="backgroundColor" red="0.34901960780000002" green="0.66666666669999997" blue="0.74117647060000003" alpha="1" colorSpace="calibratedRGB"/>
+                                <constraints>
+                                    <constraint firstItem="9nM-pq-XfG" firstAttribute="leading" secondItem="LKu-2g-jSI" secondAttribute="leadingMargin" id="0kV-FD-J9J"/>
+                                    <constraint firstAttribute="trailingMargin" secondItem="9nM-pq-XfG" secondAttribute="trailing" id="9E0-cf-diM"/>
+                                    <constraint firstAttribute="bottomMargin" secondItem="9nM-pq-XfG" secondAttribute="bottom" id="9oL-0C-4eH"/>
+                                    <constraint firstItem="9nM-pq-XfG" firstAttribute="top" secondItem="LKu-2g-jSI" secondAttribute="topMargin" id="X1i-jH-dt2"/>
+                                </constraints>
+                            </view>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="dWX-FJ-PHd">
-                                <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <mapView key="tableHeaderView" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" rotateEnabled="NO" pitchEnabled="NO" showsUserLocation="YES" showsPointsOfInterest="NO" id="RNm-Sw-0SN">
-                                    <rect key="frame" x="0.0" y="64" width="600" height="126"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                </mapView>
+                                <rect key="frame" x="0.0" y="268" width="600" height="268"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="erCell" id="edN-JY-1Yy">
-                                        <rect key="frame" x="0.0" y="218" width="600" height="44"/>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="erCell" id="edN-JY-1Yy">
+                                        <rect key="frame" x="0.0" y="28" width="600" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="edN-JY-1Yy" id="EXY-Yl-IHJ">
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" tableViewCell="edN-JY-1Yy" id="EXY-Yl-IHJ">
                                             <rect key="frame" x="0.0" y="0.0" width="600" height="43"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </tableViewCellContentView>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                     </tableViewCell>
                                 </prototypes>
                             </tableView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="dWX-FJ-PHd" secondAttribute="bottom" id="0U2-Uf-a2j"/>
-                            <constraint firstItem="dWX-FJ-PHd" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="ShW-ay-dsf"/>
-                            <constraint firstAttribute="trailing" secondItem="dWX-FJ-PHd" secondAttribute="trailing" id="m1k-X7-2fj"/>
-                            <constraint firstItem="dWX-FJ-PHd" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="zJX-a0-cI4"/>
+                            <constraint firstItem="dWX-FJ-PHd" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="JZ7-5I-Ds3"/>
+                            <constraint firstItem="LKu-2g-jSI" firstAttribute="trailing" secondItem="dWX-FJ-PHd" secondAttribute="trailing" id="PYS-bN-osI"/>
+                            <constraint firstAttribute="trailing" secondItem="mEY-Zk-EPh" secondAttribute="trailing" id="Q1A-4K-UOC"/>
+                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="mEY-Zk-EPh" secondAttribute="bottom" id="SVE-Tl-yg8"/>
+                            <constraint firstItem="mEY-Zk-EPh" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="U6W-Yi-cUU"/>
+                            <constraint firstItem="dWX-FJ-PHd" firstAttribute="top" secondItem="LKu-2g-jSI" secondAttribute="bottom" id="eoP-4C-RYs"/>
+                            <constraint firstItem="mEY-Zk-EPh" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" id="fWS-Gs-wHs"/>
+                            <constraint firstItem="LKu-2g-jSI" firstAttribute="leading" secondItem="dWX-FJ-PHd" secondAttribute="leading" id="gAz-lm-hze"/>
+                            <constraint firstAttribute="trailing" secondItem="dWX-FJ-PHd" secondAttribute="trailing" id="nLN-dQ-0wz"/>
+                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="dWX-FJ-PHd" secondAttribute="bottom" id="nbV-YL-wdD"/>
+                            <constraint firstItem="dWX-FJ-PHd" firstAttribute="top" secondItem="mEY-Zk-EPh" secondAttribute="centerY" id="pm4-Qm-hoW"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" id="3So-en-Nda"/>
+                    <navigationItem key="navigationItem" title="Open ERs" id="3So-en-Nda"/>
                     <connections>
-                        <outlet property="mapView" destination="RNm-Sw-0SN" id="xpW-WI-7oe"/>
+                        <outlet property="mapView" destination="mEY-Zk-EPh" id="SAt-iT-slo"/>
                         <outlet property="tableView" destination="dWX-FJ-PHd" id="j1S-XM-g2V"/>
+                        <outlet property="toolbarLabel" destination="9nM-pq-XfG" id="cQz-3W-3Pr"/>
+                        <outlet property="toolbarView" destination="LKu-2g-jSI" id="vfu-Ol-w8e"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
@@ -59,9 +88,13 @@
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="mZ0-nm-wsk" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="VBx-L2-v3m">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" translucent="NO" id="VBx-L2-v3m">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
+                        <color key="barTintColor" red="0.34901960780000002" green="0.66666666669999997" blue="0.74117647060000003" alpha="1" colorSpace="calibratedRGB"/>
+                        <textAttributes key="titleTextAttributes">
+                            <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        </textAttributes>
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
