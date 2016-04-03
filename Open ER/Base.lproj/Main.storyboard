@@ -33,12 +33,16 @@
                                     </label>
                                 </subviews>
                                 <color key="backgroundColor" red="0.34901960780000002" green="0.66666666669999997" blue="0.74117647060000003" alpha="1" colorSpace="calibratedRGB"/>
+                                <gestureRecognizers/>
                                 <constraints>
                                     <constraint firstItem="9nM-pq-XfG" firstAttribute="leading" secondItem="LKu-2g-jSI" secondAttribute="leadingMargin" id="0kV-FD-J9J"/>
                                     <constraint firstAttribute="trailingMargin" secondItem="9nM-pq-XfG" secondAttribute="trailing" id="9E0-cf-diM"/>
                                     <constraint firstAttribute="bottomMargin" secondItem="9nM-pq-XfG" secondAttribute="bottom" id="9oL-0C-4eH"/>
                                     <constraint firstItem="9nM-pq-XfG" firstAttribute="top" secondItem="LKu-2g-jSI" secondAttribute="topMargin" id="X1i-jH-dt2"/>
                                 </constraints>
+                                <connections>
+                                    <outletCollection property="gestureRecognizers" destination="hiR-W7-cS6" appends="YES" id="adr-3J-hpq"/>
+                                </connections>
                             </view>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="dWX-FJ-PHd">
                                 <rect key="frame" x="0.0" y="268" width="600" height="268"/>
@@ -63,6 +67,7 @@
                             <constraint firstAttribute="trailing" secondItem="mEY-Zk-EPh" secondAttribute="trailing" id="Q1A-4K-UOC"/>
                             <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="mEY-Zk-EPh" secondAttribute="bottom" id="SVE-Tl-yg8"/>
                             <constraint firstItem="mEY-Zk-EPh" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="U6W-Yi-cUU"/>
+                            <constraint firstItem="dWX-FJ-PHd" firstAttribute="top" secondItem="mEY-Zk-EPh" secondAttribute="bottom" priority="990" id="UL7-v6-hh7"/>
                             <constraint firstItem="dWX-FJ-PHd" firstAttribute="top" secondItem="LKu-2g-jSI" secondAttribute="bottom" id="eoP-4C-RYs"/>
                             <constraint firstItem="mEY-Zk-EPh" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" id="fWS-Gs-wHs"/>
                             <constraint firstItem="LKu-2g-jSI" firstAttribute="leading" secondItem="dWX-FJ-PHd" secondAttribute="leading" id="gAz-lm-hze"/>
@@ -75,11 +80,17 @@
                     <connections>
                         <outlet property="mapView" destination="mEY-Zk-EPh" id="SAt-iT-slo"/>
                         <outlet property="tableView" destination="dWX-FJ-PHd" id="j1S-XM-g2V"/>
+                        <outlet property="tableViewTopMapViewCenterConstraint" destination="pm4-Qm-hoW" id="0Vw-S6-xrN"/>
                         <outlet property="toolbarLabel" destination="9nM-pq-XfG" id="cQz-3W-3Pr"/>
                         <outlet property="toolbarView" destination="LKu-2g-jSI" id="vfu-Ol-w8e"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
+                <tapGestureRecognizer id="hiR-W7-cS6">
+                    <connections>
+                        <action selector="toolbarTapped:" destination="BYZ-38-t0r" id="9jx-v2-474"/>
+                    </connections>
+                </tapGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="1241" y="482"/>
         </scene>

@@ -24,11 +24,16 @@ class ERsVC: UIViewController,
     @IBOutlet var toolbarView: UIView!
     @IBOutlet var toolbarLabel: UILabel!
     
+    @IBOutlet var tableViewTopMapViewCenterConstraint: NSLayoutConstraint!
+    
     // MARK: - Properties
     let locationManager = CLLocationManager()
     var shouldUpdateMapAnnotationsOnUserLocationUpdate = true
     let minLocationAccuracy: Double = 5000
     var nearbyOpenERs = [ER]()
+    var showTableView = true
+    
+    typealias AnimationClosure = () -> Void
     
     // MARK: - Lifecycle
     
@@ -49,18 +54,22 @@ class ERsVC: UIViewController,
     // MARK: - Helpers
     
     func setupTableView() {
+        tableView.delegate = self
+        tableView.dataSource = self
+        
         // Blur tableView background
         let visualEffect = UIBlurEffect(style: .ExtraLight)
         let visualEffectView = UIVisualEffectView(effect: visualEffect)
         tableView.backgroundView = visualEffectView
-        
-        tableView.delegate = self
-        tableView.dataSource = self
     }
     
     func setupMapView() {
-        mapView.layoutMargins.bottom = tableView.frame.height + toolbarView.frame.height
         mapView.delegate = self
+        configureMapViewLayoutMargins()
+    }
+    
+    func configureMapViewLayoutMargins() {
+        mapView.layoutMargins.bottom = tableView.frame.height + toolbarView.frame.height
     }
     
     // MARK: - UITableView Datasource
@@ -112,6 +121,37 @@ class ERsVC: UIViewController,
         
         // Show results in tableView.
         tableView.reloadData()
+    }
+    
+    // MARK: - Actions
+    
+    @IBAction func toolbarTapped(sender: AnyObject) {
+        self.view.layoutIfNeeded()
+        
+        let animationClosure: AnimationClosure = {
+            self.showTableView = !self.showTableView
+            
+            self.toolbarLabel.text = self.showTableView ? "Hide List" : "Show List"
+            
+            self.tableViewTopMapViewCenterConstraint.active = self.showTableView
+            self.view.layoutIfNeeded()
+            self.setupMapView()
+            
+            // Adjust visible region of map to enclose all annotations.
+            var annotationsToShow: [MKAnnotation] = self.nearbyOpenERs
+            annotationsToShow.append(self.mapView.userLocation)
+            self.mapView.adjustRegionToDisplayAnnotations(annotationsToShow, animated: true)
+        }
+        
+        UIView.animateWithDuration(
+            0.3,
+            delay: 0.0,
+            usingSpringWithDamping: 1.0,
+            initialSpringVelocity: 1.0,
+            options: [],
+            animations: animationClosure,
+            completion: nil
+        )
     }
 }
 
