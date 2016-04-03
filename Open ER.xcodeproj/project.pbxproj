@@ -8,23 +8,29 @@
 
 /* Begin PBXBuildFile section */
 		00611C011CB080FA00C08B07 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00611C001CB080FA00C08B07 /* AppDelegate.swift */; };
-		00611C031CB080FA00C08B07 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00611C021CB080FA00C08B07 /* ViewController.swift */; };
+		00611C031CB080FA00C08B07 /* ERsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00611C021CB080FA00C08B07 /* ERsVC.swift */; };
 		00611C061CB080FA00C08B07 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 00611C041CB080FA00C08B07 /* Main.storyboard */; };
 		00611C081CB080FA00C08B07 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 00611C071CB080FA00C08B07 /* Assets.xcassets */; };
 		00611C0B1CB080FA00C08B07 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 00611C091CB080FA00C08B07 /* LaunchScreen.storyboard */; };
 		00611C141CB0818E00C08B07 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00611C131CB0818E00C08B07 /* CloudKit.framework */; };
+		00611C1D1CB08A7500C08B07 /* ERService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00611C1C1CB08A7500C08B07 /* ERService.swift */; };
+		00611C1F1CB0905300C08B07 /* ER.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00611C1E1CB0905300C08B07 /* ER.swift */; };
+		00611C221CB0972B00C08B07 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00611C211CB0972B00C08B07 /* Extensions.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		00611BFD1CB080FA00C08B07 /* Open ER.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Open ER.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		00611C001CB080FA00C08B07 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		00611C021CB080FA00C08B07 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		00611C021CB080FA00C08B07 /* ERsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ERsVC.swift; sourceTree = "<group>"; };
 		00611C051CB080FA00C08B07 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		00611C071CB080FA00C08B07 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		00611C0A1CB080FA00C08B07 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		00611C0C1CB080FA00C08B07 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00611C121CB0818A00C08B07 /* Open ER.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Open ER.entitlements"; sourceTree = "<group>"; };
 		00611C131CB0818E00C08B07 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
+		00611C1C1CB08A7500C08B07 /* ERService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ERService.swift; sourceTree = "<group>"; };
+		00611C1E1CB0905300C08B07 /* ER.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ER.swift; sourceTree = "<group>"; };
+		00611C211CB0972B00C08B07 /* Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -64,6 +70,8 @@
 				00611C191CB0824100C08B07 /* Models */,
 				00611C181CB0823800C08B07 /* Views */,
 				00611C171CB0822B00C08B07 /* Controllers */,
+				00611C1B1CB08A2000C08B07 /* Services */,
+				00611C201CB0971400C08B07 /* Globals */,
 				00611C1A1CB0825300C08B07 /* Support */,
 			);
 			path = "Open ER";
@@ -89,7 +97,7 @@
 		00611C171CB0822B00C08B07 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
-				00611C021CB080FA00C08B07 /* ViewController.swift */,
+				00611C021CB080FA00C08B07 /* ERsVC.swift */,
 			);
 			name = Controllers;
 			sourceTree = "<group>";
@@ -107,6 +115,7 @@
 		00611C191CB0824100C08B07 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				00611C1E1CB0905300C08B07 /* ER.swift */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -117,6 +126,22 @@
 				00611C0C1CB080FA00C08B07 /* Info.plist */,
 			);
 			name = Support;
+			sourceTree = "<group>";
+		};
+		00611C1B1CB08A2000C08B07 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				00611C1C1CB08A7500C08B07 /* ERService.swift */,
+			);
+			name = Services;
+			sourceTree = "<group>";
+		};
+		00611C201CB0971400C08B07 /* Globals */ = {
+			isa = PBXGroup;
+			children = (
+				00611C211CB0972B00C08B07 /* Extensions.swift */,
+			);
+			name = Globals;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -196,7 +221,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				00611C031CB080FA00C08B07 /* ViewController.swift in Sources */,
+				00611C221CB0972B00C08B07 /* Extensions.swift in Sources */,
+				00611C1D1CB08A7500C08B07 /* ERService.swift in Sources */,
+				00611C031CB080FA00C08B07 /* ERsVC.swift in Sources */,
+				00611C1F1CB0905300C08B07 /* ER.swift in Sources */,
 				00611C011CB080FA00C08B07 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
