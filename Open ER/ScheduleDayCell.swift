@@ -12,6 +12,7 @@ class ScheduleDayCell: UITableViewCell {
     
     // MARK: - Outlets
     @IBOutlet var dayLabel: UILabel!
+    @IBOutlet var monthLabel: UILabel!
     
     @IBOutlet var firstStateIndicator: UIView!
     @IBOutlet var secondStateIndicator: UIView!
@@ -29,12 +30,19 @@ class ScheduleDayCell: UITableViewCell {
     
     func configureScheduleDay(scheduleDay: ScheduleDay) {
         dayLabel.text = scheduleDay.date.day
+        monthLabel.text = scheduleDay.date.month
         
-        guard scheduleDay.date.day == "4" else {return}
+        if scheduleDay.date.day == "4" {
+//            hide(firstStateIndicator, stateLabel: firstStateLabel, timesLabel: firstTimesLabel)
+            hide(secondStateIndicator, stateLabel: secondStateLabel, timesLabel: secondTimesLabel)
+            hide(thirdStateIndicator, stateLabel: thirdStateLabel, timesLabel: thirdTimesLabel)
+        } else {
+            show(firstStateIndicator, stateLabel: firstStateLabel, timesLabel: firstTimesLabel)
+            show(secondStateIndicator, stateLabel: secondStateLabel, timesLabel: secondTimesLabel)
+            show(thirdStateIndicator, stateLabel: thirdStateLabel, timesLabel: thirdTimesLabel)
+        }
         
-//        hide(firstStateIndicator, stateLabel: firstStateLabel, timesLabel: firstTimesLabel)
-        hide(secondStateIndicator, stateLabel: secondStateLabel, timesLabel: secondTimesLabel)
-        hide(thirdStateIndicator, stateLabel: thirdStateLabel, timesLabel: thirdTimesLabel)
+
     }
     
     private func hide(stateIndicator: UIView, stateLabel: UILabel, timesLabel: UILabel) {

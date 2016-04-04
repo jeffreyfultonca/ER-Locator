@@ -21,6 +21,7 @@ class ScheduleDaysVC: UIViewController,
     // MARK: - Properties
     var er: ER!
     var scheduleDays = [ScheduleDay]()
+    var scheduleDaysLoaded = false
     
     // MARK: - Lifecycle
     
@@ -38,6 +39,7 @@ class ScheduleDaysVC: UIViewController,
                 
             case .Success(let scheduleDays):
                 self.scheduleDays = scheduleDays
+                self.scheduleDaysLoaded = true
                 self.tableView.reloadData()
             }
         }
@@ -49,20 +51,35 @@ class ScheduleDaysVC: UIViewController,
         tableView.dataSource = self
         tableView.delegate = self
         
-        tableView.estimatedRowHeight = 44
+        tableView.estimatedRowHeight = 65
         tableView.rowHeight = UITableViewAutomaticDimension
     }
     
     // MARK: - UITableViewDataSource
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return scheduleDays.count
+        guard scheduleDaysLoaded else { return 0 }
+        return 365
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("scheduleDayCell", forIndexPath: indexPath) as! ScheduleDayCell
         
-        let scheduleDay = scheduleDays[indexPath.row]
+        let row = indexPath.row
+        let scheduleDay: ScheduleDay
+        
+        if row < scheduleDays.count {
+            // Existing record
+            scheduleDay = scheduleDays[indexPath.row]
+            
+        } else {
+            // Create new with defaults
+            let earliestDate = scheduleDays.first?.date ?? NSDate.now
+            let date = earliestDate.plusDays(row)
+            scheduleDay = ScheduleDay(date: date)
+            scheduleDays.append(scheduleDay)
+        }
+        
         cell.configureScheduleDay(scheduleDay)
         
         return cell

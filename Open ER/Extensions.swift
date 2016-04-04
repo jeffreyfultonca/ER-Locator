@@ -62,9 +62,24 @@ extension NSDate {
         return formatter.stringFromDate(self)
     }
     
+    var month: String {
+        let formatter = NSDateFormatter()
+        formatter.dateFormat = "MMM"
+        
+        return formatter.stringFromDate(self)
+    }
+    
     var time: String {
         let formatter = NSDateFormatter()
-        formatter.dateFormat = "ha" // i.e. 7AM, 7PM
+        
+        let calendar = NSCalendar.currentCalendar()
+        let components = calendar.components(.Minute, fromDate: self)
+        
+        if components.minute % 60 == 1 {
+            formatter.dateFormat = "ha" // i.e. 7AM, 7PM
+        } else {
+            formatter.dateFormat = "h:mma" // i.e. 7:30AM, 7:00PM
+        }
         
         // Use alternate format string if user has 24-Hour Time enabled
         let formatString = NSDateFormatter.dateFormatFromTemplate("j", options: 0, locale: NSLocale.currentLocale())!
@@ -73,15 +88,11 @@ extension NSDate {
             formatter.dateFormat = "h:mm" // i.e. 07:00, 19:00
         }
         
-        return formatter.stringFromDate(self)
+        return formatter.stringFromDate(self).lowercaseString
     }
     
-    /// Timestamp used by database.
-    var timestamp: String {
-        let df = NSDateFormatter()
-        df.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
-        df.timeZone = NSTimeZone(abbreviation: "UTC")
-        
-        return df.stringFromDate(self)
+    func plusDays(days: Int) -> NSDate {
+        let interval = Double(days) * 24 * 60 * 60
+        return NSDate(timeInterval: interval, sinceDate: self)
     }
 }

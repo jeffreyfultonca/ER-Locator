@@ -273,15 +273,37 @@
                                                 <stackView opaque="NO" contentMode="scaleToFill" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="mBn-j5-Bf7">
                                                     <rect key="frame" x="8" y="0.0" width="551" height="106"/>
                                                     <subviews>
-                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="260" verticalHuggingPriority="251" text="28" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsLetterSpacingToFitWidth="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="J3d-mC-b16" userLabel="Day Label">
+                                                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="vSA-cK-LLB">
                                                             <rect key="frame" x="0.0" y="0.0" width="54" height="106"/>
+                                                            <subviews>
+                                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="260" verticalHuggingPriority="251" text="28" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsLetterSpacingToFitWidth="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="J3d-mC-b16" userLabel="Day Label">
+                                                                    <rect key="frame" x="0.0" y="19" width="54" height="56"/>
+                                                                    <constraints>
+                                                                        <constraint firstAttribute="width" constant="54" id="hus-bM-d47"/>
+                                                                    </constraints>
+                                                                    <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="48"/>
+                                                                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                                                    <nil key="highlightedColor"/>
+                                                                </label>
+                                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="260" text="MMM" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nkn-gK-pbG" userLabel="Month Label">
+                                                                    <rect key="frame" x="0.0" y="67" width="54" height="15"/>
+                                                                    <fontDescription key="fontDescription" style="UICTFontTextStyleFootnote"/>
+                                                                    <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                                                                    <nil key="highlightedColor"/>
+                                                                </label>
+                                                            </subviews>
+                                                            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                             <constraints>
-                                                                <constraint firstAttribute="width" constant="54" id="hus-bM-d47"/>
+                                                                <constraint firstItem="J3d-mC-b16" firstAttribute="leading" secondItem="vSA-cK-LLB" secondAttribute="leading" id="8cc-1i-zaK"/>
+                                                                <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="nkn-gK-pbG" secondAttribute="bottom" constant="4" id="UkI-K7-SX2"/>
+                                                                <constraint firstItem="nkn-gK-pbG" firstAttribute="leading" secondItem="J3d-mC-b16" secondAttribute="leading" id="a7a-9O-OpB"/>
+                                                                <constraint firstAttribute="trailing" secondItem="J3d-mC-b16" secondAttribute="trailing" id="bx0-4I-epe"/>
+                                                                <constraint firstItem="J3d-mC-b16" firstAttribute="top" relation="greaterThanOrEqual" secondItem="vSA-cK-LLB" secondAttribute="top" id="krs-ta-tws"/>
+                                                                <constraint firstItem="J3d-mC-b16" firstAttribute="centerY" secondItem="vSA-cK-LLB" secondAttribute="centerY" constant="-6" id="lv9-3A-dYA"/>
+                                                                <constraint firstItem="nkn-gK-pbG" firstAttribute="top" secondItem="J3d-mC-b16" secondAttribute="bottom" constant="-8" id="ofW-1E-gvT"/>
+                                                                <constraint firstItem="nkn-gK-pbG" firstAttribute="trailing" secondItem="J3d-mC-b16" secondAttribute="trailing" id="xrA-wG-lFt"/>
                                                             </constraints>
-                                                            <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="48"/>
-                                                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                                                            <nil key="highlightedColor"/>
-                                                        </label>
+                                                        </view>
                                                         <stackView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="270" axis="vertical" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="ylT-0R-FX0">
                                                             <rect key="frame" x="62" y="0.0" width="4" height="106"/>
                                                             <subviews>
@@ -308,22 +330,22 @@
                                                                 </mask>
                                                             </variation>
                                                         </stackView>
-                                                        <stackView opaque="NO" contentMode="scaleToFill" misplaced="YES" axis="vertical" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="5Et-kB-s5d">
+                                                        <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="5Et-kB-s5d">
                                                             <rect key="frame" x="74" y="0.0" width="53" height="106"/>
                                                             <subviews>
-                                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="260" verticalHuggingPriority="251" misplaced="YES" text="Open" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uMn-IB-D5P">
+                                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="260" verticalHuggingPriority="251" text="Open" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uMn-IB-D5P">
                                                                     <rect key="frame" x="0.0" y="0.0" width="53" height="35"/>
                                                                     <fontDescription key="fontDescription" style="UICTFontTextStyleHeadline"/>
                                                                     <color key="textColor" red="0.50588235290000005" green="0.73725490199999999" blue="0.23921568630000001" alpha="1" colorSpace="calibratedRGB"/>
                                                                     <nil key="highlightedColor"/>
                                                                 </label>
-                                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="260" verticalHuggingPriority="251" misplaced="YES" text="Closed" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xYs-JV-wen">
+                                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="260" verticalHuggingPriority="251" text="Closed" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xYs-JV-wen">
                                                                     <rect key="frame" x="0.0" y="35" width="53" height="36"/>
                                                                     <fontDescription key="fontDescription" style="UICTFontTextStyleHeadline"/>
                                                                     <color key="textColor" red="0.70196078429999997" green="0.12549019610000001" blue="0.090196078430000007" alpha="1" colorSpace="calibratedRGB"/>
                                                                     <nil key="highlightedColor"/>
                                                                 </label>
-                                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="260" verticalHuggingPriority="251" misplaced="YES" text="Open" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mU4-ws-Eev">
+                                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="260" verticalHuggingPriority="251" text="Open" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mU4-ws-Eev">
                                                                     <rect key="frame" x="0.0" y="71" width="53" height="35"/>
                                                                     <fontDescription key="fontDescription" style="UICTFontTextStyleHeadline"/>
                                                                     <color key="textColor" red="0.50588235290000005" green="0.73725490199999999" blue="0.23921568630000001" alpha="1" colorSpace="calibratedRGB"/>
@@ -331,22 +353,22 @@
                                                                 </label>
                                                             </subviews>
                                                         </stackView>
-                                                        <stackView opaque="NO" contentMode="scaleToFill" misplaced="YES" axis="vertical" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="OdB-R0-gJA">
+                                                        <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="OdB-R0-gJA">
                                                             <rect key="frame" x="135" y="0.0" width="416" height="106"/>
                                                             <subviews>
-                                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="1st Times" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AgJ-W8-Nnw">
+                                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="1st Times" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AgJ-W8-Nnw">
                                                                     <rect key="frame" x="0.0" y="0.0" width="416" height="35"/>
                                                                     <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
                                                                     <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                                                     <nil key="highlightedColor"/>
                                                                 </label>
-                                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="2nd Times" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AnJ-8A-9mw">
+                                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="2nd Times" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AnJ-8A-9mw">
                                                                     <rect key="frame" x="0.0" y="35" width="416" height="36"/>
                                                                     <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
                                                                     <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                                                     <nil key="highlightedColor"/>
                                                                 </label>
-                                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="3rd Times" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GMi-gW-RjS">
+                                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="3rd Times" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GMi-gW-RjS">
                                                                     <rect key="frame" x="0.0" y="71" width="416" height="35"/>
                                                                     <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
                                                                     <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -369,6 +391,7 @@
                                             <outlet property="firstStateIndicator" destination="Kga-Rs-d6t" id="FFJ-VG-J6q"/>
                                             <outlet property="firstStateLabel" destination="uMn-IB-D5P" id="cjX-GV-l9v"/>
                                             <outlet property="firstTimesLabel" destination="AgJ-W8-Nnw" id="6E9-HT-Tnv"/>
+                                            <outlet property="monthLabel" destination="nkn-gK-pbG" id="g3q-TU-WYA"/>
                                             <outlet property="secondStateIndicator" destination="plM-Sk-p1I" id="6Se-vY-FkX"/>
                                             <outlet property="secondStateLabel" destination="xYs-JV-wen" id="Uwz-uX-aQ3"/>
                                             <outlet property="secondTimesLabel" destination="AnJ-8A-9mw" id="fqg-SF-T9P"/>
