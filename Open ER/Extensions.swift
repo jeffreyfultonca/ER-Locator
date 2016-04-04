@@ -47,12 +47,20 @@ extension NSDate {
         return calendar.dateFromComponents(components)!
     }
     
+    var isBeginningOfDay: Bool {
+        return self == self.beginningOfDay
+    }
+    
     var endOfDay: NSDate {
         let components = NSDateComponents()
         components.day = 1
         var date = NSCalendar.currentCalendar().dateByAddingComponents(components, toDate: self.beginningOfDay, options: [])!
         date = date.dateByAddingTimeInterval(-1)
         return date
+    }
+    
+    var isEndOfDay: Bool {
+        return self == self.endOfDay
     }
     
     var inPast: Bool {
@@ -114,10 +122,10 @@ extension NSDate {
 
 extension UIColor {
     static func closed() -> UIColor {
-        return UIColor.redColor()
+        return UIColor(red: 0.701961, green: 0.12549, blue: 0.0901961, alpha: 1.0)
     }
     
     static func open() -> UIColor {
-        return UIColor.greenColor()
+        return UIColor(red: 0.505882, green: 0.737255, blue: 0.239216, alpha: 1.0)
     }
 }

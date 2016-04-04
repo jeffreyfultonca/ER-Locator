@@ -9,14 +9,14 @@
 import MapKit
 import CloudKit
 
-class ER: NSObject, MKAnnotation {
+class ER: CloudKitRecord, CloudKitRecordProtocol, MKAnnotation {
+    
+    // MARK: - CloudKitProtocol
+    static var recordType = "ER"
     
     // MARK: - Properties
     var name: String
     var location: CLLocation
-    
-    // MARK: CloudKit
-    var recordID: CKRecordID
     
     // MARK: MKAnnotation
     var coordinate: CLLocationCoordinate2D { return self.location.coordinate }
@@ -38,6 +38,7 @@ class ER: NSObject, MKAnnotation {
     {
         self.name = name
         self.location = location
-        self.recordID = recordID
+        
+        super.init(recordID: recordID)
     }
 }

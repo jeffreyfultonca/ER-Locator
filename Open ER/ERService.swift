@@ -21,7 +21,6 @@ enum ScheduleDaysFetchResult {
 }
 typealias ScheduleDaysFetchHandler = (ScheduleDaysFetchResult) -> Void
 
-
 class ERService {
     static let sharedInstance = ERService()
     
@@ -32,7 +31,7 @@ class ERService {
         let container = CKContainer.defaultContainer()
         let publicDatabase = container.publicCloudDatabase
         
-        let query = CKQuery(recordType: "ER", predicate: NSPredicate(value: true) )
+        let query = CKQuery(recordType: ER.recordType, predicate: NSPredicate(value: true) )
         
         publicDatabase.performQuery(query, inZoneWithID: nil) { (records: [CKRecord]?, error) in
             guard let records = records else {
@@ -60,7 +59,7 @@ class ERService {
         let container = CKContainer.defaultContainer()
         let publicDatabase = container.publicCloudDatabase
         
-        let query = CKQuery(recordType: "ER", predicate: NSPredicate(value: true) )
+        let query = CKQuery(recordType: ER.recordType, predicate: NSPredicate(value: true) )
         
         publicDatabase.performQuery(query, inZoneWithID: nil) { (records: [CKRecord]?, error) in
             guard let records = records else {
@@ -94,7 +93,7 @@ class ERService {
             NSPredicate(format: "date >= %@", NSDate.now.beginningOfDay)
         ])
         
-        let query = CKQuery(recordType: "ScheduleDay", predicate: predicate )
+        let query = CKQuery(recordType: ScheduleDay.recordType, predicate: predicate )
         query.sortDescriptors = [NSSortDescriptor(key: "date", ascending: true) ]
         
         publicDatabase.performQuery(query, inZoneWithID: nil) { (records: [CKRecord]?, error) in
@@ -105,9 +104,22 @@ class ERService {
             }
             
             let scheduleDays = records.map({ record -> ScheduleDay in
+//                let recordID = record.recordID
                 let date = record["date"] as! NSDate
                 
-                return ScheduleDay(date: date)
+                let firstOpen = record["firstOpen"] as? NSDate
+                let firstClose = record["firstClose"] as? NSDate
+                
+                let secondOpen = record["secondOpen"] as? NSDate
+                let secondClose = record["secondClose"] as? NSDate
+                
+                return ScheduleDay(
+                    date: date,
+                    firstOpen: firstOpen,
+                    firstClose: firstClose,
+                    secondOpen: secondOpen,
+                    secondClose: secondClose
+                )
             })
             
             NSOperationQueue.mainQueue().addOperationWithBlock {
@@ -115,5 +127,4 @@ class ERService {
             }
         }
     }
-    
 }

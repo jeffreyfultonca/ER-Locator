@@ -18,6 +18,7 @@
 		00611C221CB0972B00C08B07 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00611C211CB0972B00C08B07 /* Extensions.swift */; };
 		008BF3ED1CB1A31600946E4A /* ERCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 008BF3EC1CB1A31600946E4A /* ERCell.swift */; };
 		00C197931CB2D39600786B5A /* TimeSlotView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00C197921CB2D39600786B5A /* TimeSlotView.swift */; };
+		00C197971CB2E65200786B5A /* CloudKitRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00C197961CB2E65200786B5A /* CloudKitRecord.swift */; };
 		00DC0A981CB1E05800014279 /* ERsListVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00DC0A971CB1E05800014279 /* ERsListVC.swift */; };
 		00DC0A9A1CB1E8C900014279 /* ScheduleDayCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00DC0A991CB1E8C900014279 /* ScheduleDayCell.swift */; };
 		00DC0A9C1CB1E90100014279 /* ScheduleDaysVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00DC0A9B1CB1E90100014279 /* ScheduleDaysVC.swift */; };
@@ -39,6 +40,7 @@
 		00611C211CB0972B00C08B07 /* Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		008BF3EC1CB1A31600946E4A /* ERCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ERCell.swift; sourceTree = "<group>"; };
 		00C197921CB2D39600786B5A /* TimeSlotView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimeSlotView.swift; sourceTree = "<group>"; };
+		00C197961CB2E65200786B5A /* CloudKitRecord.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CloudKitRecord.swift; sourceTree = "<group>"; };
 		00DC0A971CB1E05800014279 /* ERsListVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ERsListVC.swift; sourceTree = "<group>"; };
 		00DC0A991CB1E8C900014279 /* ScheduleDayCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScheduleDayCell.swift; sourceTree = "<group>"; };
 		00DC0A9B1CB1E90100014279 /* ScheduleDaysVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScheduleDaysVC.swift; sourceTree = "<group>"; };
@@ -130,6 +132,7 @@
 		00611C191CB0824100C08B07 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				00C197961CB2E65200786B5A /* CloudKitRecord.swift */,
 				00611C1E1CB0905300C08B07 /* ER.swift */,
 				00DC0A9D1CB1E9B500014279 /* ScheduleDay.swift */,
 			);
@@ -258,6 +261,7 @@
 				00DC0A9E1CB1E9B500014279 /* ScheduleDay.swift in Sources */,
 				00611C011CB080FA00C08B07 /* AppDelegate.swift in Sources */,
 				00DC0A9C1CB1E90100014279 /* ScheduleDaysVC.swift in Sources */,
+				00C197971CB2E65200786B5A /* CloudKitRecord.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

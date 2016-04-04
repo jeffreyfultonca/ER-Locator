@@ -63,39 +63,40 @@ class ScheduleDayCell: UITableViewCell {
         // Hide all.
         hideAllTimeSlots()
         
-        switch scheduleDay.openTimeSlots.count {
-        case 0: // Closed
+        // Closed if firstTimeSlot is nil
+        guard let firstTimeSlot = scheduleDay.firstTimeSlot else {
             firstTimeSlotView.state = .Closed
             firstTimeSlotView.hidden = false
             
-        case 1: // O, O/C, C/O, C/O/C
-            guard let openTimeSlot = scheduleDay.openTimeSlots.first else {
-                fatalError("Unable to access first openTimeSlot; this should never have occured.")
-            }
+            return
+        }
+        
+        // O, O/C, C/O, or C/O/C if secondTimeSlot is nil
+        guard let secondTimeSlot = scheduleDay.secondTimeSlot else {
+            let open = firstTimeSlot.open
+            let close = firstTimeSlot.close
             
             // O: Open all day
-            if openTimeSlot.open == nil && openTimeSlot.close == nil {
+            if open.isBeginningOfDay && close.isEndOfDay {
                 firstTimeSlotView.state = .Open
+                firstTimeSlotView.timesLabel.text = "24 Hours"
             }
-            
             // O/C
-            if let close = openTimeSlot.close where openTimeSlot.open == nil {
+            else if open.isBeginningOfDay /* && !close.isEndOfDay */ {
                 firstTimeSlotView.state = .Open
-                firstTimeSlotView.timesLabel.text = "Midnight - \(close.time)"
+                firstTimeSlotView.timesLabel.text = "\(open.time) - \(close.time)"
                 
                 secondTimeSlotView.state = .Closed
             }
-            
             // C/O
-            if let open = openTimeSlot.open where openTimeSlot.close == nil {
+            else if /* !open.isBeginningOfDay && */ close.isEndOfDay {
                 firstTimeSlotView.state = .Closed
                 
                 secondTimeSlotView.state = .Open
-                secondTimeSlotView.timesLabel.text = "\(open.time) - Midnight"
+                secondTimeSlotView.timesLabel.text = "\(open.time) - \(close.time)"
             }
-            
             // C/O/C
-            if let open = openTimeSlot.open, close = openTimeSlot.close {
+            else /* if !open.isBeginningOfDay && !close.isEndOfDay */ {
                 firstTimeSlotView.state = .Closed
                 
                 secondTimeSlotView.state = .Open
@@ -104,38 +105,17 @@ class ScheduleDayCell: UITableViewCell {
                 thirdTimeSlotView.state = .Closed
             }
             
-            // if (date is today) && (open == nil || open < now) && (closed == nil || closed > now)
-            
-        case 2: // O/C/O
-            guard let
-                firstOpenTimeSlot = scheduleDay.openTimeSlots.first,
-                secondOpenTimeSlot = scheduleDay.openTimeSlots.last else
-            {
-                fatalError("Unable to access first and last openTimeSlots; this should never have occured.")
-            }
-            
-            // O/C/O
-            guard let firstClose = firstOpenTimeSlot.close where firstOpenTimeSlot.open == nil else {
-                fatalError("Invalid time slot encountered. Open/Closed/Open only valid for 24 ER's. First open slot must start at midnight (represented as nil) and have non-nil close date.")
-            }
-            
-            guard let secondOpen = secondOpenTimeSlot.open where secondOpenTimeSlot.close == nil else {
-                fatalError("Invalid time slot encountered. Open/Closed/Open only valid for 24 ER's. Second open slot must have non-nil open date and close at midnight (represented as nil).")
-            }
-            
-            firstTimeSlotView.state = .Open
-            firstTimeSlotView.timesLabel.text = "Midnight - \(firstClose.time)"
-            
-            secondTimeSlotView.state = .Closed
-            
-            thirdTimeSlotView.state = .Open
-            thirdTimeSlotView.timesLabel.text = "\(secondOpen.time) - Midnight"
-            
-            
-        default:
-            // Implement an unknown state to protect for future options?
-            print("Unknown state...")
+            return
         }
+        
+        // O/C/O
+        firstTimeSlotView.state = .Open
+        firstTimeSlotView.timesLabel.text = "\(firstTimeSlot.open.time) - \(firstTimeSlot.close.time)"
+        
+        secondTimeSlotView.state = .Closed
+        
+        thirdTimeSlotView.state = .Open
+        thirdTimeSlotView.timesLabel.text = "\(secondTimeSlot.open.time) - \(secondTimeSlot.close.time)"
     }
     
     private func setHiddenAllTimeSlots(hidden: Bool) {
@@ -150,13 +130,5 @@ class ScheduleDayCell: UITableViewCell {
     
     private func showAllTimeSlots() {
         setHiddenAllTimeSlots(false)
-    }
-}
-
-typealias TimeSlot = (open: NSDate?, close: NSDate?)
-
-extension ScheduleDay {
-    var openTimeSlots: [TimeSlot] {
-        return []
     }
 }
