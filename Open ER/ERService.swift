@@ -89,8 +89,13 @@ class ERService {
         let container = CKContainer.defaultContainer()
         let publicDatabase = container.publicCloudDatabase
         
-        let predicate = NSPredicate(format: "er == %@", er.recordID)
+        let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
+            NSPredicate(format: "er == %@", er.recordID)
+//            NSPredicate(format: "date > %@", NSDate.now)
+        ])
+        
         let query = CKQuery(recordType: "ScheduleDay", predicate: predicate )
+        query.sortDescriptors = [NSSortDescriptor(key: "date", ascending: true) ]
         
         publicDatabase.performQuery(query, inZoneWithID: nil) { (records: [CKRecord]?, error) in
             guard let records = records else {
