@@ -73,10 +73,10 @@ class OpenERsVC: UIViewController,
     
     func setupMapView() {
         mapView.delegate = self
-        configureMapViewLayoutMargins()
+        adjustMapViewLayoutMargins()
     }
     
-    func configureMapViewLayoutMargins() {
+    func adjustMapViewLayoutMargins() {
         mapView.layoutMargins.bottom = tableView.frame.height + toolbarView.frame.height
     }
     
@@ -154,7 +154,7 @@ class OpenERsVC: UIViewController,
             
             self.tableViewTopMapViewCenterConstraint.active = self.showTableView
             self.view.layoutIfNeeded()
-            self.setupMapView()
+            self.adjustMapViewLayoutMargins()
             
             // Adjust visible region of map to enclose all annotations.
             var annotationsToShow: [MKAnnotation] = self.nearbyOpenERs

@@ -40,6 +40,21 @@ extension NSDate {
         return NSDate()
     }
     
+    /// 00:00 of todays date.
+    var beginningOfDay: NSDate {
+        let calendar = NSCalendar.currentCalendar()
+        let components = calendar.components([.Year, .Month, .Day], fromDate: self)
+        return calendar.dateFromComponents(components)!
+    }
+    
+    var endOfDay: NSDate {
+        let components = NSDateComponents()
+        components.day = 1
+        var date = NSCalendar.currentCalendar().dateByAddingComponents(components, toDate: self.beginningOfDay, options: [])!
+        date = date.dateByAddingTimeInterval(-1)
+        return date
+    }
+    
     var inPast: Bool {
         return self < NSDate()
     }
@@ -94,5 +109,15 @@ extension NSDate {
     func plusDays(days: Int) -> NSDate {
         let interval = Double(days) * 24 * 60 * 60
         return NSDate(timeInterval: interval, sinceDate: self)
+    }
+}
+
+extension UIColor {
+    static func closed() -> UIColor {
+        return UIColor.redColor()
+    }
+    
+    static func open() -> UIColor {
+        return UIColor.greenColor()
     }
 }

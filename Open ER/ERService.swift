@@ -90,8 +90,8 @@ class ERService {
         let publicDatabase = container.publicCloudDatabase
         
         let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
-            NSPredicate(format: "er == %@", er.recordID)
-//            NSPredicate(format: "date > %@", NSDate.now)
+            NSPredicate(format: "er == %@", er.recordID),
+            NSPredicate(format: "date >= %@", NSDate.now.beginningOfDay)
         ])
         
         let query = CKQuery(recordType: "ScheduleDay", predicate: predicate )
