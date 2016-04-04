@@ -15,18 +15,47 @@ enum ERsFetchResult {
 }
 typealias ERsFetchHandler = (ERsFetchResult) -> Void
 
+enum ScheduleDaysFetchResult {
+    case Success([ScheduleDay])
+    case Failure(ErrorType)
+}
+typealias ScheduleDaysFetchHandler = (ScheduleDaysFetchResult) -> Void
+
+
 class ERService {
     static let sharedInstance = ERService()
     
-    /// Closures run on main thread
-//    func fetchOpenERsNearestLocation(location: CLLocation,
-//        failure: (ErrorType) -> (),
-//        success: ([ER])->() )
-//    {
-//        
-//    }
+    // MARK: - ERs
     
-    /// Handler closure runs on main thread.
+    /// Handler runs on main thread.
+    func fetchAllERs(handler: ERsFetchHandler) {
+        let container = CKContainer.defaultContainer()
+        let publicDatabase = container.publicCloudDatabase
+        
+        let query = CKQuery(recordType: "ER", predicate: NSPredicate(value: true) )
+        
+        publicDatabase.performQuery(query, inZoneWithID: nil) { (records: [CKRecord]?, error) in
+            guard let records = records else {
+                return NSOperationQueue.mainQueue().addOperationWithBlock {
+                    handler(.Failure(error!))
+                }
+            }
+            
+            let ers = records.map({ record -> ER in
+                let name = record["name"] as! String
+                let location = record["location"] as! CLLocation
+                let recordID = record.recordID
+                
+                return ER(name: name, location: location, recordID: recordID)
+            })
+            
+            NSOperationQueue.mainQueue().addOperationWithBlock {
+                handler(.Success(ers))
+            }
+        }   
+    }
+    
+    /// Handler runs on main thread.
     func fetchOpenERsNearestLocation(location: CLLocation, handler: ERsFetchHandler) {
         let container = CKContainer.defaultContainer()
         let publicDatabase = container.publicCloudDatabase
@@ -43,8 +72,9 @@ class ERService {
             let ers = records.map({ record -> ER in
                 let name = record["name"] as! String
                 let location = record["location"] as! CLLocation
+                let recordID = record.recordID
                 
-                return ER(name: name, location: location)
+                return ER(name: name, location: location, recordID: recordID)
             })
             
             NSOperationQueue.mainQueue().addOperationWithBlock {
@@ -52,4 +82,33 @@ class ERService {
             }
         }
     }
+    
+    // MARK: - ScheduleDays
+    
+    func fetchScheduleDaysForER(er: ER, handler: ScheduleDaysFetchHandler) {
+        let container = CKContainer.defaultContainer()
+        let publicDatabase = container.publicCloudDatabase
+        
+        let predicate = NSPredicate(format: "er == %@", er.recordID)
+        let query = CKQuery(recordType: "ScheduleDay", predicate: predicate )
+        
+        publicDatabase.performQuery(query, inZoneWithID: nil) { (records: [CKRecord]?, error) in
+            guard let records = records else {
+                return NSOperationQueue.mainQueue().addOperationWithBlock {
+                    handler(.Failure(error!))
+                }
+            }
+            
+            let scheduleDays = records.map({ record -> ScheduleDay in
+                let date = record["date"] as! NSDate
+                
+                return ScheduleDay(date: date)
+            })
+            
+            NSOperationQueue.mainQueue().addOperationWithBlock {
+                handler(.Success(scheduleDays))
+            }
+        }
+    }
+    
 }

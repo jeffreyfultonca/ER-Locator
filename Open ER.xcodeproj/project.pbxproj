@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		00611C011CB080FA00C08B07 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00611C001CB080FA00C08B07 /* AppDelegate.swift */; };
-		00611C031CB080FA00C08B07 /* ERsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00611C021CB080FA00C08B07 /* ERsVC.swift */; };
+		00611C031CB080FA00C08B07 /* OpenERsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00611C021CB080FA00C08B07 /* OpenERsVC.swift */; };
 		00611C061CB080FA00C08B07 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 00611C041CB080FA00C08B07 /* Main.storyboard */; };
 		00611C081CB080FA00C08B07 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 00611C071CB080FA00C08B07 /* Assets.xcassets */; };
 		00611C0B1CB080FA00C08B07 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 00611C091CB080FA00C08B07 /* LaunchScreen.storyboard */; };
@@ -16,12 +16,17 @@
 		00611C1D1CB08A7500C08B07 /* ERService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00611C1C1CB08A7500C08B07 /* ERService.swift */; };
 		00611C1F1CB0905300C08B07 /* ER.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00611C1E1CB0905300C08B07 /* ER.swift */; };
 		00611C221CB0972B00C08B07 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00611C211CB0972B00C08B07 /* Extensions.swift */; };
+		008BF3ED1CB1A31600946E4A /* ERCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 008BF3EC1CB1A31600946E4A /* ERCell.swift */; };
+		00DC0A981CB1E05800014279 /* ERsListVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00DC0A971CB1E05800014279 /* ERsListVC.swift */; };
+		00DC0A9A1CB1E8C900014279 /* ScheduleDayCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00DC0A991CB1E8C900014279 /* ScheduleDayCell.swift */; };
+		00DC0A9C1CB1E90100014279 /* ScheduleDaysVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00DC0A9B1CB1E90100014279 /* ScheduleDaysVC.swift */; };
+		00DC0A9E1CB1E9B500014279 /* ScheduleDay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00DC0A9D1CB1E9B500014279 /* ScheduleDay.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		00611BFD1CB080FA00C08B07 /* Open ER.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Open ER.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		00611C001CB080FA00C08B07 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		00611C021CB080FA00C08B07 /* ERsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ERsVC.swift; sourceTree = "<group>"; };
+		00611C021CB080FA00C08B07 /* OpenERsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenERsVC.swift; sourceTree = "<group>"; };
 		00611C051CB080FA00C08B07 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		00611C071CB080FA00C08B07 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		00611C0A1CB080FA00C08B07 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -31,6 +36,11 @@
 		00611C1C1CB08A7500C08B07 /* ERService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ERService.swift; sourceTree = "<group>"; };
 		00611C1E1CB0905300C08B07 /* ER.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ER.swift; sourceTree = "<group>"; };
 		00611C211CB0972B00C08B07 /* Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		008BF3EC1CB1A31600946E4A /* ERCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ERCell.swift; sourceTree = "<group>"; };
+		00DC0A971CB1E05800014279 /* ERsListVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ERsListVC.swift; sourceTree = "<group>"; };
+		00DC0A991CB1E8C900014279 /* ScheduleDayCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScheduleDayCell.swift; sourceTree = "<group>"; };
+		00DC0A9B1CB1E90100014279 /* ScheduleDaysVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScheduleDaysVC.swift; sourceTree = "<group>"; };
+		00DC0A9D1CB1E9B500014279 /* ScheduleDay.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScheduleDay.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -97,7 +107,9 @@
 		00611C171CB0822B00C08B07 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
-				00611C021CB080FA00C08B07 /* ERsVC.swift */,
+				00611C021CB080FA00C08B07 /* OpenERsVC.swift */,
+				00DC0A971CB1E05800014279 /* ERsListVC.swift */,
+				00DC0A9B1CB1E90100014279 /* ScheduleDaysVC.swift */,
 			);
 			name = Controllers;
 			sourceTree = "<group>";
@@ -108,6 +120,7 @@
 				00611C041CB080FA00C08B07 /* Main.storyboard */,
 				00611C071CB080FA00C08B07 /* Assets.xcassets */,
 				00611C091CB080FA00C08B07 /* LaunchScreen.storyboard */,
+				00DC0A9F1CB2140900014279 /* TableView Cells */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -116,6 +129,7 @@
 			isa = PBXGroup;
 			children = (
 				00611C1E1CB0905300C08B07 /* ER.swift */,
+				00DC0A9D1CB1E9B500014279 /* ScheduleDay.swift */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -142,6 +156,15 @@
 				00611C211CB0972B00C08B07 /* Extensions.swift */,
 			);
 			name = Globals;
+			sourceTree = "<group>";
+		};
+		00DC0A9F1CB2140900014279 /* TableView Cells */ = {
+			isa = PBXGroup;
+			children = (
+				008BF3EC1CB1A31600946E4A /* ERCell.swift */,
+				00DC0A991CB1E8C900014279 /* ScheduleDayCell.swift */,
+			);
+			name = "TableView Cells";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -221,11 +244,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				00DC0A981CB1E05800014279 /* ERsListVC.swift in Sources */,
 				00611C221CB0972B00C08B07 /* Extensions.swift in Sources */,
 				00611C1D1CB08A7500C08B07 /* ERService.swift in Sources */,
-				00611C031CB080FA00C08B07 /* ERsVC.swift in Sources */,
+				00DC0A9A1CB1E8C900014279 /* ScheduleDayCell.swift in Sources */,
+				00611C031CB080FA00C08B07 /* OpenERsVC.swift in Sources */,
 				00611C1F1CB0905300C08B07 /* ER.swift in Sources */,
+				008BF3ED1CB1A31600946E4A /* ERCell.swift in Sources */,
+				00DC0A9E1CB1E9B500014279 /* ScheduleDay.swift in Sources */,
 				00611C011CB080FA00C08B07 /* AppDelegate.swift in Sources */,
+				00DC0A9C1CB1E90100014279 /* ScheduleDaysVC.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -1,5 +1,5 @@
 //
-//  ERsVC.swift
+//  OpenERsVC.swift
 //  Open ER
 //
 //  Created by Jeffrey Fulton on 2016-04-02.
@@ -9,7 +9,7 @@
 import UIKit
 import MapKit
 
-class ERsVC: UIViewController,
+class OpenERsVC: UIViewController,
     UITableViewDelegate,
     UITableViewDataSource,
     MKMapViewDelegate
@@ -23,6 +23,7 @@ class ERsVC: UIViewController,
     
     @IBOutlet var toolbarView: UIView!
     @IBOutlet var toolbarLabel: UILabel!
+    @IBOutlet var toolbarDetailLabel: UILabel!
     
     @IBOutlet var tableViewTopMapViewCenterConstraint: NSLayoutConstraint!
     
@@ -51,11 +52,18 @@ class ERsVC: UIViewController,
         setupMapView()
     }
     
+    deinit {
+        NSNotificationCenter.defaultCenter().removeObserver(self)
+    }
+    
     // MARK: - Helpers
     
     func setupTableView() {
         tableView.delegate = self
         tableView.dataSource = self
+        
+        tableView.estimatedRowHeight = 63
+        tableView.rowHeight = UITableViewAutomaticDimension
         
         // Blur tableView background
         let visualEffect = UIBlurEffect(style: .ExtraLight)
@@ -79,9 +87,11 @@ class ERsVC: UIViewController,
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("erCell", forIndexPath: indexPath)
+        let cell = tableView.dequeueReusableCellWithIdentifier("erCell", forIndexPath: indexPath) as! ERCell
+        
         let er = nearbyOpenERs[indexPath.row]
-        cell.textLabel?.text = er.name
+        cell.configureER(er, fromLocation: mapView.userLocation.location)
+        
         return cell
     }
     
@@ -123,6 +133,15 @@ class ERsVC: UIViewController,
         tableView.reloadData()
     }
     
+//    func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
+//        guard annotation is ER else { return nil }
+//        
+//        let pinAnnotationView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: "pinAnnotationView")
+//        pinAnnotationView.pinTintColor = tableView.tintColor
+//        
+//        return pinAnnotationView
+//    }
+    
     // MARK: - Actions
     
     @IBAction func toolbarTapped(sender: AnyObject) {
@@ -153,5 +172,12 @@ class ERsVC: UIViewController,
             completion: nil
         )
     }
+    
+    // MARK: - Segues
+    
+    @IBAction func unwindToOpenERsVC(segue: UIStoryboardSegue) {
+        print(#function)
+    }
+    
 }
 
