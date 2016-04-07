@@ -20,8 +20,7 @@ class ScheduleDaysVC: UIViewController,
     
     // MARK: - Properties
     var er: ER!
-    var scheduleDays = [ScheduleDay]()
-    var scheduleDaysLoaded = false
+    var scheduleDayCache = [NSDate: ScheduleDay]()
     
     let today = NSDate.now.beginningOfDay
     
@@ -38,23 +37,6 @@ class ScheduleDaysVC: UIViewController,
         guard er != nil else { fatalError("er dependency not met.") }
         
         setupTableView()
-        
-        // Show loading...
-        
-        erService.fetchScheduleDaysForER(er) { result in
-            
-            // Hide loading...
-            
-            switch result {
-            case .Failure(let error):
-                print(error)
-                
-            case .Success(let scheduleDays):
-                self.scheduleDays = scheduleDays
-                self.scheduleDaysLoaded = true
-                self.tableView.reloadData()
-            }
-        }
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -89,6 +71,11 @@ class ScheduleDaysVC: UIViewController,
         tableView.scrollToRowAtIndexPath(indexPath, atScrollPosition: .Top, animated: animated)
     }
     
+    func dateForIndexPath(indexPath: NSIndexPath) -> NSDate {
+        let firstDayOfOffsetMonth = today.firstDayOfMonthWithOffset(indexPath.section + monthOffset)
+        return firstDayOfOffsetMonth.plusDays(indexPath.row)
+    }
+    
     // MARK: UITableViewDataSource
     
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
@@ -110,45 +97,49 @@ class ScheduleDaysVC: UIViewController,
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("scheduleDayCell", forIndexPath: indexPath) as! ScheduleDayCell
         
-        let firstDayOfOffsetMonth = today.firstDayOfMonthWithOffset(indexPath.section + monthOffset)
-        let date = firstDayOfOffsetMonth.plusDays(indexPath.row)
-        
+        let date = dateForIndexPath(indexPath)
         cell.configureForDate(date)
         
         return cell
     }
     
     func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
-        print("cell.height: \(cell.frame.height)")
+        
+        // Cell at this point will already be in 'loading' state; date configured but without schedule data.
+        
+        let date = dateForIndexPath(indexPath)
+        
+        guard let cell = cell as? ScheduleDayCell else {
+            return print("Cell not ScheduleDayCell. Nothing to do.")
+        }
+        
+        // Check ScheduleDayCache
+        if let scheduleDay = scheduleDayCache[date] {
+            cell.configureWithScheduleDay(scheduleDay)
+            return
+        }
+        
+        // Query CloudKit, returns on main thread
+        erService.fetchScheduleDayForER(er, onDate: date) { result in
+            
+            // Cell will be nil if not currently visible
+            let cell = tableView.cellForRowAtIndexPath(indexPath) as? ScheduleDayCell
+            
+            switch result {
+            case .Failure(let error):
+                cell?.configureWithError(error)
+                
+            case .Success(let scheduleDay):
+                guard let scheduleDay = scheduleDay else {
+                    cell?.configureAsClosed()
+                    return
+                }
+                
+                // Add to cache
+                self.scheduleDayCache[date] = scheduleDay
+                
+                cell?.configureWithScheduleDay(scheduleDay)
+            }
+        }
     }
-    
-//    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-//        guard scheduleDaysLoaded else { return 0 }
-//        return 10_000
-//    }
-//    
-//    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-//        let cell = tableView.dequeueReusableCellWithIdentifier("scheduleDayCell", forIndexPath: indexPath) as! ScheduleDayCell
-//
-//        let row = indexPath.row
-//        let scheduleDay: ScheduleDay
-//        
-//        if row < scheduleDays.count {
-//            // Existing record
-//            scheduleDay = scheduleDays[indexPath.row]
-//            
-//        } else {
-//            // Create new with defaults
-//            let earliestDate = scheduleDays.first?.date ?? NSDate.now
-//            let date = earliestDate.plusDays(row)
-//            scheduleDay = erService.createScheduleDayForER(er, onDate: date)
-//            
-//            scheduleDays.append(scheduleDay)
-//        }
-//        
-//        cell.configureScheduleDay(scheduleDay)
-//        
-//        return cell
-//    }
-
 }

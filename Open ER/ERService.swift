@@ -111,4 +111,55 @@ class ERService {
             runOnMainQueue { handler( .Success(scheduleDays) ) }
         }
     }
+    
+    enum ScheduleDayFetchResult {
+        case Success(ScheduleDay?)
+        case Failure(ErrorType)
+    }
+    
+    /// Handler executes on main thread.
+    func fetchScheduleDayForER(er: ER, onDate date: NSDate, handler: (ScheduleDayFetchResult)->() ) {
+        
+        let predicate = NSPredicate(format: "er == %@ AND date == %@", er.recordID, date)
+        let query = CKQuery(recordType: ScheduleDay.recordType, predicate: predicate)
+        query.sortDescriptors = [ NSSortDescriptor(key: "modificationDate", ascending: true) ]
+        
+        publicDatabase.performQuery(query, inZoneWithID: nil) { (records: [CKRecord]?, error) in
+            
+            // TODO: Handler possible errors? Or is passing them back up good?
+            guard error == nil else { return runOnMainQueue { handler( .Failure(error!) ) } }
+            guard let records = records else {
+                return runOnMainQueue {
+                    handler( .Failure( Error.UnableToAccessReturnedRecordsOfType(ScheduleDay.recordType) ) )
+                }
+            }
+            
+            // Error conditions may result in duplicate records for the same day. 
+            // We only want to use the most recently updated one... I think?
+            guard let record = records.first else {
+                runOnMainQueue { handler(.Success(nil)) }
+                return
+            }
+            
+            let recordID = record.recordID
+            let date = record["date"] as! NSDate
+            
+            let firstOpen = record["firstOpen"] as? NSDate
+            let firstClose = record["firstClose"] as? NSDate
+            
+            let secondOpen = record["secondOpen"] as? NSDate
+            let secondClose = record["secondClose"] as? NSDate
+            
+            let scheduleDay = ScheduleDay(
+                recordID: recordID,
+                date: date,
+                firstOpen: firstOpen,
+                firstClose: firstClose,
+                secondOpen: secondOpen,
+                secondClose: secondClose
+            )
+            
+            runOnMainQueue { handler( .Success(scheduleDay) ) }
+        }
+    }
 }

@@ -52,7 +52,7 @@ class ScheduleDayCell: UITableViewCell {
     
     // Helpers
     
-    func configureScheduleDay(scheduleDay: ScheduleDay) {
+    func configureWithScheduleDay(scheduleDay: ScheduleDay) {
         self.configureForDate(scheduleDay.date)
         
         // ScheduleDay can have up to 2 open times.
@@ -112,6 +112,14 @@ class ScheduleDayCell: UITableViewCell {
         
         thirdTimeSlotView.state = .Open
         thirdTimeSlotView.timesLabel.text = "\(secondTimeSlot.open.time) - \(secondTimeSlot.close.time)"
+    }
+    
+    func configureWithError(error: ErrorType) {
+        
+    }
+    
+    func configureAsClosed() {
+        
     }
     
     private func setHiddenAllTimeSlots(hidden: Bool) {
