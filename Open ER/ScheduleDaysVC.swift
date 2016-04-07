@@ -23,6 +23,13 @@ class ScheduleDaysVC: UIViewController,
     var scheduleDays = [ScheduleDay]()
     var scheduleDaysLoaded = false
     
+    let today = NSDate.now.beginningOfDay
+    
+    // MARK: - Month Sections
+    static let monthCountConstant = 120 // Enable single value to be used in both count and offset properties.
+    let monthCount = monthCountConstant // 50 years in either direction.
+    let monthOffset = monthCountConstant / -2 // Set today to middle of possible values
+    
     // MARK: - Lifecycle
     
     override func viewDidLoad() {
@@ -32,7 +39,12 @@ class ScheduleDaysVC: UIViewController,
         
         setupTableView()
         
+        // Show loading...
+        
         erService.fetchScheduleDaysForER(er) { result in
+            
+            // Hide loading...
+            
             switch result {
             case .Failure(let error):
                 print(error)
@@ -45,44 +57,98 @@ class ScheduleDaysVC: UIViewController,
         }
     }
     
-    // MARK: - Helpers
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        scrollTableToDate(today, animated: false)
+    }
+    
+    override func viewDidAppear(animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        scrollTableToDate(today, animated: true)
+    }
+    
+    // MARK: - TableView
     
     func setupTableView() {
         tableView.dataSource = self
         tableView.delegate = self
         
-        tableView.estimatedRowHeight = 65
+        tableView.estimatedRowHeight = 54
         tableView.rowHeight = UITableViewAutomaticDimension
+        
+        tableView.showsVerticalScrollIndicator = false // Indicator not helpful with list this long.
     }
     
-    // MARK: - UITableViewDataSource
+    /// Set the cell for date param at top of table.
+    func scrollTableToDate(date: NSDate, animated: Bool) {
+        let section = abs(monthOffset) + (date.monthOrdinal - today.monthOrdinal)
+        let row = date.dayOrdinalInMonth - 1 // Subtract one to make zero based.
+        let indexPath = NSIndexPath(forRow: row, inSection: section)
+        tableView.scrollToRowAtIndexPath(indexPath, atScrollPosition: .Top, animated: animated)
+    }
+    
+    // MARK: UITableViewDataSource
+    
+    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+        return monthCount
+    }
+    
+    func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        let firstDayOfOffsetMonth = today.firstDayOfMonthWithOffset(section + monthOffset)
+        return firstDayOfOffsetMonth.monthAbbreviationString
+    }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        guard scheduleDaysLoaded else { return 0 }
-        return 365
+        // Get month offset from today by section
+        let firstDayOfOffsetMonth = today.firstDayOfMonthWithOffset(section + monthOffset)
+        let numberOfDaysInMonth = firstDayOfOffsetMonth.numberOfDaysInMonth
+        return numberOfDaysInMonth
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("scheduleDayCell", forIndexPath: indexPath) as! ScheduleDayCell
         
-        let row = indexPath.row
-        let scheduleDay: ScheduleDay
+        let firstDayOfOffsetMonth = today.firstDayOfMonthWithOffset(indexPath.section + monthOffset)
+        let date = firstDayOfOffsetMonth.plusDays(indexPath.row)
         
-        if row < scheduleDays.count {
-            // Existing record
-            scheduleDay = scheduleDays[indexPath.row]
-            
-        } else {
-            // Create new with defaults
-            let earliestDate = scheduleDays.first?.date ?? NSDate.now
-            let date = earliestDate.plusDays(row)
-            scheduleDay = ScheduleDay(date: date)
-            scheduleDays.append(scheduleDay)
-        }
-        
-        cell.configureScheduleDay(scheduleDay)
+        cell.configureForDate(date)
         
         return cell
     }
+    
+    func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
+        print("cell.height: \(cell.frame.height)")
+    }
+    
+//    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+//        guard scheduleDaysLoaded else { return 0 }
+//        return 10_000
+//    }
+//    
+//    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+//        let cell = tableView.dequeueReusableCellWithIdentifier("scheduleDayCell", forIndexPath: indexPath) as! ScheduleDayCell
+//
+//        let row = indexPath.row
+//        let scheduleDay: ScheduleDay
+//        
+//        if row < scheduleDays.count {
+//            // Existing record
+//            scheduleDay = scheduleDays[indexPath.row]
+//            
+//        } else {
+//            // Create new with defaults
+//            let earliestDate = scheduleDays.first?.date ?? NSDate.now
+//            let date = earliestDate.plusDays(row)
+//            scheduleDay = erService.createScheduleDayForER(er, onDate: date)
+//            
+//            scheduleDays.append(scheduleDay)
+//        }
+//        
+//        cell.configureScheduleDay(scheduleDay)
+//        
+//        return cell
+//    }
 
 }

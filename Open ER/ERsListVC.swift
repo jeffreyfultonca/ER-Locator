@@ -27,17 +27,7 @@ class ERsListVC: UIViewController,
         super.viewDidLoad()
 
         setupTableView()
-        
-        erService.fetchAllERs { result in
-            switch result {
-            case .Failure(let error):
-                print(error)
-                
-            case .Success(let ers):
-                self.ers = ers
-                self.tableView.reloadData()
-            }
-        }
+        fetchERs()
     }
     
     // MARK: - Helpers
@@ -49,6 +39,26 @@ class ERsListVC: UIViewController,
         tableView.estimatedRowHeight = 44
         tableView.rowHeight = UITableViewAutomaticDimension
     }
+    
+    func fetchERs() {
+        // Show loading
+        erService.fetchAllERs(failure: processError, success: processERs)
+    }
+    
+    func processError(error: ErrorType) {
+        // Hide loading
+        
+        // TODO: Handler possible errors.
+        print(error)
+    }
+    
+    func processERs(ers: [ER]) {
+        // Hide loading
+        self.ers = ers
+        tableView.reloadData()
+    }
+    
+    
     
     // MARK: - UITableViewDataSource
     

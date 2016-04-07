@@ -8,7 +8,7 @@
 
 import CloudKit
 
-class ScheduleDay: CloudKitRecordProtocol {
+class ScheduleDay: CloudKitRecord, CloudKitRecordProtocol {
     
     // MARK: - CloudKitProtocol
     static var recordType = "ScheduleDay"
@@ -25,6 +25,7 @@ class ScheduleDay: CloudKitRecordProtocol {
     // MARK: - Lifecycle
     
     init(
+        recordID: CKRecordID,
         date: NSDate,
         firstOpen: NSDate? = nil,
         firstClose: NSDate? = nil,
@@ -38,6 +39,8 @@ class ScheduleDay: CloudKitRecordProtocol {
         
         self.secondOpen = secondOpen
         self.secondClose = secondClose
+        
+        super.init(recordID: recordID)
     }
     
     // MARK: TimeSlots

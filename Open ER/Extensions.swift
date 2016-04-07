@@ -36,13 +36,27 @@ func >(lhs: NSDate, rhs: NSDate) -> Bool { return lhs.compare(rhs) == .OrderedDe
 func >=(lhs: NSDate, rhs: NSDate) -> Bool { return lhs > rhs || lhs == rhs }
 
 extension NSDate {
-    static var now: NSDate {
-        return NSDate()
+    static var now: NSDate { return NSDate() }
+    
+    // MARK: Calendar
+    var calendar: NSCalendar { return NSCalendar.currentCalendar() }
+    
+    // MARK: Month
+    
+    var monthAbbreviationString: String {
+        let formatter = NSDateFormatter()
+        formatter.dateFormat = "MMM"
+        
+        return formatter.stringFromDate(self)
     }
     
-    /// 00:00 of todays date.
+    var monthOrdinal: Int {
+        return calendar.ordinalityOfUnit(.Month, inUnit: .Year, forDate: self)
+    }
+    
+    // MARK: Day
+    
     var beginningOfDay: NSDate {
-        let calendar = NSCalendar.currentCalendar()
         let components = calendar.components([.Year, .Month, .Day], fromDate: self)
         return calendar.dateFromComponents(components)!
     }
@@ -54,7 +68,7 @@ extension NSDate {
     var endOfDay: NSDate {
         let components = NSDateComponents()
         components.day = 1
-        var date = NSCalendar.currentCalendar().dateByAddingComponents(components, toDate: self.beginningOfDay, options: [])!
+        var date = calendar.dateByAddingComponents(components, toDate: self.beginningOfDay, options: [])!
         date = date.dateByAddingTimeInterval(-1)
         return date
     }
@@ -63,60 +77,51 @@ extension NSDate {
         return self == self.endOfDay
     }
     
-    var inPast: Bool {
-        return self < NSDate()
+    var dayOrdinalInMonth: Int {
+        return calendar.ordinalityOfUnit(.Day, inUnit: .Month, forDate: self)
     }
     
-    var inFuture: Bool {
-        return self > NSDate()
-    }
-    
-    var shortDate: String {
-        let formatter = NSDateFormatter()
-        formatter.dateFormat = "MMM d"
-        
-        return formatter.stringFromDate(self)
-    }
-    
-    var day: String {
-        let formatter = NSDateFormatter()
-        formatter.dateFormat = "d"
-        
-        return formatter.stringFromDate(self)
-    }
-    
-    var month: String {
-        let formatter = NSDateFormatter()
-        formatter.dateFormat = "MMM"
-        
-        return formatter.stringFromDate(self)
-    }
-    
-    var time: String {
-        let formatter = NSDateFormatter()
-        
-        let calendar = NSCalendar.currentCalendar()
-        let components = calendar.components(.Minute, fromDate: self)
-        
-        if components.minute % 60 == 1 {
-            formatter.dateFormat = "ha" // i.e. 7AM, 7PM
-        } else {
-            formatter.dateFormat = "h:mma" // i.e. 7:30AM, 7:00PM
-        }
-        
-        // Use alternate format string if user has 24-Hour Time enabled
-        let formatString = NSDateFormatter.dateFormatFromTemplate("j", options: 0, locale: NSLocale.currentLocale())!
-        let display24HourTime = !formatString.containsString("a")
-        if display24HourTime {
-            formatter.dateFormat = "h:mm" // i.e. 07:00, 19:00
-        }
-        
-        return formatter.stringFromDate(self).lowercaseString
+    var dayOrdinalInMonthString: String {
+        return dayOrdinalInMonth.description
     }
     
     func plusDays(days: Int) -> NSDate {
         let interval = Double(days) * 24 * 60 * 60
         return NSDate(timeInterval: interval, sinceDate: self)
+    }
+    
+    /// Returns the first day of the offset month.
+    /// i.e. Count up `offset` number of months from date, then return first day of that month.
+    func firstDayOfMonthWithOffset(offset: Int) -> NSDate {
+        let components = calendar.components([.Year, .Month], fromDate: self)
+        components.month += offset
+        return calendar.dateFromComponents(components)!
+    }
+    
+    var numberOfDaysInMonth: Int {
+        return calendar.rangeOfUnit(.Day, inUnit: .Month, forDate: self).length
+    }
+    
+    // MARK: Time
+    
+    var time: String {
+        let formatter = NSDateFormatter()
+        
+        // Use alternate format string if user has 24-Hour Time enabled
+        if userHas24HourTimeEnabled {
+            formatter.dateFormat = "h:mm" // i.e. 07:00, 19:00
+            
+        } else {
+            let components = calendar.components(.Minute, fromDate: self)
+            
+            if components.minute % 60 == 1 {
+                formatter.dateFormat = "ha" // i.e. 7AM, 7PM
+            } else {
+                formatter.dateFormat = "h:mma" // i.e. 7:30AM, 7:00PM
+            }
+        }
+        
+        return formatter.stringFromDate(self).lowercaseString
     }
 }
 

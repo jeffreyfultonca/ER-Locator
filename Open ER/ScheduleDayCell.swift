@@ -53,15 +53,11 @@ class ScheduleDayCell: UITableViewCell {
     // Helpers
     
     func configureScheduleDay(scheduleDay: ScheduleDay) {
-        dayLabel.text = scheduleDay.date.day
-        monthLabel.text = scheduleDay.date.month
+        self.configureForDate(scheduleDay.date)
         
         // ScheduleDay can have up to 2 open times.
         // O = Open, C = Closed.
         // Allows for O, O/C, C/O, C/O/C, O/C/O.
-        
-        // Hide all.
-        hideAllTimeSlots()
         
         // Closed if firstTimeSlot is nil
         guard let firstTimeSlot = scheduleDay.firstTimeSlot else {
@@ -131,4 +127,15 @@ class ScheduleDayCell: UITableViewCell {
     private func showAllTimeSlots() {
         setHiddenAllTimeSlots(false)
     }
+    
+    // MARK: - Date based
+    
+    func configureForDate(date: NSDate) {
+        dayLabel.text = date.dayOrdinalInMonthString
+        monthLabel.text = date.monthAbbreviationString
+        
+        // Hide all.
+        hideAllTimeSlots()
+    }
+    
 }

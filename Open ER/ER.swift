@@ -32,9 +32,9 @@ class ER: CloudKitRecord, CloudKitRecordProtocol, MKAnnotation {
     }
     
     init(
+        recordID: CKRecordID,
         name: String,
-        location: CLLocation,
-        recordID: CKRecordID)
+        location: CLLocation)
     {
         self.name = name
         self.location = location

@@ -16,6 +16,8 @@
 		00611C1D1CB08A7500C08B07 /* ERService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00611C1C1CB08A7500C08B07 /* ERService.swift */; };
 		00611C1F1CB0905300C08B07 /* ER.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00611C1E1CB0905300C08B07 /* ER.swift */; };
 		00611C221CB0972B00C08B07 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00611C211CB0972B00C08B07 /* Extensions.swift */; };
+		00656B5E1CB44DF00000C4D4 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00656B5D1CB44DF00000C4D4 /* Constants.swift */; };
+		00656B601CB481DF0000C4D4 /* Functions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00656B5F1CB481DF0000C4D4 /* Functions.swift */; };
 		008BF3ED1CB1A31600946E4A /* ERCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 008BF3EC1CB1A31600946E4A /* ERCell.swift */; };
 		00C197931CB2D39600786B5A /* TimeSlotView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00C197921CB2D39600786B5A /* TimeSlotView.swift */; };
 		00C197971CB2E65200786B5A /* CloudKitRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00C197961CB2E65200786B5A /* CloudKitRecord.swift */; };
@@ -38,6 +40,8 @@
 		00611C1C1CB08A7500C08B07 /* ERService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ERService.swift; sourceTree = "<group>"; };
 		00611C1E1CB0905300C08B07 /* ER.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ER.swift; sourceTree = "<group>"; };
 		00611C211CB0972B00C08B07 /* Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		00656B5D1CB44DF00000C4D4 /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		00656B5F1CB481DF0000C4D4 /* Functions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Functions.swift; sourceTree = "<group>"; };
 		008BF3EC1CB1A31600946E4A /* ERCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ERCell.swift; sourceTree = "<group>"; };
 		00C197921CB2D39600786B5A /* TimeSlotView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimeSlotView.swift; sourceTree = "<group>"; };
 		00C197961CB2E65200786B5A /* CloudKitRecord.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CloudKitRecord.swift; sourceTree = "<group>"; };
@@ -158,7 +162,9 @@
 		00611C201CB0971400C08B07 /* Globals */ = {
 			isa = PBXGroup;
 			children = (
+				00656B5D1CB44DF00000C4D4 /* Constants.swift */,
 				00611C211CB0972B00C08B07 /* Extensions.swift */,
+				00656B5F1CB481DF0000C4D4 /* Functions.swift */,
 			);
 			name = Globals;
 			sourceTree = "<group>";
@@ -253,10 +259,12 @@
 				00DC0A981CB1E05800014279 /* ERsListVC.swift in Sources */,
 				00611C221CB0972B00C08B07 /* Extensions.swift in Sources */,
 				00611C1D1CB08A7500C08B07 /* ERService.swift in Sources */,
+				00656B601CB481DF0000C4D4 /* Functions.swift in Sources */,
 				00C197931CB2D39600786B5A /* TimeSlotView.swift in Sources */,
 				00DC0A9A1CB1E8C900014279 /* ScheduleDayCell.swift in Sources */,
 				00611C031CB080FA00C08B07 /* OpenERsVC.swift in Sources */,
 				00611C1F1CB0905300C08B07 /* ER.swift in Sources */,
+				00656B5E1CB44DF00000C4D4 /* Constants.swift in Sources */,
 				008BF3ED1CB1A31600946E4A /* ERCell.swift in Sources */,
 				00DC0A9E1CB1E9B500014279 /* ScheduleDay.swift in Sources */,
 				00611C011CB080FA00C08B07 /* AppDelegate.swift in Sources */,

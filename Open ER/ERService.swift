@@ -1,4 +1,4 @@
-//
+ //
 //  ERService.swift
 //  Open ER
 //
@@ -9,102 +9,87 @@
 import CoreLocation
 import CloudKit
 
-enum ERsFetchResult {
-    case Success([ER])
-    case Failure(ErrorType)
-}
-typealias ERsFetchHandler = (ERsFetchResult) -> Void
-
-enum ScheduleDaysFetchResult {
-    case Success([ScheduleDay])
-    case Failure(ErrorType)
-}
-typealias ScheduleDaysFetchHandler = (ScheduleDaysFetchResult) -> Void
-
 class ERService {
     static let sharedInstance = ERService()
     
+    // MARK: - CloudKit Properties
+    private let publicDatabase = CKContainer.defaultContainer().publicCloudDatabase
+    
     // MARK: - ERs
     
-    /// Handler runs on main thread.
-    func fetchAllERs(handler: ERsFetchHandler) {
-        let container = CKContainer.defaultContainer()
-        let publicDatabase = container.publicCloudDatabase
-        
+    /// Handler closures execute on main thread.
+    func fetchAllERs(failure failure: (ErrorType)->(), success: ([ER])->() ) {
         let query = CKQuery(recordType: ER.recordType, predicate: NSPredicate(value: true) )
         
         publicDatabase.performQuery(query, inZoneWithID: nil) { (records: [CKRecord]?, error) in
+            // TODO: Handler possible errors? Or is passing them back up good?
+            guard error == nil else { return runOnMainQueue { failure(error!) } }
             guard let records = records else {
-                return NSOperationQueue.mainQueue().addOperationWithBlock {
-                    handler(.Failure(error!))
-                }
+                return runOnMainQueue { failure( Error.UnableToAccessReturnedRecordsOfType(ER.recordType) ) }
             }
             
-            let ers = records.map({ record -> ER in
+            let ers = records.map { record -> ER in
+                let recordID = record.recordID
                 let name = record["name"] as! String
                 let location = record["location"] as! CLLocation
-                let recordID = record.recordID
                 
-                return ER(name: name, location: location, recordID: recordID)
-            })
-            
-            NSOperationQueue.mainQueue().addOperationWithBlock {
-                handler(.Success(ers))
+                return ER(recordID: recordID, name: name, location: location)
             }
+            
+            runOnMainQueue { success(ers) }
         }   
     }
     
-    /// Handler runs on main thread.
-    func fetchOpenERsNearestLocation(location: CLLocation, handler: ERsFetchHandler) {
-        let container = CKContainer.defaultContainer()
-        let publicDatabase = container.publicCloudDatabase
-        
+    /// Handler closures execute on main thread.
+    func fetchOpenERsNearestLocation(location: CLLocation, failure: (ErrorType)->(), success: ([ER])->() ) {
         let query = CKQuery(recordType: ER.recordType, predicate: NSPredicate(value: true) )
         
         publicDatabase.performQuery(query, inZoneWithID: nil) { (records: [CKRecord]?, error) in
+            // TODO: Handler possible errors? Or is passing them back up good?
+            guard error == nil else { return runOnMainQueue { failure(error!) } }
             guard let records = records else {
-                return NSOperationQueue.mainQueue().addOperationWithBlock {
-                    handler(.Failure(error!))
-                }
+                return runOnMainQueue { failure( Error.UnableToAccessReturnedRecordsOfType(ER.recordType) ) }
             }
             
-            let ers = records.map({ record -> ER in
+            let ers = records.map { record -> ER in
+                let recordID = record.recordID
                 let name = record["name"] as! String
                 let location = record["location"] as! CLLocation
-                let recordID = record.recordID
                 
-                return ER(name: name, location: location, recordID: recordID)
-            })
-            
-            NSOperationQueue.mainQueue().addOperationWithBlock {
-                handler(.Success(ers))
+                return ER(recordID: recordID, name: name, location: location)
             }
+            
+            runOnMainQueue { success(ers) }
         }
     }
     
     // MARK: - ScheduleDays
     
-    func fetchScheduleDaysForER(er: ER, handler: ScheduleDaysFetchHandler) {
-        let container = CKContainer.defaultContainer()
-        let publicDatabase = container.publicCloudDatabase
-        
-        let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
-            NSPredicate(format: "er == %@", er.recordID),
-            NSPredicate(format: "date >= %@", NSDate.now.beginningOfDay)
-        ])
-        
-        let query = CKQuery(recordType: ScheduleDay.recordType, predicate: predicate )
-        query.sortDescriptors = [NSSortDescriptor(key: "date", ascending: true) ]
+    enum ScheduleDaysFetchResult {
+        case Success([ScheduleDay])
+        case Failure(ErrorType)
+    }
+    typealias ScheduleDaysFetchHandler = (ScheduleDaysFetchResult)->()
+    
+    /// Handler closures execute on main thread.
+    func fetchScheduleDaysForERTwo(er: ER, handler: ScheduleDaysFetchHandler ) {}
+    
+    func fetchScheduleDaysForER(er: ER, handler: (ScheduleDaysFetchResult)->() ) {
+        let predicate = NSPredicate(format: "er == %@ AND date >= %@", er.recordID, NSDate.now.beginningOfDay)
+        let query = CKQuery(recordType: ScheduleDay.recordType, predicate: predicate)
+        query.sortDescriptors = [ NSSortDescriptor(key: "date", ascending: true) ]
         
         publicDatabase.performQuery(query, inZoneWithID: nil) { (records: [CKRecord]?, error) in
+            // TODO: Handler possible errors? Or is passing them back up good?
+            guard error == nil else { return runOnMainQueue { handler( .Failure(error!) ) } }
             guard let records = records else {
-                return NSOperationQueue.mainQueue().addOperationWithBlock {
-                    handler(.Failure(error!))
+                return runOnMainQueue {
+                    handler( .Failure( Error.UnableToAccessReturnedRecordsOfType(ScheduleDay.recordType) ) )
                 }
             }
             
             let scheduleDays = records.map({ record -> ScheduleDay in
-//                let recordID = record.recordID
+                let recordID = record.recordID
                 let date = record["date"] as! NSDate
                 
                 let firstOpen = record["firstOpen"] as? NSDate
@@ -114,6 +99,7 @@ class ERService {
                 let secondClose = record["secondClose"] as? NSDate
                 
                 return ScheduleDay(
+                    recordID: recordID,
                     date: date,
                     firstOpen: firstOpen,
                     firstClose: firstClose,
@@ -122,9 +108,7 @@ class ERService {
                 )
             })
             
-            NSOperationQueue.mainQueue().addOperationWithBlock {
-                handler(.Success(scheduleDays))
-            }
+            runOnMainQueue { handler( .Success(scheduleDays) ) }
         }
     }
 }
