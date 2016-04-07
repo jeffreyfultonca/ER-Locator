@@ -126,11 +126,19 @@ extension NSDate {
 }
 
 extension UIColor {
+    static func loading() -> UIColor {
+        return UIColor(white: 0.8, alpha: 1.0)
+    }
+    
     static func closed() -> UIColor {
         return UIColor(red: 0.701961, green: 0.12549, blue: 0.0901961, alpha: 1.0)
     }
     
     static func open() -> UIColor {
         return UIColor(red: 0.505882, green: 0.737255, blue: 0.239216, alpha: 1.0)
+    }
+    
+    static func warning() -> UIColor {
+        return UIColor.orangeColor()
     }
 }

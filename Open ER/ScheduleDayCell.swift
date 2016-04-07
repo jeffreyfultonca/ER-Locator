@@ -11,6 +11,7 @@ import UIKit
 class ScheduleDayCell: UITableViewCell {
     
     // MARK: - Outlets
+    
     @IBOutlet var dayLabel: UILabel!
     @IBOutlet var monthLabel: UILabel!
     
@@ -30,7 +31,7 @@ class ScheduleDayCell: UITableViewCell {
     var secondTimeSlotView: TimeSlotView!
     var thirdTimeSlotView: TimeSlotView!
     
-    // Lifecycle
+    // MARK: - Lifecycle
     
     override func awakeFromNib() {
         firstTimeSlotView = TimeSlotView(
@@ -50,10 +51,24 @@ class ScheduleDayCell: UITableViewCell {
         )
     }
     
-    // Helpers
+    // MARK: - Configuration
+    
+    func configureWithDate(date: NSDate) {
+        // Hide all.
+        hideAllTimeSlots()
+        
+        dayLabel.text = date.dayOrdinalInMonthString
+        monthLabel.text = date.monthAbbreviationString
+    }
+    
+    func configureAsLoadingWithDate(date: NSDate) {
+        configureWithDate(date)
+        
+        firstTimeSlotView.state = .Loading
+    }
     
     func configureWithScheduleDay(scheduleDay: ScheduleDay) {
-        self.configureForDate(scheduleDay.date)
+        configureWithDate(scheduleDay.date)
         
         // ScheduleDay can have up to 2 open times.
         // O = Open, C = Closed.
@@ -62,8 +77,6 @@ class ScheduleDayCell: UITableViewCell {
         // Closed if firstTimeSlot is nil
         guard let firstTimeSlot = scheduleDay.firstTimeSlot else {
             firstTimeSlotView.state = .Closed
-            firstTimeSlotView.hidden = false
-            
             return
         }
         
@@ -114,13 +127,20 @@ class ScheduleDayCell: UITableViewCell {
         thirdTimeSlotView.timesLabel.text = "\(secondTimeSlot.open.time) - \(secondTimeSlot.close.time)"
     }
     
-    func configureWithError(error: ErrorType) {
+    func configureWithError(error: ErrorType, andDate date: NSDate) {
+        configureWithDate(date)
         
+        firstTimeSlotView.state = .Error
+        firstTimeSlotView.timesLabel.text = "\(error)"
     }
     
-    func configureAsClosed() {
+    func configureAsClosedWithDate(date: NSDate) {
+        configureWithDate(date)
         
+        firstTimeSlotView.state = .Closed
     }
+    
+    // MARK: - Helpers
     
     private func setHiddenAllTimeSlots(hidden: Bool) {
         firstTimeSlotView.hidden = hidden
@@ -135,15 +155,4 @@ class ScheduleDayCell: UITableViewCell {
     private func showAllTimeSlots() {
         setHiddenAllTimeSlots(false)
     }
-    
-    // MARK: - Date based
-    
-    func configureForDate(date: NSDate) {
-        dayLabel.text = date.dayOrdinalInMonthString
-        monthLabel.text = date.monthAbbreviationString
-        
-        // Hide all.
-        hideAllTimeSlots()
-    }
-    
 }

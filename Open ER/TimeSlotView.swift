@@ -32,15 +32,21 @@ class TimeSlotView {
     
     // MARK: - State
     enum State: String {
+        case Loading
         case Closed
         case Open
+        case Error
         
         var color: UIColor {
             switch self {
+            case .Loading:
+                return UIColor.loading()
             case .Closed:
                 return UIColor.closed()
             case .Open:
                 return UIColor.open()
+            case .Error:
+                return UIColor.warning()
             }
         }
     }

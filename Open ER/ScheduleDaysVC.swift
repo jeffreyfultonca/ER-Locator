@@ -19,10 +19,13 @@ class ScheduleDaysVC: UIViewController,
     @IBOutlet var tableView: UITableView!
     
     // MARK: - Properties
+    let today = NSDate.now.beginningOfDay
     var er: ER!
     var scheduleDayCache = [NSDate: ScheduleDay]()
     
-    let today = NSDate.now.beginningOfDay
+    /// Used to limit network requests
+    var datesRequested = Set<NSDate>()
+    var datesFetched = Set<NSDate>()
     
     // MARK: - Month Sections
     static let monthCountConstant = 120 // Enable single value to be used in both count and offset properties.
@@ -57,7 +60,7 @@ class ScheduleDaysVC: UIViewController,
         tableView.dataSource = self
         tableView.delegate = self
         
-        tableView.estimatedRowHeight = 54
+        tableView.estimatedRowHeight = 54.5
         tableView.rowHeight = UITableViewAutomaticDimension
         
         tableView.showsVerticalScrollIndicator = false // Indicator not helpful with list this long.
@@ -98,40 +101,67 @@ class ScheduleDaysVC: UIViewController,
         let cell = tableView.dequeueReusableCellWithIdentifier("scheduleDayCell", forIndexPath: indexPath) as! ScheduleDayCell
         
         let date = dateForIndexPath(indexPath)
-        cell.configureForDate(date)
+        cell.configureAsLoadingWithDate(date)
         
         return cell
     }
     
     func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
-        
-        // Cell at this point will already be in 'loading' state; date configured but without schedule data.
-        
-        let date = dateForIndexPath(indexPath)
-        
         guard let cell = cell as? ScheduleDayCell else {
-            return print("Cell not ScheduleDayCell. Nothing to do.")
-        }
-        
-        // Check ScheduleDayCache
-        if let scheduleDay = scheduleDayCache[date] {
-            cell.configureWithScheduleDay(scheduleDay)
+            print("Not ScheduleDayCell; nothing to do.")
             return
         }
         
-        // Query CloudKit, returns on main thread
+        let date = dateForIndexPath(indexPath)
+        
+        // Check ScheduleDayCache
+        if let scheduleDay = scheduleDayCache[date] {
+            print("Loaded from cache: \(date)")
+            cell.configureWithScheduleDay(scheduleDay)
+        }
+        // Loading if request in progress
+        else if datesRequested.contains(date) {
+            print("Request in progress: \(date)")
+            cell.configureAsLoadingWithDate(date)
+        }
+        // Closed if already fetched and not cached or requested
+        else if datesFetched.contains(date) {
+            print("Already fetched: \(date)")
+            cell.configureAsClosedWithDate(date)
+        }
+            // Fetch from CloudKit
+        else {
+            print("Fetching from CloudKit: \(date)")
+            fetchAndUpdateCellAtIndexPath(indexPath)
+        }
+    }
+    
+    func fetchAndUpdateCellAtIndexPath(indexPath: NSIndexPath) {
+        let date = dateForIndexPath(indexPath)
+        
+        // Prevent duplicate network requests
+        self.datesRequested.insert(date)
+        
+        // Fetch from CloudKit
         erService.fetchScheduleDayForER(er, onDate: date) { result in
             
+            // Remove from requested list
+            self.datesRequested.remove(date)
+            
             // Cell will be nil if not currently visible
-            let cell = tableView.cellForRowAtIndexPath(indexPath) as? ScheduleDayCell
+            let cell = self.tableView.cellForRowAtIndexPath(indexPath) as? ScheduleDayCell
             
             switch result {
             case .Failure(let error):
-                cell?.configureWithError(error)
+                cell?.configureWithError(error, andDate: date)
                 
             case .Success(let scheduleDay):
+                // Successfully fetched
+                self.datesFetched.insert(date)
+                
                 guard let scheduleDay = scheduleDay else {
-                    cell?.configureAsClosed()
+                    // Nil result means closed
+                    cell?.configureAsClosedWithDate(date)
                     return
                 }
                 

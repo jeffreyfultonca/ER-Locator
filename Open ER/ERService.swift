@@ -119,12 +119,16 @@ class ERService {
     
     /// Handler executes on main thread.
     func fetchScheduleDayForER(er: ER, onDate date: NSDate, handler: (ScheduleDayFetchResult)->() ) {
-        
-        let predicate = NSPredicate(format: "er == %@ AND date == %@", er.recordID, date)
+        let predicate = NSPredicate(
+            format: "er == %@ AND date >= %@ AND date <= %@",
+            er.recordID, date.beginningOfDay, date.endOfDay
+        )
         let query = CKQuery(recordType: ScheduleDay.recordType, predicate: predicate)
         query.sortDescriptors = [ NSSortDescriptor(key: "modificationDate", ascending: true) ]
         
         publicDatabase.performQuery(query, inZoneWithID: nil) { (records: [CKRecord]?, error) in
+            
+//            print("\(#function): response handler called.")
             
             // TODO: Handler possible errors? Or is passing them back up good?
             guard error == nil else { return runOnMainQueue { handler( .Failure(error!) ) } }
