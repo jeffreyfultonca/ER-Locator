@@ -50,6 +50,13 @@ extension NSDate {
         return formatter.stringFromDate(self)
     }
     
+    var monthFullName: String {
+        let formatter = NSDateFormatter()
+        formatter.dateFormat = "MMMM"
+        
+        return formatter.stringFromDate(self)
+    }
+    
     var monthOrdinal: Int {
         return calendar.ordinalityOfUnit(.Month, inUnit: .Year, forDate: self)
     }

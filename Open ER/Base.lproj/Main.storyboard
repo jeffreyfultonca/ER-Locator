@@ -231,7 +231,7 @@
                             <constraint firstItem="dTQ-ui-Pc0" firstAttribute="top" secondItem="Mxi-43-i2x" secondAttribute="bottom" id="m9n-aW-JEh"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" title="Scheduler" id="J7g-vH-HqY">
+                    <navigationItem key="navigationItem" title="ERs" id="J7g-vH-HqY">
                         <barButtonItem key="leftBarButtonItem" image="Map Marker" id="5qx-K4-08q">
                             <connections>
                                 <segue destination="5wo-Fo-e6w" kind="unwind" unwindAction="unwindToOpenERsVC:" id="01f-ou-8Qq"/>
@@ -398,6 +398,7 @@
                                             <outlet property="thirdStateIndicator" destination="J4B-QQ-nnO" id="lUI-dR-2Wh"/>
                                             <outlet property="thirdStateLabel" destination="mU4-ws-Eev" id="OxV-S4-qF3"/>
                                             <outlet property="thirdTimesLabel" destination="GMi-gW-RjS" id="Glo-0n-EtK"/>
+                                            <segue destination="Bzt-5c-nME" kind="show" identifier="showScheduleDayDetail" id="Pbp-uR-K2y"/>
                                         </connections>
                                     </tableViewCell>
                                 </prototypes>
@@ -418,6 +419,70 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Gkv-qM-h7x" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="3308" y="458"/>
+        </scene>
+        <!--Schedule Day DetailVC-->
+        <scene sceneID="tzb-ge-iyk">
+            <objects>
+                <viewController id="Bzt-5c-nME" customClass="ScheduleDayDetailVC" customModule="Open_ER" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="1fc-Mu-iPV"/>
+                        <viewControllerLayoutGuide type="bottom" id="Od3-Ni-48L"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="8TQ-sg-Ds8">
+                        <rect key="frame" x="0.0" y="64" width="600" height="536"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="EFX-Ga-BEH">
+                                <rect key="frame" x="20" y="20" width="560" height="58"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="First Open Time Slot" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QxB-Qj-FdK">
+                                        <rect key="frame" x="0.0" y="0.0" width="560" height="20"/>
+                                        <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
+                                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <stackView opaque="NO" contentMode="scaleToFill" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="suE-8g-mex">
+                                        <rect key="frame" x="0.0" y="28" width="560" height="30"/>
+                                        <subviews>
+                                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="C2X-fL-A1l">
+                                                <rect key="frame" x="0.0" y="0.0" width="265" height="30"/>
+                                                <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
+                                                <textInputTraits key="textInputTraits"/>
+                                            </textField>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="260" verticalHuggingPriority="240" horizontalCompressionResistancePriority="760" text="to" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iQi-cT-XPh">
+                                                <rect key="frame" x="273" y="0.0" width="15" height="30"/>
+                                                <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
+                                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" horizontalCompressionResistancePriority="740" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="r7k-3r-Hi9">
+                                                <rect key="frame" x="296" y="0.0" width="264" height="30"/>
+                                                <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
+                                                <textInputTraits key="textInputTraits"/>
+                                            </textField>
+                                        </subviews>
+                                        <constraints>
+                                            <constraint firstItem="C2X-fL-A1l" firstAttribute="width" secondItem="r7k-3r-Hi9" secondAttribute="width" id="tBy-Ux-b36"/>
+                                        </constraints>
+                                    </stackView>
+                                </subviews>
+                            </stackView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstAttribute="leadingMargin" secondItem="EFX-Ga-BEH" secondAttribute="leading" id="atY-cq-qgs"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="EFX-Ga-BEH" secondAttribute="trailing" id="gjo-5W-U4j"/>
+                            <constraint firstItem="EFX-Ga-BEH" firstAttribute="top" secondItem="1fc-Mu-iPV" secondAttribute="bottom" constant="20" id="itF-mI-1ms"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="firstCloseTextField" destination="r7k-3r-Hi9" id="07g-sd-BCh"/>
+                        <outlet property="firstOpenTextField" destination="C2X-fL-A1l" id="tpt-c4-bmM"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="o4Y-kv-utt" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="4038" y="458"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="kTs-tN-ppG">

@@ -32,6 +32,8 @@ class ScheduleDaysVC: UIViewController,
     let monthCount = monthCountConstant // 50 years in either direction.
     let monthOffset = monthCountConstant / -2 // Set today to middle of possible values
     
+    var shouldScrollToTodayAppear = true
+    
     // MARK: - Lifecycle
     
     override func viewDidLoad() {
@@ -39,19 +41,26 @@ class ScheduleDaysVC: UIViewController,
         
         guard er != nil else { fatalError("er dependency not met.") }
         
+        navigationItem.title = "\(er.name) Schedule"
+        
         setupTableView()
     }
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
-        
-        scrollTableToDate(today, animated: false)
+      
+        if shouldScrollToTodayAppear {
+            scrollTableToDate(today, animated: false)
+        }
     }
     
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
         
-        scrollTableToDate(today, animated: true)
+        if shouldScrollToTodayAppear {
+            shouldScrollToTodayAppear = false
+            scrollTableToDate(today, animated: true)
+        }
     }
     
     // MARK: - TableView
@@ -87,7 +96,7 @@ class ScheduleDaysVC: UIViewController,
     
     func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         let firstDayOfOffsetMonth = today.firstDayOfMonthWithOffset(section + monthOffset)
-        return firstDayOfOffsetMonth.monthAbbreviationString
+        return firstDayOfOffsetMonth.monthFullName
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -169,6 +178,19 @@ class ScheduleDaysVC: UIViewController,
                 self.scheduleDayCache[date] = scheduleDay
                 
                 cell?.configureWithScheduleDay(scheduleDay)
+            }
+        }
+    }
+    
+    // MARK: - Segues
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        if segue.identifier == "showScheduleDayDetail" {
+            if let
+                vc = segue.destinationViewController as? ScheduleDayDetailVC,
+                indexPath = tableView.indexPathForSelectedRow
+            {
+                vc.date = dateForIndexPath(indexPath)
             }
         }
     }
