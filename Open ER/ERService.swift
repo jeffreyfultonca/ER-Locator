@@ -28,13 +28,7 @@ class ERService {
                 return runOnMainQueue { failure( Error.UnableToAccessReturnedRecordsOfType(ER.recordType) ) }
             }
             
-            let ers = records.map { record -> ER in
-                let recordID = record.recordID
-                let name = record["name"] as! String
-                let location = record["location"] as! CLLocation
-                
-                return ER(recordID: recordID, name: name, location: location)
-            }
+            let ers = records.map { ER(record: $0) }
             
             runOnMainQueue { success(ers) }
         }   
@@ -51,13 +45,7 @@ class ERService {
                 return runOnMainQueue { failure( Error.UnableToAccessReturnedRecordsOfType(ER.recordType) ) }
             }
             
-            let ers = records.map { record -> ER in
-                let recordID = record.recordID
-                let name = record["name"] as! String
-                let location = record["location"] as! CLLocation
-                
-                return ER(recordID: recordID, name: name, location: location)
-            }
+            let ers = records.map { ER(record: $0) }
             
             runOnMainQueue { success(ers) }
         }
@@ -88,25 +76,7 @@ class ERService {
                 }
             }
             
-            let scheduleDays = records.map({ record -> ScheduleDay in
-                let recordID = record.recordID
-                let date = record["date"] as! NSDate
-                
-                let firstOpen = record["firstOpen"] as? NSDate
-                let firstClose = record["firstClose"] as? NSDate
-                
-                let secondOpen = record["secondOpen"] as? NSDate
-                let secondClose = record["secondClose"] as? NSDate
-                
-                return ScheduleDay(
-                    recordID: recordID,
-                    date: date,
-                    firstOpen: firstOpen,
-                    firstClose: firstClose,
-                    secondOpen: secondOpen,
-                    secondClose: secondClose
-                )
-            })
+            let scheduleDays = records.map { ScheduleDay(record: $0) }
             
             runOnMainQueue { handler( .Success(scheduleDays) ) }
         }
@@ -128,8 +98,6 @@ class ERService {
         
         publicDatabase.performQuery(query, inZoneWithID: nil) { (records: [CKRecord]?, error) in
             
-//            print("\(#function): response handler called.")
-            
             // TODO: Handler possible errors? Or is passing them back up good?
             guard error == nil else { return runOnMainQueue { handler( .Failure(error!) ) } }
             guard let records = records else {
@@ -145,23 +113,45 @@ class ERService {
                 return
             }
             
-            let recordID = record.recordID
-            let date = record["date"] as! NSDate
+            let scheduleDay = ScheduleDay(record: record)
             
-            let firstOpen = record["firstOpen"] as? NSDate
-            let firstClose = record["firstClose"] as? NSDate
+            runOnMainQueue { handler( .Success(scheduleDay) ) }
+        }
+    }
+    
+    // MARK: Creation
+    
+    func createScheduleDayForER(er: ER, onDate date: NSDate) -> ScheduleDay {
+        let scheduleDayRecord = CKRecord(recordType: ScheduleDay.recordType)
+        
+        scheduleDayRecord["er"] = er.asCKReferenceWithAction(.None)
+        scheduleDayRecord["date"] = date
+        
+        let scheduleDay = ScheduleDay(record: scheduleDayRecord)
+        return scheduleDay
+    }
+    
+    // MARK: Saving
+    
+    enum ScheduleDaySaveResult {
+        case Success(ScheduleDay)
+        case Failure(ErrorType)
+    }
+    
+    /// Handler executes on main thread.
+    func saveScheduleDay(scheduleDay: ScheduleDay, handler: (ScheduleDaySaveResult)->() ) {
+        
+        let record = scheduleDay.asCKRecord
+        
+        publicDatabase.saveRecord(record) { record, error in
+            guard error == nil else { return runOnMainQueue { handler( .Failure(error!) ) } }
+            guard let record = record else {
+                return runOnMainQueue {
+                    handler( .Failure( Error.UnableToAccessReturnedRecordsOfType(ScheduleDay.recordType) ) )
+                }
+            }
             
-            let secondOpen = record["secondOpen"] as? NSDate
-            let secondClose = record["secondClose"] as? NSDate
-            
-            let scheduleDay = ScheduleDay(
-                recordID: recordID,
-                date: date,
-                firstOpen: firstOpen,
-                firstClose: firstClose,
-                secondOpen: secondOpen,
-                secondClose: secondClose
-            )
+            let scheduleDay = ScheduleDay(record: record)
             
             runOnMainQueue { handler( .Success(scheduleDay) ) }
         }

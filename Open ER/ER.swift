@@ -11,18 +11,18 @@ import CloudKit
 
 class ER: CloudKitRecord, CloudKitRecordProtocol, MKAnnotation {
     
-    // MARK: - CloudKitProtocol
-    static var recordType = "ER"
-    
     // MARK: - Properties
+    
     var name: String
     var location: CLLocation
     
     // MARK: MKAnnotation
+    
     var coordinate: CLLocationCoordinate2D { return self.location.coordinate }
     var title: String? { return self.name }
     
     // MARK: Computed
+    
     var hoursOpen: String {
         return "12AM - 12PM"
     }
@@ -31,14 +31,27 @@ class ER: CloudKitRecord, CloudKitRecordProtocol, MKAnnotation {
         return "Estimated wait time"
     }
     
-    init(
-        recordID: CKRecordID,
-        name: String,
-        location: CLLocation)
-    {
-        self.name = name
-        self.location = location
+    // MARK: - Lifecycle
+    
+    override init(record: CKRecord) {
+        self.name = record["name"] as! String
+        self.location = record["location"] as! CLLocation
         
-        super.init(recordID: recordID)
+        super.init(record: record)
+    }
+    
+    // MARK: - CloudKitProtocol
+    static var recordType = "ER"
+    
+    var asCKRecord: CKRecord {
+        record["name"] = name
+        record["location"] = location
+        
+        return record
+    }
+    
+    func asCKReferenceWithAction(action: CKReferenceAction) -> CKReference {
+        let record = self.asCKRecord
+        return CKReference(record: record, action: action)
     }
 }

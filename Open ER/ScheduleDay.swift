@@ -10,9 +10,6 @@ import CloudKit
 
 class ScheduleDay: CloudKitRecord, CloudKitRecordProtocol {
     
-    // MARK: - CloudKitProtocol
-    static var recordType = "ScheduleDay"
-    
     // MARK: - Properties
     var date: NSDate
     
@@ -24,23 +21,31 @@ class ScheduleDay: CloudKitRecord, CloudKitRecordProtocol {
     
     // MARK: - Lifecycle
     
-    init(
-        recordID: CKRecordID,
-        date: NSDate,
-        firstOpen: NSDate? = nil,
-        firstClose: NSDate? = nil,
-        secondOpen: NSDate? = nil,
-        secondClose: NSDate? = nil)
-    {
-        self.date = date
+    override init(record: CKRecord) {
+        self.date = record["date"] as! NSDate
         
-        self.firstOpen = firstOpen
-        self.firstClose = firstClose
+        self.firstOpen = record["firstOpen"] as? NSDate
+        self.firstClose = record["firstClose"] as? NSDate
         
-        self.secondOpen = secondOpen
-        self.secondClose = secondClose
+        self.secondOpen = record["secondOpen"] as? NSDate
+        self.secondClose = record["secondClose"] as? NSDate
         
-        super.init(recordID: recordID)
+        super.init(record: record)
+    }
+    
+    // MARK: - CloudKitProtocol
+    static var recordType = "ScheduleDay"
+    
+    var asCKRecord: CKRecord {
+        record["date"] = date
+        
+        record["firstOpen"] = firstOpen
+        record["firstClose"] = firstClose
+        
+        record["secondOpen"] = secondOpen
+        record["secondClose"] = secondClose
+        
+        return record
     }
     
     // MARK: TimeSlots
@@ -55,5 +60,7 @@ class ScheduleDay: CloudKitRecord, CloudKitRecordProtocol {
     var secondTimeSlot: TimeSlot? {
         guard let open = secondOpen, close = secondClose else { return nil }
         return TimeSlot(open: open, close: close)
-    }    
+    }
+    
+    
 }

@@ -7,7 +7,9 @@
 //
 
 import Foundation
+import CloudKit
 
 enum Error: ErrorType {
     case UnableToAccessReturnedRecordsOfType(String)
+    case UnableToLoadCKRecord(CKRecord)
 }

@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		00104BFA1CBC1735007C453C /* RangeSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00104BF71CBC1735007C453C /* RangeSlider.swift */; };
+		00104BFB1CBC1735007C453C /* RangeSliderThumbLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00104BF81CBC1735007C453C /* RangeSliderThumbLayer.swift */; };
+		00104BFC1CBC1735007C453C /* RangeSliderTrackLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00104BF91CBC1735007C453C /* RangeSliderTrackLayer.swift */; };
 		00611C011CB080FA00C08B07 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00611C001CB080FA00C08B07 /* AppDelegate.swift */; };
 		00611C031CB080FA00C08B07 /* OpenERsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00611C021CB080FA00C08B07 /* OpenERsVC.swift */; };
 		00611C061CB080FA00C08B07 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 00611C041CB080FA00C08B07 /* Main.storyboard */; };
@@ -29,6 +32,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		00104BF71CBC1735007C453C /* RangeSlider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RangeSlider.swift; path = ../../Experimentation/RangeSlider/RangeSlider/RangeSlider.swift; sourceTree = "<group>"; };
+		00104BF81CBC1735007C453C /* RangeSliderThumbLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RangeSliderThumbLayer.swift; path = ../../Experimentation/RangeSlider/RangeSlider/RangeSliderThumbLayer.swift; sourceTree = "<group>"; };
+		00104BF91CBC1735007C453C /* RangeSliderTrackLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RangeSliderTrackLayer.swift; path = ../../Experimentation/RangeSlider/RangeSlider/RangeSliderTrackLayer.swift; sourceTree = "<group>"; };
 		00611BFD1CB080FA00C08B07 /* Open ER.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Open ER.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		00611C001CB080FA00C08B07 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		00611C021CB080FA00C08B07 /* OpenERsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenERsVC.swift; sourceTree = "<group>"; };
@@ -65,6 +71,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		00104BF61CBC1719007C453C /* RangeSlider */ = {
+			isa = PBXGroup;
+			children = (
+				00104BF71CBC1735007C453C /* RangeSlider.swift */,
+				00104BF81CBC1735007C453C /* RangeSliderThumbLayer.swift */,
+				00104BF91CBC1735007C453C /* RangeSliderTrackLayer.swift */,
+			);
+			name = RangeSlider;
+			sourceTree = "<group>";
+		};
 		00611BF41CB080FA00C08B07 = {
 			isa = PBXGroup;
 			children = (
@@ -132,6 +148,7 @@
 				00611C071CB080FA00C08B07 /* Assets.xcassets */,
 				00611C091CB080FA00C08B07 /* LaunchScreen.storyboard */,
 				00DC0A9F1CB2140900014279 /* TableView Cells */,
+				00104BF61CBC1719007C453C /* RangeSlider */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -269,10 +286,13 @@
 				00611C1F1CB0905300C08B07 /* ER.swift in Sources */,
 				00656B5E1CB44DF00000C4D4 /* Constants.swift in Sources */,
 				00935E541CB72B9A00A9FF71 /* ScheduleDayDetailVC.swift in Sources */,
+				00104BFC1CBC1735007C453C /* RangeSliderTrackLayer.swift in Sources */,
 				008BF3ED1CB1A31600946E4A /* ERCell.swift in Sources */,
 				00DC0A9E1CB1E9B500014279 /* ScheduleDay.swift in Sources */,
+				00104BFA1CBC1735007C453C /* RangeSlider.swift in Sources */,
 				00611C011CB080FA00C08B07 /* AppDelegate.swift in Sources */,
 				00DC0A9C1CB1E90100014279 /* ScheduleDaysVC.swift in Sources */,
+				00104BFB1CBC1735007C453C /* RangeSliderThumbLayer.swift in Sources */,
 				00C197971CB2E65200786B5A /* CloudKitRecord.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

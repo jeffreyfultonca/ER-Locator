@@ -61,12 +61,6 @@ class ScheduleDayCell: UITableViewCell {
         monthLabel.text = date.monthAbbreviationString
     }
     
-    func configureAsLoadingWithDate(date: NSDate) {
-        configureWithDate(date)
-        
-        firstTimeSlotView.state = .Loading
-    }
-    
     func configureWithScheduleDay(scheduleDay: ScheduleDay) {
         configureWithDate(scheduleDay.date)
         
@@ -86,7 +80,7 @@ class ScheduleDayCell: UITableViewCell {
             let close = firstTimeSlot.close
             
             // O: Open all day
-            if open.isBeginningOfDay && close.isEndOfDay {
+            if open.isBeginningOfDay && close.isEndOf(open) {
                 firstTimeSlotView.state = .Open
                 firstTimeSlotView.timesLabel.text = "24 Hours"
             }
@@ -98,7 +92,7 @@ class ScheduleDayCell: UITableViewCell {
                 secondTimeSlotView.state = .Closed
             }
             // C/O
-            else if /* !open.isBeginningOfDay && */ close.isEndOfDay {
+            else if /* !open.isBeginningOfDay && */ close.isEndOf(open) {
                 firstTimeSlotView.state = .Closed
                 
                 secondTimeSlotView.state = .Open
@@ -125,6 +119,18 @@ class ScheduleDayCell: UITableViewCell {
         
         thirdTimeSlotView.state = .Open
         thirdTimeSlotView.timesLabel.text = "\(secondTimeSlot.open.time) - \(secondTimeSlot.close.time)"
+    }
+    
+    func configureAsSavingWithDate(date: NSDate) {
+        configureWithDate(date)
+        
+        firstTimeSlotView.state = .Saving
+    }
+    
+    func configureAsLoadingWithDate(date: NSDate) {
+        configureWithDate(date)
+        
+        firstTimeSlotView.state = .Loading
     }
     
     func configureWithError(error: ErrorType, andDate date: NSDate) {

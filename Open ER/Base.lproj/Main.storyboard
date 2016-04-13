@@ -433,7 +433,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="EFX-Ga-BEH">
-                                <rect key="frame" x="20" y="20" width="560" height="58"/>
+                                <rect key="frame" x="20" y="20" width="560" height="110"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="First Open Time Slot" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QxB-Qj-FdK">
                                         <rect key="frame" x="0.0" y="0.0" width="560" height="20"/>
@@ -465,6 +465,21 @@
                                             <constraint firstItem="C2X-fL-A1l" firstAttribute="width" secondItem="r7k-3r-Hi9" secondAttribute="width" id="tBy-Ux-b36"/>
                                         </constraints>
                                     </stackView>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="sKd-gF-V2l" customClass="RangeSlider" customModule="Open_ER" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="66" width="560" height="44"/>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="44" id="ipo-vG-sae"/>
+                                        </constraints>
+                                        <variation key="default">
+                                            <mask key="constraints">
+                                                <exclude reference="ipo-vG-sae"/>
+                                            </mask>
+                                        </variation>
+                                        <connections>
+                                            <action selector="rangeSliderValueChanged:" destination="Bzt-5c-nME" eventType="valueChanged" id="Eej-MV-e0b"/>
+                                        </connections>
+                                    </view>
                                 </subviews>
                             </stackView>
                         </subviews>
@@ -478,6 +493,7 @@
                     <connections>
                         <outlet property="firstCloseTextField" destination="r7k-3r-Hi9" id="07g-sd-BCh"/>
                         <outlet property="firstOpenTextField" destination="C2X-fL-A1l" id="tpt-c4-bmM"/>
+                        <outlet property="firstTimeSlotRangeSlider" destination="sKd-gF-V2l" id="D96-Eu-bbV"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="o4Y-kv-utt" userLabel="First Responder" sceneMemberID="firstResponder"/>

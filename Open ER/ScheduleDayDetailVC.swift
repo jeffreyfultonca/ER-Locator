@@ -14,27 +14,28 @@ class ScheduleDayDetailVC: UIViewController {
     
     @IBOutlet var firstOpenTextField: UITextField!
     @IBOutlet var firstCloseTextField: UITextField!
+    @IBOutlet var firstTimeSlotRangeSlider: RangeSlider!
     
     // MARK: - Properties
-//    var date: NSDate!
-    var date: NSDate! = NSDate()
+    var scheduleDay: ScheduleDay!
     
-    var scheduleDay: ScheduleDay?
-    
-    // MARK: DatePickers
-    let datePicker1stOpen = UIDatePicker()
-    let datePicker1stClose = UIDatePicker()
-    let datePicker2ndOpen = UIDatePicker()
-    let datePicker2ndClose = UIDatePicker()
+    // MARK: - Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        guard date != nil else { fatalError("date dependency not met.") }
+        guard scheduleDay != nil else { fatalError("scheduleDay dependency not met.") }
         
         configureNavBar()
         
-        configureDatePickersForTextFields()
+        // Make sure firstTimeSlot open and closed are set
+        scheduleDay.firstOpen = scheduleDay.firstOpen ?? scheduleDay.date.beginningOfDay
+        scheduleDay.firstClose = scheduleDay.firstClose ?? scheduleDay.date.endOfDay
+        
+        configureRangeSliders()
+        
+        updateTextFields()
+        updateRangeSliders()
     }
     
     // MARK: - Helpers
@@ -43,52 +44,42 @@ class ScheduleDayDetailVC: UIViewController {
         let df = NSDateFormatter()
         df.dateFormat = "MMMM d"
         
-        navigationItem.title = df.stringFromDate(date)
+        navigationItem.title = df.stringFromDate(scheduleDay.date)
+    }
+    
+    func configureRangeSliders() {
+        firstTimeSlotRangeSlider.date = scheduleDay.date
     }
 
-    func configureDatePickersForTextFields() {
-        // First Open
-        addActionToDatePicker(datePicker1stOpen)
-        datePicker1stOpen.date = scheduleDay?.firstOpen ?? date
-        firstOpenTextField.inputView = datePicker1stOpen
-        
-        // First Close
-        addActionToDatePicker(datePicker1stClose)
-        datePicker1stClose.date = scheduleDay?.firstClose ?? date
-        firstCloseTextField.inputView = datePicker1stClose
+    func updateTextFields() {
+        firstOpenTextField.text = scheduleDay.firstOpen?.time
+        firstCloseTextField.text = scheduleDay.firstClose?.time
     }
     
-    func addActionToDatePicker(datePicker: UIDatePicker) {
-        datePicker.datePickerMode = .Time
-        datePicker.minuteInterval = 30
-        datePicker.addTarget(self, action: #selector(datePickerChanged), forControlEvents: .ValueChanged)
-    }
-    
-    // MARK: - DatePicker
-    func datePickerChanged(datePicker: UIDatePicker) {
-        switch datePicker {
-        case datePicker1stOpen:
-            scheduleDay?.firstOpen = datePicker.date
-            firstOpenTextField.text = datePicker.date.time
-            
-        case datePicker1stClose:
-            scheduleDay?.firstClose = datePicker.date
-            firstCloseTextField.text = datePicker.date.time
-            
-            
-        default:
-            print(datePicker.date.description)
+    func updateRangeSliders() {
+        if let firstOpen = scheduleDay.firstOpen {
+            firstTimeSlotRangeSlider.lowerTime = firstOpen
         }
+        
+        if let firstClose = scheduleDay.firstClose {
+            firstTimeSlotRangeSlider.upperTime = firstClose
+        }
+        
     }
 
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+    // MARK: - Actions
+    
+    @IBAction func rangeSliderValueChanged(rangeSlider: RangeSlider) {
+        print("RangeSlider value changed: \(rangeSlider.lowerValue) - \(rangeSlider.upperValue)")
+        
+        let firstOpen = rangeSlider.lowerTime
+        let firstClosed = rangeSlider.upperTime
+        
+        // Update ScheduleDay properties
+        scheduleDay.firstOpen = firstOpen
+        scheduleDay.firstClose = firstClosed
+        
+        updateTextFields()
+        
     }
-    */
-
 }

@@ -23,7 +23,11 @@ class ScheduleDaysVC: UIViewController,
     var er: ER!
     var scheduleDayCache = [NSDate: ScheduleDay]()
     
+    /// Used to reload tableView cell if set.
+    var lastSelectedDate: NSDate?
+    
     /// Used to limit network requests
+    var datesSaving = Set<NSDate>()
     var datesRequested = Set<NSDate>()
     var datesFetched = Set<NSDate>()
     
@@ -52,6 +56,24 @@ class ScheduleDaysVC: UIViewController,
         if shouldScrollToTodayAppear {
             scrollTableToDate(today, animated: false)
         }
+        
+        // Reload cell for last selected date.
+        if let
+            lastSelectedDate = lastSelectedDate,
+            indexPath = indexPathForDate(lastSelectedDate)
+        {
+            tableView.reloadRowsAtIndexPaths([indexPath], withRowAnimation: .None)
+        }
+        
+        // Save ScheduleDay for last selected date.
+        if let
+            lastSelectedDate = lastSelectedDate,
+            scheduleDay = scheduleDayCache[lastSelectedDate]
+        {
+            saveAndUpdateCellForScheduleDay(scheduleDay)
+        }
+        
+        lastSelectedDate = nil
     }
     
     override func viewDidAppear(animated: Bool) {
@@ -73,19 +95,26 @@ class ScheduleDaysVC: UIViewController,
         tableView.rowHeight = UITableViewAutomaticDimension
         
         tableView.showsVerticalScrollIndicator = false // Indicator not helpful with list this long.
+        tableView.scrollsToTop = false // Top in this case is years previous.
     }
     
     /// Set the cell for date param at top of table.
     func scrollTableToDate(date: NSDate, animated: Bool) {
-        let section = abs(monthOffset) + (date.monthOrdinal - today.monthOrdinal)
-        let row = date.dayOrdinalInMonth - 1 // Subtract one to make zero based.
-        let indexPath = NSIndexPath(forRow: row, inSection: section)
-        tableView.scrollToRowAtIndexPath(indexPath, atScrollPosition: .Top, animated: animated)
+        if let indexPath = indexPathForDate(date){
+            tableView.scrollToRowAtIndexPath(indexPath, atScrollPosition: .Top, animated: animated)
+        }
     }
     
     func dateForIndexPath(indexPath: NSIndexPath) -> NSDate {
         let firstDayOfOffsetMonth = today.firstDayOfMonthWithOffset(indexPath.section + monthOffset)
         return firstDayOfOffsetMonth.plusDays(indexPath.row)
+    }
+    
+    func indexPathForDate(date: NSDate) -> NSIndexPath? {
+        let section = abs(monthOffset) + (date.monthOrdinal - today.monthOrdinal)
+        let row = date.dayOrdinalInMonth - 1 // Subtract one to make zero based.
+        let indexPath = NSIndexPath(forRow: row, inSection: section)
+        return indexPath
     }
     
     // MARK: UITableViewDataSource
@@ -123,8 +152,12 @@ class ScheduleDaysVC: UIViewController,
         
         let date = dateForIndexPath(indexPath)
         
+        if datesSaving.contains(date) {
+            print("Saving in progress")
+            cell.configureAsSavingWithDate(date)
+        }
         // Check ScheduleDayCache
-        if let scheduleDay = scheduleDayCache[date] {
+        else if let scheduleDay = scheduleDayCache[date] {
             print("Loaded from cache: \(date)")
             cell.configureWithScheduleDay(scheduleDay)
         }
@@ -162,6 +195,7 @@ class ScheduleDaysVC: UIViewController,
             
             switch result {
             case .Failure(let error):
+                print(error)
                 cell?.configureWithError(error, andDate: date)
                 
             case .Success(let scheduleDay):
@@ -182,7 +216,58 @@ class ScheduleDaysVC: UIViewController,
         }
     }
     
+    func saveAndUpdateCellForScheduleDay(scheduleDay: ScheduleDay) {
+        
+        let date = scheduleDay.date
+        
+        // Mark as saving.
+        datesSaving.insert(date)
+        
+        // Set cell to 'Saving' if visible
+        guard let indexPath = indexPathForDate(date) else {
+            print("Could not access indexPathForDate: \(date)")
+            return
+        }
+        
+        let cell = tableView.cellForRowAtIndexPath(indexPath) as? ScheduleDayCell
+        cell?.configureAsSavingWithDate(date)
+        
+        erService.saveScheduleDay(scheduleDay) { result in
+            
+            // Successfully saved
+            self.datesSaving.remove(date)
+            
+            switch result {
+            case .Failure(let error):
+                print(error)
+                cell?.configureWithError(error, andDate: date)
+                
+            case .Success(let scheduleDay):
+                print("Successfully saved: \(scheduleDay)")
+                cell?.configureWithScheduleDay(scheduleDay)
+            }
+        }
+    }
+    
     // MARK: - Segues
+    
+    override func shouldPerformSegueWithIdentifier(identifier: String, sender: AnyObject?) -> Bool {
+        if identifier == "showScheduleDayDetail" {
+            guard let indexPath = tableView.indexPathForSelectedRow else {
+                print("Could not access selected indexPath.")
+                return false
+            }
+            
+            let date = dateForIndexPath(indexPath)
+            
+            guard datesFetched.contains(date) else {
+                print("Not finished fetching ScheduleDay for date... try again when complete.")
+                return false
+            }
+        }
+        
+        return true
+    }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "showScheduleDayDetail" {
@@ -190,7 +275,19 @@ class ScheduleDaysVC: UIViewController,
                 vc = segue.destinationViewController as? ScheduleDayDetailVC,
                 indexPath = tableView.indexPathForSelectedRow
             {
-                vc.date = dateForIndexPath(indexPath)
+                let date = dateForIndexPath(indexPath)
+                self.lastSelectedDate = date
+                
+                // Provide cached ScheduleDay if exists.
+                if let scheduleDay = scheduleDayCache[date] {
+                    vc.scheduleDay = scheduleDay
+                    
+                // Create new ScheduleDay if needed.
+                } else {
+                    let scheduleDay = erService.createScheduleDayForER(er, onDate: date)
+                    scheduleDayCache[date] = scheduleDay
+                    vc.scheduleDay = scheduleDay
+                }
             }
         }
     }

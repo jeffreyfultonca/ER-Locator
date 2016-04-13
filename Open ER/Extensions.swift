@@ -72,16 +72,16 @@ extension NSDate {
         return self == self.beginningOfDay
     }
     
+    /// Represented as 00:00 of next day
     var endOfDay: NSDate {
         let components = NSDateComponents()
         components.day = 1
-        var date = calendar.dateByAddingComponents(components, toDate: self.beginningOfDay, options: [])!
-        date = date.dateByAddingTimeInterval(-1)
-        return date
+        return calendar.dateByAddingComponents(components, toDate: self.beginningOfDay, options: [])!
     }
     
-    var isEndOfDay: Bool {
-        return self == self.endOfDay
+    /// Represented as 00:00 of next day
+    func isEndOf(date: NSDate) -> Bool {
+        return self == date.endOfDay
     }
     
     var dayOrdinalInMonth: Int {
@@ -133,6 +133,10 @@ extension NSDate {
 }
 
 extension UIColor {
+    static func saving() -> UIColor {
+        return UIColor.loading()
+    }
+    
     static func loading() -> UIColor {
         return UIColor(white: 0.8, alpha: 1.0)
     }

@@ -11,14 +11,18 @@ import CloudKit
 
 protocol CloudKitRecordProtocol {
     static var recordType: String { get }
+    var asCKRecord: CKRecord { get }
 }
 
 class CloudKitRecord: NSObject {
     
     // MARK: - Properties
-    var recordID: CKRecordID
+    var record: CKRecord
+    var recordID: CKRecordID {
+        return record.recordID
+    }
     
-    init(recordID: CKRecordID) {
-        self.recordID = recordID
+    init(record: CKRecord) {
+        self.record = record
     }
 }
