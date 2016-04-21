@@ -17,6 +17,11 @@ class ERService {
     
     // MARK: - ERs
     
+    enum ERsFetchResult {
+        case Failure(ErrorType)
+        case Success([ER])
+    }
+    
     /// Handler closures execute on main thread.
     func fetchAllERs(failure failure: (ErrorType)->(), success: ([ER])->() ) {
         let query = CKQuery(recordType: ER.recordType, predicate: NSPredicate(value: true) )
@@ -35,33 +40,30 @@ class ERService {
     }
     
     /// Handler closures execute on main thread.
-    func fetchOpenERsNearestLocation(location: CLLocation, failure: (ErrorType)->(), success: ([ER])->() ) {
+    func fetchOpenERsNearestLocation(location: CLLocation, handler: (ERsFetchResult)->() ) {
         let query = CKQuery(recordType: ER.recordType, predicate: NSPredicate(value: true) )
         
         publicDatabase.performQuery(query, inZoneWithID: nil) { (records: [CKRecord]?, error) in
             // TODO: Handler possible errors? Or is passing them back up good?
-            guard error == nil else { return runOnMainQueue { failure(error!) } }
+            guard error == nil else { return runOnMainQueue { handler( .Failure(error!) ) } }
             guard let records = records else {
-                return runOnMainQueue { failure( Error.UnableToAccessReturnedRecordsOfType(ER.recordType) ) }
+                return runOnMainQueue { handler( .Failure( Error.UnableToAccessReturnedRecordsOfType(ER.recordType) ) ) }
             }
             
             let ers = records.map { ER(record: $0) }
             
-            runOnMainQueue { success(ers) }
+            runOnMainQueue { handler( .Success(ers) ) }
         }
     }
     
     // MARK: - ScheduleDays
     
     enum ScheduleDaysFetchResult {
-        case Success([ScheduleDay])
         case Failure(ErrorType)
+        case Success([ScheduleDay])
     }
-    typealias ScheduleDaysFetchHandler = (ScheduleDaysFetchResult)->()
     
-    /// Handler closures execute on main thread.
-    func fetchScheduleDaysForERTwo(er: ER, handler: ScheduleDaysFetchHandler ) {}
-    
+    /// Handler executes on main thread.
     func fetchScheduleDaysForER(er: ER, handler: (ScheduleDaysFetchResult)->() ) {
         let predicate = NSPredicate(format: "er == %@ AND date >= %@", er.recordID, NSDate.now.beginningOfDay)
         let query = CKQuery(recordType: ScheduleDay.recordType, predicate: predicate)
@@ -83,8 +85,8 @@ class ERService {
     }
     
     enum ScheduleDayFetchResult {
-        case Success(ScheduleDay?)
         case Failure(ErrorType)
+        case Success(ScheduleDay?)
     }
     
     /// Handler executes on main thread.
@@ -134,8 +136,8 @@ class ERService {
     // MARK: Saving
     
     enum ScheduleDaySaveResult {
-        case Success(ScheduleDay)
         case Failure(ErrorType)
+        case Success(ScheduleDay)
     }
     
     /// Handler executes on main thread.

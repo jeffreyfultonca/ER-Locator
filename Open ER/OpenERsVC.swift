@@ -106,22 +106,15 @@ class OpenERsVC: UIViewController,
         
         shouldUpdateMapAnnotationsOnUserLocationUpdate = false
         
-//        erService.fetchOpenERsNearestLocation(location) { result in
-//            switch result {
-//            case .Success(let ers):
-//                self.showERsOnMap(ers)
-//                
-//            case .Failure(let error):
-//                print(error)
-//            }
-//        }
-        
-        erService.fetchOpenERsNearestLocation(location, failure: { error in
-            print(error)
-            
-        }, success: { ers in
-            self.showERsOnMap(ers)
-        })
+        erService.fetchOpenERsNearestLocation(location) { result in
+            switch result {
+            case .Failure(let error):
+                print(error)
+                
+            case .Success(let ers):
+                self.showERsOnMap(ers)
+            }
+        }
     }
     
     func showERsOnMap(ers: [ER]) {
