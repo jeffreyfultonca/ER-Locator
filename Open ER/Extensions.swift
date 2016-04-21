@@ -120,12 +120,13 @@ extension NSDate {
             
         } else {
             let components = calendar.components(.Minute, fromDate: self)
+            print(components.minute)
             
-            if components.minute % 60 == 1 {
-                formatter.dateFormat = "ha" // i.e. 7AM, 7PM
-            } else {
+//            if components.minute % 60 == 0 {
+//                formatter.dateFormat = "ha" // i.e. 7AM, 7PM
+//            } else {
                 formatter.dateFormat = "h:mma" // i.e. 7:30AM, 7:00PM
-            }
+//            }
         }
         
         return formatter.stringFromDate(self).lowercaseString

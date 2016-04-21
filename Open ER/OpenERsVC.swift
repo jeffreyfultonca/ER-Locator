@@ -95,6 +95,34 @@ class OpenERsVC: UIViewController,
         return cell
     }
     
+    func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
+        guard let cell = cell as? ERCell else {
+            print("Not ERCell; nothing to do.")
+            return
+        }
+        
+        // Async fetch ScheduleDay
+        let er = nearbyOpenERs[indexPath.row]
+        erService.fetchScheduleDayForER(er, onDate: NSDate.now) { result in
+            switch result {
+            case .Failure(let error):
+                print(error)
+                
+            case .Success(let scheduleDay):
+                guard let
+                    scheduleDay = scheduleDay,
+                    firstOpen = scheduleDay.firstOpen,
+                    firstClose = scheduleDay.firstClose else
+                {
+                    print("Could not access ScheduleDay or firstOpen or firstClose; this should never occur.")
+                    return
+                }
+                
+                cell.hoursLabel.text = "\(firstOpen.time) - \(firstClose.time)"
+            }
+        }
+    }
+    
     // MARK: - UITableViewDelegate
     
     
