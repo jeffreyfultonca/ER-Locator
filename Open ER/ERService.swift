@@ -90,7 +90,7 @@ class ERService {
     /// Handler executes on main thread.
     func fetchScheduleDayForER(er: ER, onDate date: NSDate, handler: (ScheduleDayFetchResult)->() ) {
         let predicate = NSPredicate(
-            format: "er == %@ AND date >= %@ AND date <= %@",
+            format: "er == %@ AND date >= %@ AND date < %@",
             er.recordID, date.beginningOfDay, date.endOfDay
         )
         let query = CKQuery(recordType: ScheduleDay.recordType, predicate: predicate)
