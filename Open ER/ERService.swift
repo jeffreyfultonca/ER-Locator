@@ -8,12 +8,19 @@
 
 import CoreLocation
 import CloudKit
+import UIKit
 
 class ERService {
     static let sharedInstance = ERService()
     
     // MARK: - CloudKit Properties
     private let publicDatabase = CKContainer.defaultContainer().publicCloudDatabase
+    
+    // MARK: - Network Activity Indicator Helper
+    
+    func setNetworkActivityIndicatorVisible(visible: Bool) {
+        UIApplication.sharedApplication().networkActivityIndicatorVisible = visible
+    }
     
     // MARK: - ERs
     
@@ -27,7 +34,11 @@ class ERService {
         let query = CKQuery(recordType: ER.recordType, predicate: NSPredicate(value: true) )
         query.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
         
+        setNetworkActivityIndicatorVisible(true)
+        
         publicDatabase.performQuery(query, inZoneWithID: nil) { (records: [CKRecord]?, error) in
+            runOnMainQueue { self.setNetworkActivityIndicatorVisible(false) }
+            
             // TODO: Handler possible errors? Or is passing them back up good?
             guard error == nil else { return runOnMainQueue { failure(error!) } }
             guard let records = records else {
@@ -51,7 +62,11 @@ class ERService {
         let scheduleDaysPredicate = NSPredicate(format: "firstOpen <= %@ AND firstClose > %@", now, now)
         let scheduleDaysQuery = CKQuery(recordType: ScheduleDay.recordType, predicate: scheduleDaysPredicate)
         
+        setNetworkActivityIndicatorVisible(true)
+        
         publicDatabase.performQuery(scheduleDaysQuery, inZoneWithID: nil) { (records: [CKRecord]?, error) in
+            runOnMainQueue { self.setNetworkActivityIndicatorVisible(false) }
+            
             guard error == nil else { return runOnMainQueue { handler( .Failure(error!) ) } }
             guard let records = records else {
                 return runOnMainQueue { handler( .Failure( Error.UnableToAccessReturnedRecordsOfType(ER.recordType) ) ) }
@@ -64,18 +79,36 @@ class ERService {
             
             let erPredicate = NSPredicate(format: "recordID IN %@", erReferences)
             let erQuery = CKQuery(recordType: ER.recordType, predicate: erPredicate)
-            erQuery.sortDescriptors = [CKLocationSortDescriptor(key: "location", relativeLocation: location)]
+            
+            // Would love to sort in query... but variable results are returned.
+//            erQuery.sortDescriptors = [CKLocationSortDescriptor(key: "location", relativeLocation: location)]
             
             var ers = [ER]()
             
+            self.setNetworkActivityIndicatorVisible(true)
+            
             let erOperation = CKQueryOperation(query: erQuery)
             erOperation.database = self.publicDatabase
-            erOperation.resultsLimit = 3
+            
+            // Would love to limit results in Operation... but variable results are returned.
+//            erOperation.resultsLimit = 3
+            
             erOperation.recordFetchedBlock = { record in
                 ers.append( ER(record: record) )
             }
             erOperation.queryCompletionBlock = { (cursor, error) in
+                runOnMainQueue { self.setNetworkActivityIndicatorVisible(false) }
+                
                 guard error == nil else { return runOnMainQueue { handler( .Failure(error!) ) } }
+                
+                // Having to sort and limit post request due to variable results being returned if sortDescriptors & resultsLimit is used.
+                ers.sortInPlace { (first, second) -> Bool in
+                    return first.location.distanceFromLocation(location) < second.location.distanceFromLocation(location)
+                }
+                
+                // Limit to top three results
+                ers = Array( ers.prefix(3) )
+                
                 runOnMainQueue { handler( .Success(ers) ) }
             }
             erOperation.start()
@@ -95,7 +128,11 @@ class ERService {
         let query = CKQuery(recordType: ScheduleDay.recordType, predicate: predicate)
         query.sortDescriptors = [ NSSortDescriptor(key: "date", ascending: true) ]
         
+        setNetworkActivityIndicatorVisible(true)
+        
         publicDatabase.performQuery(query, inZoneWithID: nil) { (records: [CKRecord]?, error) in
+            runOnMainQueue { self.setNetworkActivityIndicatorVisible(false) }
+            
             // TODO: Handler possible errors? Or is passing them back up good?
             guard error == nil else { return runOnMainQueue { handler( .Failure(error!) ) } }
             guard let records = records else {
@@ -124,7 +161,10 @@ class ERService {
         let query = CKQuery(recordType: ScheduleDay.recordType, predicate: predicate)
         query.sortDescriptors = [ NSSortDescriptor(key: "modificationDate", ascending: true) ]
         
+        setNetworkActivityIndicatorVisible(true)
+        
         publicDatabase.performQuery(query, inZoneWithID: nil) { (records: [CKRecord]?, error) in
+            runOnMainQueue { self.setNetworkActivityIndicatorVisible(false) }
             
             // TODO: Handler possible errors? Or is passing them back up good?
             guard error == nil else { return runOnMainQueue { handler( .Failure(error!) ) } }
@@ -171,7 +211,11 @@ class ERService {
         
         let record = scheduleDay.asCKRecord
         
+        setNetworkActivityIndicatorVisible(true)
+        
         publicDatabase.saveRecord(record) { record, error in
+            runOnMainQueue { self.setNetworkActivityIndicatorVisible(false) }
+            
             guard error == nil else { return runOnMainQueue { handler( .Failure(error!) ) } }
             guard let record = record else {
                 return runOnMainQueue {
