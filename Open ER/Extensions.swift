@@ -119,9 +119,7 @@ extension NSDate {
             formatter.dateFormat = "h:mm" // i.e. 07:00, 19:00
             
         } else {
-            let components = calendar.components(.Minute, fromDate: self)
-            print(components.minute)
-            
+//            let components = calendar.components(.Minute, fromDate: self)
 //            if components.minute % 60 == 0 {
 //                formatter.dateFormat = "ha" // i.e. 7AM, 7PM
 //            } else {

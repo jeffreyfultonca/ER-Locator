@@ -70,8 +70,6 @@ class ScheduleDayDetailVC: UIViewController {
     // MARK: - Actions
     
     @IBAction func rangeSliderValueChanged(rangeSlider: RangeSlider) {
-        print("RangeSlider value changed: \(rangeSlider.lowerValue) - \(rangeSlider.upperValue)")
-        
         let firstOpen = rangeSlider.lowerTime
         let firstClosed = rangeSlider.upperTime
         
@@ -80,6 +78,5 @@ class ScheduleDayDetailVC: UIViewController {
         scheduleDay.firstClose = firstClosed
         
         updateTextFields()
-        
     }
 }

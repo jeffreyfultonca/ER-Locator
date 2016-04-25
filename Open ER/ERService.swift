@@ -25,6 +25,7 @@ class ERService {
     /// Handler closures execute on main thread.
     func fetchAllERs(failure failure: (ErrorType)->(), success: ([ER])->() ) {
         let query = CKQuery(recordType: ER.recordType, predicate: NSPredicate(value: true) )
+        query.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
         
         publicDatabase.performQuery(query, inZoneWithID: nil) { (records: [CKRecord]?, error) in
             // TODO: Handler possible errors? Or is passing them back up good?

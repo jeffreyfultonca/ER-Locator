@@ -43,6 +43,13 @@ class OpenERsVC: UIViewController,
         
         locationManager.requestWhenInUseAuthorization()
         
+        NSNotificationCenter.defaultCenter().addObserver(
+            self,
+            selector: #selector(reloadERs),
+            name: UIApplicationDidBecomeActiveNotification,
+            object: nil
+        )
+        
         setupTableView()
     }
     
@@ -50,9 +57,15 @@ class OpenERsVC: UIViewController,
         super.viewDidAppear(animated)
         
         setupMapView()
+        
+        // Reload ER's if view is reappearing as data may have changed.
+        if !shouldUpdateMapAnnotationsOnUserLocationUpdate {
+            reloadERs()
+        }
     }
     
     deinit {
+        print(#function)
         NSNotificationCenter.defaultCenter().removeObserver(self)
     }
     
@@ -78,6 +91,14 @@ class OpenERsVC: UIViewController,
     
     func adjustMapViewLayoutMargins() {
         mapView.layoutMargins.bottom = tableView.frame.height + toolbarView.frame.height
+    }
+    
+    func reloadERs() {
+        // I think this will cause the mapview to immediately receive a location update
+        // even if the system already has one.
+        mapView.showsUserLocation = false
+        shouldUpdateMapAnnotationsOnUserLocationUpdate = true
+        mapView.showsUserLocation = true
     }
     
     // MARK: - UITableView Datasource
@@ -140,12 +161,12 @@ class OpenERsVC: UIViewController,
                 print(error)
                 
             case .Success(let ers):
-                self.showERsOnMap(ers)
+                self.showERsOnMap(ers, animated: true)
             }
         }
     }
     
-    func showERsOnMap(ers: [ER]) {
+    func showERsOnMap(ers: [ER], animated: Bool) {
         // Remove existing annotations from map.
         mapView.removeAnnotations(nearbyOpenERs)
         
@@ -155,7 +176,7 @@ class OpenERsVC: UIViewController,
         // Add annotations to the map, adjusting to show annotations and user's current location.
         var annotationsToShow: [MKAnnotation] = nearbyOpenERs
         annotationsToShow.append(mapView.userLocation)
-        mapView.showAnnotations(annotationsToShow, animated: true)
+        mapView.showAnnotations(annotationsToShow, animated: animated)
         
         // Show results in tableView.
         tableView.reloadData()
@@ -206,6 +227,5 @@ class OpenERsVC: UIViewController,
     @IBAction func unwindToOpenERsVC(segue: UIStoryboardSegue) {
         print(#function)
     }
-    
 }
 
