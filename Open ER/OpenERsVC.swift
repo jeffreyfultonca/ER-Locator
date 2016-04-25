@@ -227,5 +227,17 @@ class OpenERsVC: UIViewController,
     @IBAction func unwindToOpenERsVC(segue: UIStoryboardSegue) {
         print(#function)
     }
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        if segue.identifier == "showERDetail" {
+            if let
+                indexPath = tableView.indexPathForSelectedRow,
+                vc = segue.destinationViewController as? ERDetailVC
+            {
+                let er = nearbyOpenERs[indexPath.row]
+                vc.er = er
+            }
+        }
+    }
 }
 

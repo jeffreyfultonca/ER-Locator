@@ -133,7 +133,7 @@
                                             <outlet property="estWaitTimeLabel" destination="yyf-mV-gOn" id="OLp-hi-I0I"/>
                                             <outlet property="hoursLabel" destination="MEu-mq-f3F" id="d7U-Px-7ry"/>
                                             <outlet property="nameLabel" destination="rxM-Tf-ahD" id="2il-sF-RYq"/>
-                                            <segue destination="coD-j4-uvG" kind="show" id="G6Q-BI-jBa"/>
+                                            <segue destination="coD-j4-uvG" kind="show" identifier="showERDetail" id="G6Q-BI-jBa"/>
                                         </connections>
                                     </tableViewCell>
                                 </prototypes>
@@ -618,6 +618,9 @@
                             <constraint firstItem="6Ff-6s-ahM" firstAttribute="top" secondItem="wjx-LL-hsK" secondAttribute="bottom" constant="20" id="zj4-4g-SA2"/>
                         </constraints>
                     </view>
+                    <connections>
+                        <outlet property="mapView" destination="wjx-LL-hsK" id="dqD-8x-EeT"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="3Er-9b-LtY" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
