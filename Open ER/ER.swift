@@ -14,6 +14,7 @@ class ER: CloudKitRecord, CloudKitRecordProtocol, MKAnnotation {
     // MARK: - Properties
     
     var name: String
+    var phone: String
     var location: CLLocation
     
     // MARK: MKAnnotation
@@ -35,6 +36,7 @@ class ER: CloudKitRecord, CloudKitRecordProtocol, MKAnnotation {
     
     override init(record: CKRecord) {
         self.name = record["name"] as! String
+        self.phone = record["phone"] as! String
         self.location = record["location"] as! CLLocation
         
         super.init(record: record)

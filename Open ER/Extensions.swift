@@ -152,3 +152,9 @@ extension UIColor {
         return UIColor.orangeColor()
     }
 }
+
+extension String {
+    func stringByRemovingNonNumericCharacters() -> String {
+        return self.componentsSeparatedByCharactersInSet(NSCharacterSet.decimalDigitCharacterSet().invertedSet).joinWithSeparator("")
+    }
+}

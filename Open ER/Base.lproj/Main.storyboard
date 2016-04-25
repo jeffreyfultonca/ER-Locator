@@ -585,6 +585,10 @@
                                                 </constraints>
                                             </imageView>
                                         </subviews>
+                                        <gestureRecognizers/>
+                                        <connections>
+                                            <outletCollection property="gestureRecognizers" destination="GF4-Dr-gTN" appends="YES" id="FSc-z5-w6s"/>
+                                        </connections>
                                     </stackView>
                                     <stackView opaque="NO" contentMode="scaleToFill" distribution="fillProportionally" alignment="center" spacing="12" translatesAutoresizingMaskIntoConstraints="NO" id="qBE-n6-jE4">
                                         <rect key="frame" x="0.0" y="64" width="560" height="44"/>
@@ -603,6 +607,10 @@
                                                 </constraints>
                                             </imageView>
                                         </subviews>
+                                        <gestureRecognizers/>
+                                        <connections>
+                                            <outletCollection property="gestureRecognizers" destination="yae-8n-LEX" appends="YES" id="oWe-Ck-IQs"/>
+                                        </connections>
                                     </stackView>
                                 </subviews>
                             </stackView>
@@ -623,6 +631,16 @@
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="3Er-9b-LtY" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <tapGestureRecognizer id="GF4-Dr-gTN" userLabel="Call Row Tap Gesture Recognizer">
+                    <connections>
+                        <action selector="callRowTapped:" destination="coD-j4-uvG" id="ZUa-tI-b78"/>
+                    </connections>
+                </tapGestureRecognizer>
+                <tapGestureRecognizer id="yae-8n-LEX" userLabel="Directions Row Tap Gesture Recognizer">
+                    <connections>
+                        <action selector="directionsRowTapped:" destination="coD-j4-uvG" id="xDd-SC-eL9"/>
+                    </connections>
+                </tapGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="1913" y="1203"/>
         </scene>

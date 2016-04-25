@@ -16,7 +16,6 @@ class ERDetailVC: UIViewController {
     
     // MARK: - Properties
     var er: ER!
-    
 
     // MARK: - Lifecycle
     
@@ -37,6 +36,25 @@ class ERDetailVC: UIViewController {
     
     func setupMapView() {
         mapView.showAnnotations([er], animated: false)
+    }
+    
+    // MARK: - Actions
+    
+    @IBAction func callRowTapped(sender: AnyObject) {
+        print(#function)
+        
+        let phoneNumber = er.phone.stringByRemovingNonNumericCharacters()
+        let sharedApp = UIApplication.sharedApplication()
+        let phoneCallURL = NSURL(string: "tel://\(phoneNumber)")!
+        guard sharedApp.canOpenURL(phoneCallURL) else {
+            print("Cannot open tel:// urls on this device.")
+            return
+        }
+        sharedApp.openURL(phoneCallURL)
+    }
+    
+    @IBAction func directionsRowTapped(sender: AnyObject) {
+        print(#function)
     }
     
     
