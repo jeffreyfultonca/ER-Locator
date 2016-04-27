@@ -136,10 +136,8 @@
 			isa = PBXGroup;
 			children = (
 				00611C021CB080FA00C08B07 /* OpenERsVC.swift */,
-				00DC0A971CB1E05800014279 /* ERsListVC.swift */,
-				00DC0A9B1CB1E90100014279 /* ScheduleDaysVC.swift */,
-				00935E531CB72B9A00A9FF71 /* ScheduleDayDetailVC.swift */,
 				0036A94C1CCDECCE00BBD86F /* ERDetailVC.swift */,
+				008CB4391CD168B900DF76CC /* Scheduler */,
 			);
 			name = Controllers;
 			sourceTree = "<group>";
@@ -190,6 +188,16 @@
 				00656B5F1CB481DF0000C4D4 /* Functions.swift */,
 			);
 			name = Globals;
+			sourceTree = "<group>";
+		};
+		008CB4391CD168B900DF76CC /* Scheduler */ = {
+			isa = PBXGroup;
+			children = (
+				00DC0A971CB1E05800014279 /* ERsListVC.swift */,
+				00DC0A9B1CB1E90100014279 /* ScheduleDaysVC.swift */,
+				00935E531CB72B9A00A9FF71 /* ScheduleDayDetailVC.swift */,
+			);
+			name = Scheduler;
 			sourceTree = "<group>";
 		};
 		00DC0A9F1CB2140900014279 /* TableView Cells */ = {
