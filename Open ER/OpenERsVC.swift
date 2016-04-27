@@ -53,6 +53,14 @@ class OpenERsVC: UIViewController,
         setupTableView()
     }
     
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        if let indexPath = tableView.indexPathForSelectedRow {
+            tableView.deselectRowAtIndexPath(indexPath, animated: true)
+        }
+    }
+    
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
         
@@ -182,14 +190,57 @@ class OpenERsVC: UIViewController,
         tableView.reloadData()
     }
     
-//    func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
-//        guard annotation is ER else { return nil }
-//        
-//        let pinAnnotationView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: "pinAnnotationView")
-//        pinAnnotationView.pinTintColor = tableView.tintColor
-//        
-//        return pinAnnotationView
-//    }
+    func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
+        guard annotation is ER else { return nil }
+        
+        let reuseIdentifier = "pinAnnotationView"
+        
+        let pinAnnotationView = mapView.dequeueReusableAnnotationViewWithIdentifier(reuseIdentifier) as? MKPinAnnotationView ?? MKPinAnnotationView(annotation: annotation, reuseIdentifier: reuseIdentifier)
+        
+        pinAnnotationView.canShowCallout = true
+        pinAnnotationView.animatesDrop = false
+        
+        // Info Button
+        let infoButton = UIButton(type: .DetailDisclosure)
+        pinAnnotationView.rightCalloutAccessoryView = infoButton
+        
+        return pinAnnotationView
+    }
+    
+    func mapView(
+        mapView: MKMapView,
+        annotationView view: MKAnnotationView,
+        calloutAccessoryControlTapped control: UIControl)
+    {
+        guard let er = view.annotation as? ER else {
+            print("Could not access ER from annotationView.")
+            return
+        }
+        
+        // Get indexPath for ER
+        guard let indexPath = indexPathForER(er) else {
+            print("Could not find indexPath for ER.")
+            return
+        }
+        
+        // Select indexPath in table; required for segue... poor design.
+        tableView.selectRowAtIndexPath(indexPath, animated: true, scrollPosition: .None)
+        
+        // Trigger segue
+        performSegueWithIdentifier("showERDetail", sender: self)
+    }
+    
+    func indexPathForER(er: ER) -> NSIndexPath? {
+        for (row, nearbyOpenER) in nearbyOpenERs.enumerate() {
+            if nearbyOpenER == er {
+                // No point in continuing, return indexPath for this row.
+                return NSIndexPath(forRow: row, inSection: 0)
+            }
+        }
+        
+        // ER was not found in list
+        return nil
+    }
     
     // MARK: - Actions
     
