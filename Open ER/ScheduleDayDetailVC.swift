@@ -12,6 +12,10 @@ class ScheduleDayDetailVC: UIViewController {
     
     // MARK: - Outlets
     
+    @IBOutlet var closedImageView: UIImageView!
+    @IBOutlet var customImageView: UIImageView!
+    
+    
     @IBOutlet var firstOpenTextField: UITextField!
     @IBOutlet var firstCloseTextField: UITextField!
     @IBOutlet var firstTimeSlotRangeSlider: RangeSlider!
@@ -27,6 +31,8 @@ class ScheduleDayDetailVC: UIViewController {
         guard scheduleDay != nil else { fatalError("scheduleDay dependency not met.") }
         
         configureNavBar()
+        
+        configurePresentControls()
         
         // Make sure firstTimeSlot open and closed are set
         scheduleDay.firstOpen = scheduleDay.firstOpen ?? scheduleDay.date.beginningOfDay
@@ -45,6 +51,14 @@ class ScheduleDayDetailVC: UIViewController {
         df.dateFormat = "MMMM d"
         
         navigationItem.title = df.stringFromDate(scheduleDay.date)
+    }
+    
+    func configurePresentControls() {
+        for imageView in [closedImageView, customImageView] {
+            let tintColor = imageView.tintColor
+            imageView.tintColor = nil
+            imageView.tintColor = tintColor
+        }
     }
     
     func configureRangeSliders() {
