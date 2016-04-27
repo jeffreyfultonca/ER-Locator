@@ -32,6 +32,15 @@ class ER: CloudKitRecord, CloudKitRecordProtocol, MKAnnotation {
         return "Estimated wait time"
     }
     
+    /// Used for getting directions in Maps App
+    var addressDictionary: Dictionary<String, AnyObject> {
+        return [
+            CNPostalAddressCityKey: self.name,
+            CNPostalAddressStateKey: "Manitoba",
+            CNPostalAddressCountryKey: "Cananda"
+        ]
+    }
+    
     // MARK: - Lifecycle
     
     override init(record: CKRecord) {
@@ -43,6 +52,7 @@ class ER: CloudKitRecord, CloudKitRecordProtocol, MKAnnotation {
     }
     
     // MARK: - CloudKitProtocol
+    
     static var recordType = "ER"
     
     var asCKRecord: CKRecord {

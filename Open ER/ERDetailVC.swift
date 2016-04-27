@@ -41,22 +41,27 @@ class ERDetailVC: UIViewController {
     // MARK: - Actions
     
     @IBAction func callRowTapped(sender: AnyObject) {
-        print(#function)
-        
-        let phoneNumber = er.phone.stringByRemovingNonNumericCharacters()
         let sharedApp = UIApplication.sharedApplication()
+        let phoneNumber = er.phone.stringByRemovingNonNumericCharacters()
         let phoneCallURL = NSURL(string: "tel://\(phoneNumber)")!
+        
         guard sharedApp.canOpenURL(phoneCallURL) else {
             print("Cannot open tel:// urls on this device.")
             return
         }
+        
         sharedApp.openURL(phoneCallURL)
     }
     
     @IBAction func directionsRowTapped(sender: AnyObject) {
         print(#function)
+        
+        let placemark = MKPlacemark(coordinate: er.coordinate, addressDictionary: er.addressDictionary)
+        let mapItem = MKMapItem(placemark: placemark)
+        mapItem.name = er.name
+        
+        mapItem.openInMapsWithLaunchOptions([
+            MKLaunchOptionsDirectionsModeKey: MKLaunchOptionsDirectionsModeDriving
+        ])
     }
-    
-    
-
 }
