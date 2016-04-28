@@ -109,6 +109,18 @@ extension NSDate {
         return calendar.rangeOfUnit(.Day, inUnit: .Month, forDate: self).length
     }
     
+    /// Attempts to returns new NSDate at the specified hour. i.e.
+    /// 8 -> 8AM 
+    /// 20 -> 8PM
+    ///
+    /// params: hour must be an integer between zero and 23 else self is returned.
+    /// 
+    /// Returns self if new date could not be calculated for any reason.
+    func atHour(hour: Int) -> NSDate {
+        guard hour >= 0 && hour < 24 else { return self }
+        return calendar.dateBySettingHour(hour, minute: 0, second: 0, ofDate: self, options: .MatchFirst) ?? self
+    }
+    
     // MARK: Time
     
     var time: String {

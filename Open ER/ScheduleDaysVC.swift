@@ -65,15 +65,7 @@ class ScheduleDaysVC: UIViewController,
             tableView.reloadRowsAtIndexPaths([indexPath], withRowAnimation: .None)
         }
         
-        // Save ScheduleDay for last selected date.
-        if let
-            lastSelectedDate = lastSelectedDate,
-            scheduleDay = scheduleDayCache[lastSelectedDate]
-        {
-            saveAndUpdateCellForScheduleDay(scheduleDay)
-        }
-        
-        lastSelectedDate = nil
+        saveLastSelectedScheduleDate()
     }
     
     override func viewDidAppear(animated: Bool) {
@@ -83,6 +75,18 @@ class ScheduleDaysVC: UIViewController,
             shouldScrollToTodayAppear = false
             scrollTableToDate(today, animated: true)
         }
+    }
+    
+    // MARK: - Helpers
+    
+    func saveLastSelectedScheduleDate() {
+        guard let lastSelectedDate = lastSelectedDate else { return }
+        
+        if let scheduleDay = scheduleDayCache[lastSelectedDate] {
+            saveAndUpdateCellForScheduleDay(scheduleDay)
+        }
+        
+        self.lastSelectedDate = nil
     }
     
     // MARK: - TableView
