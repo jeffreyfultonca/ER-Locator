@@ -1,4 +1,4 @@
- //
+//
 //  ERService.swift
 //  Open ER
 //
@@ -23,11 +23,6 @@ class ERService {
     }
     
     // MARK: - ERs
-    
-    enum ERsFetchResult {
-        case Failure(ErrorType)
-        case Success([ER])
-    }
     
     /// Handler closures execute on main thread.
     func fetchAllERs(failure failure: (ErrorType)->(), success: ([ER])->() ) {
@@ -117,10 +112,7 @@ class ERService {
     
     // MARK: - ScheduleDays
     
-    enum ScheduleDaysFetchResult {
-        case Failure(ErrorType)
-        case Success([ScheduleDay])
-    }
+    
     
     /// Handler executes on main thread.
     func fetchScheduleDaysForER(er: ER, handler: (ScheduleDaysFetchResult)->() ) {
@@ -147,10 +139,7 @@ class ERService {
         }
     }
     
-    enum ScheduleDayFetchResult {
-        case Failure(ErrorType)
-        case Success(ScheduleDay?)
-    }
+    
     
     /// Handler executes on main thread.
     func fetchScheduleDayForER(er: ER, onDate date: NSDate, handler: (ScheduleDayFetchResult)->() ) {

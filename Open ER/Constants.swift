@@ -12,4 +12,6 @@ import CloudKit
 enum Error: ErrorType {
     case UnableToAccessReturnedRecordsOfType(String)
     case UnableToLoadCKRecord(CKRecord)
+    
+    case OperationNotComplete
 }

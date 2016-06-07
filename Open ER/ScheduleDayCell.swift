@@ -90,10 +90,12 @@ class ScheduleDayCell: UITableViewCell {
                 firstTimeSlotView.timesLabel.text = "\(open.time) - \(close.time)"
                 
                 secondTimeSlotView.state = .Closed
+                secondTimeSlotView.stateLabel.text = nil
             }
             // C/O
             else if /* !open.isBeginningOfDay && */ close.isEndOf(open) {
                 firstTimeSlotView.state = .Closed
+                firstTimeSlotView.stateLabel.text = nil
                 
                 secondTimeSlotView.state = .Open
                 secondTimeSlotView.timesLabel.text = "\(open.time) - \(close.time)"
@@ -101,11 +103,13 @@ class ScheduleDayCell: UITableViewCell {
             // C/O/C
             else /* if !open.isBeginningOfDay && !close.isEndOfDay */ {
                 firstTimeSlotView.state = .Closed
+                firstTimeSlotView.stateLabel.text = nil
                 
                 secondTimeSlotView.state = .Open
                 secondTimeSlotView.timesLabel.text = "\(open.time) - \(close.time)"
                 
                 thirdTimeSlotView.state = .Closed
+                thirdTimeSlotView.stateLabel.text = nil
             }
             
             return

@@ -9,28 +9,33 @@
 import MapKit
 import CloudKit
 
-class ER: CloudKitRecord, CloudKitRecordProtocol, MKAnnotation {
+class ER: NSObject, CloudKitRecordable, MKAnnotation {
     
-    // MARK: - Properties
+    // MARK: - Stored Properties
+    
+    var record: CKRecord
     
     var name: String
     var phone: String
     var location: CLLocation
     
-    // MARK: MKAnnotation
+    // MARK: - Lifecycle
     
+    init(record: CKRecord) {
+        self.record = record
+        self.name = record["name"] as! String
+        self.phone = record["phone"] as! String
+        self.location = record["location"] as! CLLocation
+    }
+    
+    // MARK: - Computed Properties
+    
+    // MKAnnotation
     var coordinate: CLLocationCoordinate2D { return self.location.coordinate }
     var title: String? { return self.name }
     
-    // MARK: Computed
-    
-    var hoursOpen: String {
-        return "12AM - 12PM"
-    }
-    
-    var estimatedWaitTime: String {
-        return "Estimated wait time"
-    }
+    var hoursOpen: String { return "Loading..." }
+    var estimatedWaitTime: String { return "Estimated wait time" }
     
     /// Used for getting directions in Maps App
     var addressDictionary: Dictionary<String, AnyObject> {
@@ -41,20 +46,7 @@ class ER: CloudKitRecord, CloudKitRecordProtocol, MKAnnotation {
         ]
     }
     
-    // MARK: - Lifecycle
-    
-    override init(record: CKRecord) {
-        self.name = record["name"] as! String
-        self.phone = record["phone"] as! String
-        self.location = record["location"] as! CLLocation
-        
-        super.init(record: record)
-    }
-    
-    // MARK: - CloudKitProtocol
-    
-    static var recordType = "ER"
-    
+    // CloudKitRecordModelable
     var asCKRecord: CKRecord {
         record["name"] = name
         record["location"] = location

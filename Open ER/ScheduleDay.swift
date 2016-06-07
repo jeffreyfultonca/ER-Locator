@@ -8,9 +8,12 @@
 
 import CloudKit
 
-class ScheduleDay: CloudKitRecord, CloudKitRecordProtocol {
+class ScheduleDay: CloudKitRecordable {
     
-    // MARK: - Properties
+    // MARK: - Stored Properties
+    
+    var record: CKRecord
+    
     var date: NSDate
     
     var firstOpen: NSDate?
@@ -21,7 +24,9 @@ class ScheduleDay: CloudKitRecord, CloudKitRecordProtocol {
     
     // MARK: - Lifecycle
     
-    override init(record: CKRecord) {
+    init(record: CKRecord) {
+        self.record = record
+        
         self.date = record["date"] as! NSDate
         
         self.firstOpen = record["firstOpen"] as? NSDate
@@ -29,13 +34,11 @@ class ScheduleDay: CloudKitRecord, CloudKitRecordProtocol {
         
         self.secondOpen = record["secondOpen"] as? NSDate
         self.secondClose = record["secondClose"] as? NSDate
-        
-        super.init(record: record)
     }
     
-    // MARK: - CloudKitProtocol
-    static var recordType = "ScheduleDay"
+    // MARK: - Computed Properties
     
+    // CloudKitRecordModelable
     var asCKRecord: CKRecord {
         record["date"] = date
         
@@ -61,6 +64,4 @@ class ScheduleDay: CloudKitRecord, CloudKitRecordProtocol {
         guard let open = secondOpen, close = secondClose else { return nil }
         return TimeSlot(open: open, close: close)
     }
-    
-    
 }

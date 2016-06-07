@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10116" systemVersion="15E65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="mZ0-nm-wsk">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10117" systemVersion="15F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="mZ0-nm-wsk">
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
@@ -135,6 +135,53 @@
                                             <outlet property="nameLabel" destination="rxM-Tf-ahD" id="2il-sF-RYq"/>
                                             <segue destination="coD-j4-uvG" kind="show" identifier="showERDetail" id="G6Q-BI-jBa"/>
                                         </connections>
+                                    </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="loadingCell" id="Idg-vU-OBt">
+                                        <rect key="frame" x="0.0" y="93" width="600" height="65"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" tableViewCell="Idg-vU-OBt" id="Uae-aw-Ihc">
+                                            <rect key="frame" x="0.0" y="0.0" width="600" height="64"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <stackView opaque="NO" contentMode="scaleToFill" distribution="fillProportionally" translatesAutoresizingMaskIntoConstraints="NO" id="BHt-dQ-fuh">
+                                                    <rect key="frame" x="15" y="10" width="570" height="45"/>
+                                                    <subviews>
+                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Finding nearest open emergency rooms..." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="B7g-P1-mJ3">
+                                                            <rect key="frame" x="0.0" y="0.0" width="551" height="45"/>
+                                                            <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
+                                                            <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                                                            <nil key="highlightedColor"/>
+                                                        </label>
+                                                        <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="752" verticalHuggingPriority="750" horizontalCompressionResistancePriority="751" animating="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="1hz-3L-rqX">
+                                                            <rect key="frame" x="551" y="0.0" width="19" height="45"/>
+                                                        </activityIndicatorView>
+                                                    </subviews>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="240" id="QEd-Zd-y3S"/>
+                                                        <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="44" id="XAU-rY-pHf"/>
+                                                    </constraints>
+                                                    <variation key="default">
+                                                        <mask key="constraints">
+                                                            <exclude reference="XAU-rY-pHf"/>
+                                                        </mask>
+                                                    </variation>
+                                                </stackView>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstAttribute="bottomMargin" secondItem="BHt-dQ-fuh" secondAttribute="bottom" id="3Nh-V6-XnH"/>
+                                                <constraint firstAttribute="trailingMargin" relation="greaterThanOrEqual" secondItem="BHt-dQ-fuh" secondAttribute="trailing" id="6V9-Qg-6pl"/>
+                                                <constraint firstItem="BHt-dQ-fuh" firstAttribute="top" secondItem="Uae-aw-Ihc" secondAttribute="topMargin" id="JfX-wY-bxc"/>
+                                                <constraint firstItem="BHt-dQ-fuh" firstAttribute="centerX" secondItem="Uae-aw-Ihc" secondAttribute="centerX" id="Klp-YC-wbo"/>
+                                                <constraint firstItem="BHt-dQ-fuh" firstAttribute="centerY" secondItem="Uae-aw-Ihc" secondAttribute="centerY" id="ROv-dK-Vhs"/>
+                                                <constraint firstItem="BHt-dQ-fuh" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="Uae-aw-Ihc" secondAttribute="leadingMargin" id="yex-Sh-ofP"/>
+                                            </constraints>
+                                            <variation key="default">
+                                                <mask key="constraints">
+                                                    <exclude reference="ROv-dK-Vhs"/>
+                                                </mask>
+                                            </variation>
+                                        </tableViewCellContentView>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                     </tableViewCell>
                                 </prototypes>
                             </tableView>
@@ -509,11 +556,11 @@
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="fMS-BP-Ghu" userLabel="Closed">
                                         <rect key="frame" x="300" y="0.0" width="150" height="120"/>
                                         <subviews>
-                                            <stackView opaque="NO" contentMode="scaleToFill" misplaced="YES" axis="vertical" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="Ayl-St-kdM">
-                                                <rect key="frame" x="51" y="27" width="51" height="68"/>
+                                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="Ayl-St-kdM">
+                                                <rect key="frame" x="50" y="26" width="51" height="68"/>
                                                 <subviews>
                                                     <imageView userInteractionEnabled="NO" contentMode="center" image="Cancel" translatesAutoresizingMaskIntoConstraints="NO" id="sTl-Eg-QKV">
-                                                        <rect key="frame" x="1" y="0.0" width="48" height="48"/>
+                                                        <rect key="frame" x="2" y="0.0" width="48" height="48"/>
                                                         <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                         <constraints>
                                                             <constraint firstAttribute="width" constant="48" id="Fsi-4C-vIt"/>
@@ -546,11 +593,11 @@
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="XP8-5Q-ppO" userLabel="Custom">
                                         <rect key="frame" x="450" y="0.0" width="150" height="120"/>
                                         <subviews>
-                                            <stackView opaque="NO" contentMode="scaleToFill" misplaced="YES" axis="vertical" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="zNf-9z-dpI">
-                                                <rect key="frame" x="51" y="27" width="57" height="68"/>
+                                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="zNf-9z-dpI">
+                                                <rect key="frame" x="47" y="26" width="57" height="68"/>
                                                 <subviews>
                                                     <imageView userInteractionEnabled="NO" contentMode="center" image="Sliders" translatesAutoresizingMaskIntoConstraints="NO" id="ZVz-jW-3Jo">
-                                                        <rect key="frame" x="4" y="0.0" width="48" height="48"/>
+                                                        <rect key="frame" x="5" y="0.0" width="48" height="48"/>
                                                         <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                         <constraints>
                                                             <constraint firstAttribute="width" constant="48" id="GKp-VY-g8T"/>
@@ -581,8 +628,8 @@
                                     <constraint firstAttribute="height" constant="120" id="Nh9-mP-5re"/>
                                 </constraints>
                             </stackView>
-                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="EFX-Ga-BEH">
-                                <rect key="frame" x="20" y="140" width="560" height="110"/>
+                            <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" axis="vertical" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="EFX-Ga-BEH">
+                                <rect key="frame" x="20" y="140" width="560" height="116"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="First Open Time Slot" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QxB-Qj-FdK">
                                         <rect key="frame" x="0.0" y="0.0" width="560" height="20"/>
@@ -614,8 +661,8 @@
                                             <constraint firstItem="C2X-fL-A1l" firstAttribute="width" secondItem="r7k-3r-Hi9" secondAttribute="width" id="tBy-Ux-b36"/>
                                         </constraints>
                                     </stackView>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="sKd-gF-V2l" customClass="RangeSlider" customModule="Open_ER" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="66" width="560" height="44"/>
+                                    <view contentMode="scaleToFill" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="sKd-gF-V2l" customClass="RangeSlider" customModule="Open_ER" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="66" width="560" height="50"/>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="44" id="ipo-vG-sae"/>
@@ -696,7 +743,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="qke-ZW-H5F" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="429" y="482"/>
+            <point key="canvasLocation" x="429" y="458"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="sh9-AD-mXl">

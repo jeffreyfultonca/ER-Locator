@@ -41,24 +41,22 @@ class ERsListVC: UIViewController,
     }
     
     func fetchERs() {
-        // Show loading
+        // TODO: Show loading
         erService.fetchAllERs(failure: processError, success: processERs)
     }
     
     func processError(error: ErrorType) {
-        // Hide loading
+        // TODO: Hide loading
         
         // TODO: Handler possible errors.
         print(error)
     }
     
     func processERs(ers: [ER]) {
-        // Hide loading
+        // TODO: Hide loading
         self.ers = ers
         tableView.reloadData()
     }
-    
-    
     
     // MARK: - UITableViewDataSource
     

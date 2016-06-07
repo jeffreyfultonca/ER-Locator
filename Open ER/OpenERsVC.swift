@@ -10,12 +10,14 @@ import UIKit
 import MapKit
 
 class OpenERsVC: UIViewController,
+    DependencyEnforcing,
     UITableViewDelegate,
     UITableViewDataSource,
     MKMapViewDelegate
 {
     // MARK: - Dependencies
-    var erService = ERService.sharedInstance
+    var emergencyRoomProvider: EmergencyRoomProvider!
+    var scheduleDayProvider: ScheduleDayProvider!
     
     // MARK: - Outlets
     @IBOutlet var mapView: MKMapView!
@@ -40,6 +42,8 @@ class OpenERsVC: UIViewController,
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        enforceDependencies()
         
         locationManager.requestWhenInUseAuthorization()
         
@@ -67,17 +71,21 @@ class OpenERsVC: UIViewController,
         setupMapView()
         
         // Reload ER's if view is reappearing as data may have changed.
-        if !shouldUpdateMapAnnotationsOnUserLocationUpdate {
+        if shouldUpdateMapAnnotationsOnUserLocationUpdate {
             reloadERs()
         }
     }
     
     deinit {
-        print(#function)
         NSNotificationCenter.defaultCenter().removeObserver(self)
     }
     
     // MARK: - Helpers
+    
+    func enforceDependencies() {
+        guard emergencyRoomProvider != nil else { fatalError("emergencyRoomProvider dependency not met") }
+        guard scheduleDayProvider != nil else { fatalError("scheduleDayProvider dependency not met") }
+    }
     
     func setupTableView() {
         tableView.delegate = self
@@ -112,16 +120,29 @@ class OpenERsVC: UIViewController,
     // MARK: - UITableView Datasource
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return nearbyOpenERs.count
+        return nearbyOpenERs.isEmpty ? 1 : nearbyOpenERs.count
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("erCell", forIndexPath: indexPath) as! ERCell
         
-        let er = nearbyOpenERs[indexPath.row]
-        cell.configureER(er, fromLocation: mapView.userLocation.location)
+        // Show loading cell if empty and loading...
         
-        return cell
+        if nearbyOpenERs.isEmpty {
+            let cell = tableView.dequeueReusableCellWithIdentifier("loadingCell", forIndexPath: indexPath)
+            return cell
+            
+        } else {
+            let cell = tableView.dequeueReusableCellWithIdentifier("erCell", forIndexPath: indexPath) as! ERCell
+            
+            let er = nearbyOpenERs[indexPath.row]
+            cell.configureER(er, fromLocation: mapView.userLocation.location)
+            
+            return cell
+        }
+    }
+    
+    func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+        return nearbyOpenERs.isEmpty ? tableView.frame.height : UITableViewAutomaticDimension
     }
     
     func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
@@ -132,7 +153,7 @@ class OpenERsVC: UIViewController,
         
         // Async fetch ScheduleDay
         let er = nearbyOpenERs[indexPath.row]
-        erService.fetchScheduleDayForER(er, onDate: NSDate.now) { result in
+        scheduleDayProvider.fetchScheduleDayForER(er, onDate: NSDate.now) { result in
             switch result {
             case .Failure(let error):
                 print(error)
@@ -152,9 +173,6 @@ class OpenERsVC: UIViewController,
         }
     }
     
-    // MARK: - UITableViewDelegate
-    
-    
     // MARK: - MKMapViewDelegate
     
     func mapView(mapView: MKMapView, didUpdateUserLocation userLocation: MKUserLocation) {
@@ -163,7 +181,11 @@ class OpenERsVC: UIViewController,
         
         shouldUpdateMapAnnotationsOnUserLocationUpdate = false
         
-        erService.fetchOpenERsNearestLocation(location) { result in
+        emergencyRoomProvider.fetchOpenERsNearestLocation(
+            location,
+            limitTo: nil,
+            resultQueue: NSOperationQueue.mainQueue() )
+        { result in
             switch result {
             case .Failure(let error):
                 print(error)
@@ -187,7 +209,8 @@ class OpenERsVC: UIViewController,
         mapView.showAnnotations(annotationsToShow, animated: animated)
         
         // Show results in tableView.
-        tableView.reloadData()
+        let sections = NSIndexSet(index: 0)
+        tableView.reloadSections(sections, withRowAnimation: .Fade)
     }
     
     func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
