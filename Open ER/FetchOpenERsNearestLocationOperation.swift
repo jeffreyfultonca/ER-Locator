@@ -10,18 +10,13 @@ import CloudKit
 
 class FetchOpenERsNearestLocationOperation: AsyncOperation {
     
-    enum Result {
-        case Failure(ErrorType)
-        case Success([ER])
-    }
-    
     // MARK: - Stored Properties
     private var location: CLLocation
     private var limit: Int?
     
     private var queue = NSOperationQueue()
     
-    var result = Result.Failure(Error.OperationNotComplete)
+    var result: FetchCloudKitRecordableResult<ER> = .Failure(Error.OperationNotComplete)
     
     // MARK: - Lifecycle
     
@@ -95,7 +90,7 @@ class FetchOpenERsNearestLocationOperation: AsyncOperation {
         return Array( openERs.prefix(limit) )
     }
     
-    private func completeOperationWithResult(result: Result) {
+    private func completeOperationWithResult(result: FetchCloudKitRecordableResult<ER>) {
         self.result = result
         completeOperation()
     }
