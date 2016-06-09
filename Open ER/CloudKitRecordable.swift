@@ -22,6 +22,8 @@ protocol CloudKitRecordable {
     var record: CKRecord { get }
     var recordID: CKRecordID { get }
     var asCKRecord: CKRecord { get }
+    
+    init(record: CKRecord)
 }
 
 // Add RecordID computed property for convenience.

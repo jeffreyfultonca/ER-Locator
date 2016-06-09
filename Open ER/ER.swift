@@ -21,7 +21,7 @@ class ER: NSObject, CloudKitRecordable, MKAnnotation {
     
     // MARK: - Lifecycle
     
-    init(record: CKRecord) {
+    required init(record: CKRecord) {
         self.record = record
         self.name = record["name"] as! String
         self.phone = record["phone"] as! String
@@ -57,5 +57,11 @@ class ER: NSObject, CloudKitRecordable, MKAnnotation {
     func asCKReferenceWithAction(action: CKReferenceAction) -> CKReference {
         let record = self.asCKRecord
         return CKReference(record: record, action: action)
+    }
+    
+    // Sort Descriptors
+    
+    static func sortedByProximityToLocation(location: CLLocation) -> CKLocationSortDescriptor {
+        return CKLocationSortDescriptor(key: "location", relativeLocation: location)
     }
 }

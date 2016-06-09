@@ -24,7 +24,7 @@ class ScheduleDay: CloudKitRecordable {
     
     // MARK: - Lifecycle
     
-    init(record: CKRecord) {
+    required init(record: CKRecord) {
         self.record = record
         
         self.date = record["date"] as! NSDate
@@ -63,5 +63,12 @@ class ScheduleDay: CloudKitRecordable {
     var secondTimeSlot: TimeSlot? {
         guard let open = secondOpen, close = secondClose else { return nil }
         return TimeSlot(open: open, close: close)
+    }
+    
+    // MARK: Predicates
+    
+    static var OpenNowPredicate: NSPredicate {
+        let now = NSDate()
+        return NSPredicate(format: "firstOpen <= %@ AND firstClose > %@", now, now)
     }
 }

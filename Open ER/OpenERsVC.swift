@@ -183,7 +183,7 @@ class OpenERsVC: UIViewController,
         
         emergencyRoomProvider.fetchOpenERsNearestLocation(
             location,
-            limitTo: nil,
+            limitTo: 3,
             resultQueue: NSOperationQueue.mainQueue() )
         { result in
             switch result {

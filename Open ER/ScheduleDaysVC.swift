@@ -55,14 +55,7 @@ class ScheduleDaysVC: UIViewController,
       
         if shouldScrollToTodayAppear {
             scrollTableToDate(today, animated: false)
-        }
-        
-        // Reload cell for last selected date.
-        if let
-            lastSelectedDate = lastSelectedDate,
-            indexPath = indexPathForDate(lastSelectedDate)
-        {
-            tableView.reloadRowsAtIndexPaths([indexPath], withRowAnimation: .None)
+//            tableView.contentOffset.y += 0.0
         }
         
         saveLastSelectedScheduleDate()
@@ -71,10 +64,10 @@ class ScheduleDaysVC: UIViewController,
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
         
-        if shouldScrollToTodayAppear {
-            shouldScrollToTodayAppear = false
-            scrollTableToDate(today, animated: true)
-        }
+//        if shouldScrollToTodayAppear {
+//            shouldScrollToTodayAppear = false
+//            scrollTableToDate(today, animated: true)
+//        }
     }
     
     // MARK: - Helpers
@@ -100,6 +93,10 @@ class ScheduleDaysVC: UIViewController,
         
         tableView.showsVerticalScrollIndicator = false // Indicator not helpful with list this long.
         tableView.scrollsToTop = false // Top in this case is years previous.
+    }
+    
+    func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return UITableViewAutomaticDimension
     }
     
     /// Set the cell for date param at top of table.

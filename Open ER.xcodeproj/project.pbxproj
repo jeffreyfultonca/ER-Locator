@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		000A73291D08A4B70055BC06 /* NetworkActivityIndicatorOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000A73281D08A4B70055BC06 /* NetworkActivityIndicatorOperation.swift */; };
 		00104BFA1CBC1735007C453C /* RangeSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00104BF71CBC1735007C453C /* RangeSlider.swift */; };
 		00104BFB1CBC1735007C453C /* RangeSliderThumbLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00104BF81CBC1735007C453C /* RangeSliderThumbLayer.swift */; };
 		00104BFC1CBC1735007C453C /* RangeSliderTrackLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00104BF91CBC1735007C453C /* RangeSliderTrackLayer.swift */; };
@@ -32,6 +33,8 @@
 		00656B5E1CB44DF00000C4D4 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00656B5D1CB44DF00000C4D4 /* Constants.swift */; };
 		00656B601CB481DF0000C4D4 /* Functions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00656B5F1CB481DF0000C4D4 /* Functions.swift */; };
 		008BF3ED1CB1A31600946E4A /* ERCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 008BF3EC1CB1A31600946E4A /* ERCell.swift */; };
+		0092C9EC1D09B0C5005EA647 /* FetchCloudKitRecordableOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0092C9EB1D09B0C5005EA647 /* FetchCloudKitRecordableOperation.swift */; };
+		0092C9EE1D09BEE0005EA647 /* FetchOpenERsNearestLocationOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0092C9ED1D09BEE0005EA647 /* FetchOpenERsNearestLocationOperation.swift */; };
 		00935E541CB72B9A00A9FF71 /* ScheduleDayDetailVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00935E531CB72B9A00A9FF71 /* ScheduleDayDetailVC.swift */; };
 		00C197931CB2D39600786B5A /* TimeSlotView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00C197921CB2D39600786B5A /* TimeSlotView.swift */; };
 		00C197971CB2E65200786B5A /* CloudKitRecordable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00C197961CB2E65200786B5A /* CloudKitRecordable.swift */; };
@@ -42,6 +45,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		000A73281D08A4B70055BC06 /* NetworkActivityIndicatorOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkActivityIndicatorOperation.swift; sourceTree = "<group>"; };
 		00104BF71CBC1735007C453C /* RangeSlider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RangeSlider.swift; path = ../../Experimentation/RangeSlider/RangeSlider/RangeSlider.swift; sourceTree = "<group>"; };
 		00104BF81CBC1735007C453C /* RangeSliderThumbLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RangeSliderThumbLayer.swift; path = ../../Experimentation/RangeSlider/RangeSlider/RangeSliderThumbLayer.swift; sourceTree = "<group>"; };
 		00104BF91CBC1735007C453C /* RangeSliderTrackLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RangeSliderTrackLayer.swift; path = ../../Experimentation/RangeSlider/RangeSlider/RangeSliderTrackLayer.swift; sourceTree = "<group>"; };
@@ -70,6 +74,8 @@
 		00656B5D1CB44DF00000C4D4 /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		00656B5F1CB481DF0000C4D4 /* Functions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Functions.swift; sourceTree = "<group>"; };
 		008BF3EC1CB1A31600946E4A /* ERCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ERCell.swift; sourceTree = "<group>"; };
+		0092C9EB1D09B0C5005EA647 /* FetchCloudKitRecordableOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FetchCloudKitRecordableOperation.swift; sourceTree = "<group>"; };
+		0092C9ED1D09BEE0005EA647 /* FetchOpenERsNearestLocationOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FetchOpenERsNearestLocationOperation.swift; sourceTree = "<group>"; };
 		00935E531CB72B9A00A9FF71 /* ScheduleDayDetailVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScheduleDayDetailVC.swift; sourceTree = "<group>"; };
 		00C197921CB2D39600786B5A /* TimeSlotView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimeSlotView.swift; sourceTree = "<group>"; };
 		00C197961CB2E65200786B5A /* CloudKitRecordable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CloudKitRecordable.swift; sourceTree = "<group>"; };
@@ -91,6 +97,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		000A732A1D08A4BF0055BC06 /* Operations */ = {
+			isa = PBXGroup;
+			children = (
+				000A73281D08A4B70055BC06 /* NetworkActivityIndicatorOperation.swift */,
+				0032EEAF1D07263D000F9F10 /* AsyncOperation.swift */,
+				0092C9EB1D09B0C5005EA647 /* FetchCloudKitRecordableOperation.swift */,
+				0092C9ED1D09BEE0005EA647 /* FetchOpenERsNearestLocationOperation.swift */,
+			);
+			name = Operations;
+			sourceTree = "<group>";
+		};
 		00104BF61CBC1719007C453C /* RangeSlider */ = {
 			isa = PBXGroup;
 			children = (
@@ -144,6 +161,7 @@
 				00611C191CB0824100C08B07 /* Models */,
 				00611C181CB0823800C08B07 /* Views */,
 				00611C171CB0822B00C08B07 /* Controllers */,
+				000A732A1D08A4BF0055BC06 /* Operations */,
 				0032EEA31D063352000F9F10 /* Providers */,
 				00611C1B1CB08A2000C08B07 /* Services */,
 				00611C201CB0971400C08B07 /* Globals */,
@@ -216,7 +234,6 @@
 				0032EEA61D065BE9000F9F10 /* EmergencyRoomService.swift */,
 				0032EEA81D065BF9000F9F10 /* ScheduleDayService.swift */,
 				0032EEAC1D067AA5000F9F10 /* PersistenceService.swift */,
-				0032EEAF1D07263D000F9F10 /* AsyncOperation.swift */,
 			);
 			name = Services;
 			sourceTree = "<group>";
@@ -330,6 +347,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0092C9EC1D09B0C5005EA647 /* FetchCloudKitRecordableOperation.swift in Sources */,
 				00DC0A981CB1E05800014279 /* ERsListVC.swift in Sources */,
 				00611C221CB0972B00C08B07 /* Extensions.swift in Sources */,
 				00611C1D1CB08A7500C08B07 /* ERService.swift in Sources */,
@@ -342,6 +360,7 @@
 				00DC0A9A1CB1E8C900014279 /* ScheduleDayCell.swift in Sources */,
 				00611C031CB080FA00C08B07 /* OpenERsVC.swift in Sources */,
 				00611C1F1CB0905300C08B07 /* ER.swift in Sources */,
+				000A73291D08A4B70055BC06 /* NetworkActivityIndicatorOperation.swift in Sources */,
 				00656B5E1CB44DF00000C4D4 /* Constants.swift in Sources */,
 				00935E541CB72B9A00A9FF71 /* ScheduleDayDetailVC.swift in Sources */,
 				00104BFC1CBC1735007C453C /* RangeSliderTrackLayer.swift in Sources */,
@@ -350,6 +369,7 @@
 				0032EEA91D065BF9000F9F10 /* ScheduleDayService.swift in Sources */,
 				0032EEB21D075B51000F9F10 /* LoadingCell.swift in Sources */,
 				0032EEA51D0633A2000F9F10 /* ScheduleDayProvider.swift in Sources */,
+				0092C9EE1D09BEE0005EA647 /* FetchOpenERsNearestLocationOperation.swift in Sources */,
 				00DC0A9E1CB1E9B500014279 /* ScheduleDay.swift in Sources */,
 				00104BFA1CBC1735007C453C /* RangeSlider.swift in Sources */,
 				00611C011CB080FA00C08B07 /* AppDelegate.swift in Sources */,

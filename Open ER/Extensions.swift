@@ -180,3 +180,15 @@ extension SequenceType where Generator.Element: ER {
         return Array(sortedERs.prefix(limit))
     }
 }
+
+extension NSOperation {
+    func withDependency(dependency: NSOperation) -> Self {
+        self.addDependency(dependency)
+        return self
+    }
+    
+    func withDependencies(dependencies: [NSOperation]) -> Self {
+        dependencies.forEach { self.addDependency($0) }
+        return self
+    }
+}
