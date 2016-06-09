@@ -69,11 +69,6 @@ class OpenERsVC: UIViewController,
         super.viewDidAppear(animated)
         
         setupMapView()
-        
-        // Reload ER's if view is reappearing as data may have changed.
-        if shouldUpdateMapAnnotationsOnUserLocationUpdate {
-            reloadERs()
-        }
     }
     
     deinit {
@@ -299,7 +294,7 @@ class OpenERsVC: UIViewController,
     // MARK: - Segues
     
     @IBAction func unwindToOpenERsVC(segue: UIStoryboardSegue) {
-        print(#function)
+        self.reloadERs()
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
