@@ -21,11 +21,14 @@ enum FetchCloudKitRecordableResult<T: CloudKitRecordable> {
 class FetchCloudKitRecordableOperation<T: CloudKitRecordable>: AsyncOperation {
     
     // MARK: - Stored Properties
-    let cloudDatabase: CKDatabase
-    let recordZoneID: CKRecordZoneID?
-    let predicate: NSPredicate
-    let sortDescriptors: [NSSortDescriptor]?
-    let resultsLimit: Int?
+    private let cloudDatabase: CKDatabase
+    private let recordZoneID: CKRecordZoneID?
+    private let predicate: NSPredicate
+    private let sortDescriptors: [NSSortDescriptor]?
+    private let resultsLimit: Int?
+    
+    // Cancel CloudKit Request after this interval.
+    var timeoutIntervalInSeconds: Double = 60
     
     var result: FetchCloudKitRecordableResult<T> = .Failure(Error.OperationNotComplete)
     
@@ -68,6 +71,13 @@ class FetchCloudKitRecordableOperation<T: CloudKitRecordable>: AsyncOperation {
         }
         
         queryOperation.start()
+        
+        // Roll your own timeout... it works.
+        delay(inSeconds: self.timeoutIntervalInSeconds) {
+            // Timeout operation
+            self.result = .Failure(Error.OperationTimedOut)
+            queryOperation.cancel()
+        }
     }
     
     // MARK: - Helpers

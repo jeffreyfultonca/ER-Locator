@@ -8,6 +8,19 @@
 
 import Foundation
 
+/// Execute the supplied closure on the main queue
+/// after the specified number of seconds.
+func delay(inSeconds delay:Double, closure:()->()) {
+    dispatch_after(
+        dispatch_time(
+            DISPATCH_TIME_NOW,
+            Int64(delay * Double(NSEC_PER_SEC))
+        ),
+        dispatch_get_main_queue(),
+        closure
+    )
+}
+
 func runOnMainQueue(closure: ()->() ) {
     NSOperationQueue.mainQueue().addOperationWithBlock(closure)
 }

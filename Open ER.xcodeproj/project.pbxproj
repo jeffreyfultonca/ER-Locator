@@ -19,7 +19,7 @@
 		0032EEAB1D067A8B000F9F10 /* PersistenceProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0032EEAA1D067A8B000F9F10 /* PersistenceProvider.swift */; };
 		0032EEAD1D067AA5000F9F10 /* PersistenceService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0032EEAC1D067AA5000F9F10 /* PersistenceService.swift */; };
 		0032EEB01D07263D000F9F10 /* AsyncOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0032EEAF1D07263D000F9F10 /* AsyncOperation.swift */; };
-		0032EEB21D075B51000F9F10 /* LoadingCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0032EEB11D075B51000F9F10 /* LoadingCell.swift */; };
+		0032EEB21D075B51000F9F10 /* MessageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0032EEB11D075B51000F9F10 /* MessageCell.swift */; };
 		0036A94D1CCDECCE00BBD86F /* ERDetailVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0036A94C1CCDECCE00BBD86F /* ERDetailVC.swift */; };
 		00611C011CB080FA00C08B07 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00611C001CB080FA00C08B07 /* AppDelegate.swift */; };
 		00611C031CB080FA00C08B07 /* OpenERsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00611C021CB080FA00C08B07 /* OpenERsVC.swift */; };
@@ -57,7 +57,7 @@
 		0032EEAA1D067A8B000F9F10 /* PersistenceProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PersistenceProvider.swift; sourceTree = "<group>"; };
 		0032EEAC1D067AA5000F9F10 /* PersistenceService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PersistenceService.swift; sourceTree = "<group>"; };
 		0032EEAF1D07263D000F9F10 /* AsyncOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AsyncOperation.swift; sourceTree = "<group>"; };
-		0032EEB11D075B51000F9F10 /* LoadingCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoadingCell.swift; sourceTree = "<group>"; };
+		0032EEB11D075B51000F9F10 /* MessageCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageCell.swift; sourceTree = "<group>"; };
 		0036A94C1CCDECCE00BBD86F /* ERDetailVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ERDetailVC.swift; sourceTree = "<group>"; };
 		00611BFD1CB080FA00C08B07 /* Open ER.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Open ER.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		00611C001CB080FA00C08B07 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -265,7 +265,7 @@
 				008BF3EC1CB1A31600946E4A /* ERCell.swift */,
 				00DC0A991CB1E8C900014279 /* ScheduleDayCell.swift */,
 				00C197921CB2D39600786B5A /* TimeSlotView.swift */,
-				0032EEB11D075B51000F9F10 /* LoadingCell.swift */,
+				0032EEB11D075B51000F9F10 /* MessageCell.swift */,
 			);
 			name = "TableView Cells";
 			sourceTree = "<group>";
@@ -367,7 +367,7 @@
 				008BF3ED1CB1A31600946E4A /* ERCell.swift in Sources */,
 				0032EEB01D07263D000F9F10 /* AsyncOperation.swift in Sources */,
 				0032EEA91D065BF9000F9F10 /* ScheduleDayService.swift in Sources */,
-				0032EEB21D075B51000F9F10 /* LoadingCell.swift in Sources */,
+				0032EEB21D075B51000F9F10 /* MessageCell.swift in Sources */,
 				0032EEA51D0633A2000F9F10 /* ScheduleDayProvider.swift in Sources */,
 				0092C9EE1D09BEE0005EA647 /* FetchOpenERsNearestLocationOperation.swift in Sources */,
 				00DC0A9E1CB1E9B500014279 /* ScheduleDay.swift in Sources */,

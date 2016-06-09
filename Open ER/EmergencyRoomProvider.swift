@@ -30,5 +30,5 @@ protocol EmergencyRoomProvider {
         limitTo: Int?,
         resultQueue: NSOperationQueue?,
         result: (ERsFetchResult)->()
-    )
+    ) -> FetchOpenERsNearestLocationRequest
 }

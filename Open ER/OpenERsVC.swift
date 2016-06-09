@@ -29,14 +29,20 @@ class OpenERsVC: UIViewController,
     
     @IBOutlet var tableViewTopMapViewCenterConstraint: NSLayoutConstraint!
     
+    typealias AnimationClosure = () -> Void
+    
     // MARK: - Properties
+    
     let locationManager = CLLocationManager()
-    var shouldUpdateMapAnnotationsOnUserLocationUpdate = true
     let minLocationAccuracy: Double = 5000
-    var nearbyOpenERs = [ER]()
+    
+    var shouldUpdateUIOnUserLocationUpdate = true
     var showTableView = true
     
-    typealias AnimationClosure = () -> Void
+    var ers = [ER]()
+    var error: ErrorType?
+    
+    var fetchOpenERsNearestLocationRequest: FetchOpenERsNearestLocationRequest?
     
     // MARK: - Lifecycle
     
@@ -108,28 +114,62 @@ class OpenERsVC: UIViewController,
         // I think this will cause the mapview to immediately receive a location update
         // even if the system already has one.
         mapView.showsUserLocation = false
-        shouldUpdateMapAnnotationsOnUserLocationUpdate = true
+        shouldUpdateUIOnUserLocationUpdate = true
         mapView.showsUserLocation = true
+    }
+    
+    func refreshUI(animated: Bool) {
+        refreshMapViewAnnotations(animated)
+        refreshTableView()
+    }
+    
+    func refreshMapViewAnnotations(animated: Bool) {
+        // Remove existing annotations from map.
+        let previousERAnnotations = mapView.annotations.filter { $0 is ER }
+        mapView.removeAnnotations(previousERAnnotations)
+        
+        // Add annotations to the map, adjusting to show annotations and user's current location.
+        var annotationsToShow: [MKAnnotation] = ers
+        annotationsToShow.append(mapView.userLocation)
+        mapView.showAnnotations(annotationsToShow, animated: animated)
+    }
+    
+    func refreshTableView() {
+        let sections = NSIndexSet(index: 0)
+        tableView.reloadSections(sections, withRowAnimation: .Fade)
     }
     
     // MARK: - UITableView Datasource
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return nearbyOpenERs.isEmpty ? 1 : nearbyOpenERs.count
+        return ers.isEmpty ? 1 : ers.count
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         
-        // Show loading cell if empty and loading...
-        
-        if nearbyOpenERs.isEmpty {
-            let cell = tableView.dequeueReusableCellWithIdentifier("loadingCell", forIndexPath: indexPath)
+        if ers.isEmpty {
+            
+            let cell = tableView.dequeueReusableCellWithIdentifier("messageCell", forIndexPath: indexPath) as! MessageCell
+            
+            if let _ = error {
+                cell.messageLabel.text = "We are unable to download the Emergency Room schedule."
+                cell.activityIndicatorView.stopAnimating()
+                
+            } else if let request = fetchOpenERsNearestLocationRequest where request.finished {
+                cell.messageLabel.text = "Sorry, we could not find any open emergency rooms nearby."
+                cell.activityIndicatorView.stopAnimating()
+                
+            } else {
+                cell.messageLabel.text = "Finding nearest open emergency rooms..."
+                cell.activityIndicatorView.startAnimating()
+            }
+            
             return cell
             
         } else {
             let cell = tableView.dequeueReusableCellWithIdentifier("erCell", forIndexPath: indexPath) as! ERCell
             
-            let er = nearbyOpenERs[indexPath.row]
+            let er = ers[indexPath.row]
             cell.configureER(er, fromLocation: mapView.userLocation.location)
             
             return cell
@@ -137,46 +177,18 @@ class OpenERsVC: UIViewController,
     }
     
     func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-        return nearbyOpenERs.isEmpty ? tableView.frame.height : UITableViewAutomaticDimension
-    }
-    
-    func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
-        guard let cell = cell as? ERCell else {
-            print("Not ERCell; nothing to do.")
-            return
-        }
-        
-        // Async fetch ScheduleDay
-        let er = nearbyOpenERs[indexPath.row]
-        scheduleDayProvider.fetchScheduleDayForER(er, onDate: NSDate.now) { result in
-            switch result {
-            case .Failure(let error):
-                print(error)
-                
-            case .Success(let scheduleDay):
-                guard let
-                    scheduleDay = scheduleDay,
-                    firstOpen = scheduleDay.firstOpen,
-                    firstClose = scheduleDay.firstClose else
-                {
-                    print("Could not access ScheduleDay or firstOpen or firstClose; this should never occur.")
-                    return
-                }
-                
-                cell.hoursLabel.text = "\(firstOpen.time) - \(firstClose.time)"
-            }
-        }
+        return ers.isEmpty ? tableView.frame.height : UITableViewAutomaticDimension
     }
     
     // MARK: - MKMapViewDelegate
     
     func mapView(mapView: MKMapView, didUpdateUserLocation userLocation: MKUserLocation) {
-        guard shouldUpdateMapAnnotationsOnUserLocationUpdate else { return }
+        guard shouldUpdateUIOnUserLocationUpdate else { return }
         guard let location = userLocation.location where location.horizontalAccuracy < minLocationAccuracy else { return }
         
-        shouldUpdateMapAnnotationsOnUserLocationUpdate = false
+        shouldUpdateUIOnUserLocationUpdate = false
         
-        emergencyRoomProvider.fetchOpenERsNearestLocation(
+        fetchOpenERsNearestLocationRequest = emergencyRoomProvider.fetchOpenERsNearestLocation(
             location,
             limitTo: 3,
             resultQueue: NSOperationQueue.mainQueue() )
@@ -184,28 +196,17 @@ class OpenERsVC: UIViewController,
             switch result {
             case .Failure(let error):
                 print(error)
+                self.ers.removeAll()
+                self.error = error
                 
             case .Success(let ers):
-                self.showERsOnMap(ers, animated: true)
+                self.ers = ers
             }
+            
+            self.refreshUI(true)
         }
-    }
-    
-    func showERsOnMap(ers: [ER], animated: Bool) {
-        // Remove existing annotations from map.
-        mapView.removeAnnotations(nearbyOpenERs)
         
-        // Get new annotations.
-        nearbyOpenERs = ers
-        
-        // Add annotations to the map, adjusting to show annotations and user's current location.
-        var annotationsToShow: [MKAnnotation] = nearbyOpenERs
-        annotationsToShow.append(mapView.userLocation)
-        mapView.showAnnotations(annotationsToShow, animated: animated)
-        
-        // Show results in tableView.
-        let sections = NSIndexSet(index: 0)
-        tableView.reloadSections(sections, withRowAnimation: .Fade)
+        refreshUI(true)
     }
     
     func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
@@ -249,7 +250,7 @@ class OpenERsVC: UIViewController,
     }
     
     func indexPathForER(er: ER) -> NSIndexPath? {
-        for (row, nearbyOpenER) in nearbyOpenERs.enumerate() {
+        for (row, nearbyOpenER) in ers.enumerate() {
             if nearbyOpenER == er {
                 // No point in continuing, return indexPath for this row.
                 return NSIndexPath(forRow: row, inSection: 0)
@@ -275,7 +276,7 @@ class OpenERsVC: UIViewController,
             self.adjustMapViewLayoutMargins()
             
             // Adjust visible region of map to enclose all annotations.
-            var annotationsToShow: [MKAnnotation] = self.nearbyOpenERs
+            var annotationsToShow: [MKAnnotation] = self.ers
             annotationsToShow.append(self.mapView.userLocation)
             self.mapView.adjustRegionToDisplayAnnotations(annotationsToShow, animated: true)
         }
@@ -303,7 +304,7 @@ class OpenERsVC: UIViewController,
                 indexPath = tableView.indexPathForSelectedRow,
                 vc = segue.destinationViewController as? ERDetailVC
             {
-                let er = nearbyOpenERs[indexPath.row]
+                let er = ers[indexPath.row]
                 vc.er = er
             }
         }

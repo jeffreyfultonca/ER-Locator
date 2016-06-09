@@ -83,10 +83,24 @@ class FetchOpenERsNearestLocationOperation: AsyncOperation {
     
     // MARK: - Helpers
     
-    private func processERs(ers: [ER], andScheduleDays scheduleDays: [ScheduleDay], limitTo limit: Int? = nil) -> [ER] {
-        let erReferences = scheduleDays.map { $0.record["er"] as! CKReference }
-        let openERs = ers.filter { erReferences.contains($0.asCKReferenceWithAction(.None)) }
+    private func processERs(
+        ers: [ER],
+        andScheduleDays scheduleDays: [ScheduleDay],
+        limitTo limit: Int? = nil) -> [ER]
+    {
+        // Filter ers which have ScheduleDay and assign that scheduleDay to the er.
+        let openERs = ers.filter { er in
+            // Get ScheduleDay with matching reference.
+            guard let scheduleDay = scheduleDays.filter({ $0.erReference.recordID == er.recordID }).first else
+            {
+                return false
+            }
+            er.scheduleDay = scheduleDay
+            return true
+        }
+        
         guard let limit = limit else { return openERs }
+        
         return Array( openERs.prefix(limit) )
     }
     
@@ -95,3 +109,37 @@ class FetchOpenERsNearestLocationOperation: AsyncOperation {
         completeOperation()
     }
 }
+
+class FetchOpenERsNearestLocationRequest {
+    private var operation: FetchOpenERsNearestLocationOperation
+    private var queue: NSOperationQueue
+    
+    var finished: Bool {
+        return operation.finished
+    }
+    
+    var priority: NSOperationQueuePriority = .Normal {
+        didSet(oldPriority) {
+            guard operation.executing == false else { return }
+            
+            let newOperation = FetchOpenERsNearestLocationOperation(
+                location: operation.location,
+                limitTo: operation.limit
+            )
+            operation.cancel()
+            operation = newOperation
+            queue.addOperation(operation)
+        }
+    }
+    
+    init(operation: FetchOpenERsNearestLocationOperation, queue: NSOperationQueue) {
+        self.operation = operation
+        self.queue = queue
+    }
+    
+    func cancel() {
+        operation.cancel()
+    }
+    
+}
+

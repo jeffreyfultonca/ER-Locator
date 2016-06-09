@@ -14,4 +14,5 @@ enum Error: ErrorType {
     case UnableToLoadCKRecord(CKRecord)
     
     case OperationNotComplete
+    case OperationTimedOut
 }

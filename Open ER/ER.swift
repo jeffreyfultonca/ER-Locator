@@ -19,6 +19,8 @@ class ER: NSObject, CloudKitRecordable, MKAnnotation {
     var phone: String
     var location: CLLocation
     
+    var scheduleDay: ScheduleDay?
+    
     // MARK: - Lifecycle
     
     required init(record: CKRecord) {
@@ -34,7 +36,18 @@ class ER: NSObject, CloudKitRecordable, MKAnnotation {
     var coordinate: CLLocationCoordinate2D { return self.location.coordinate }
     var title: String? { return self.name }
     
-    var hoursOpen: String { return "Loading..." }
+    var hoursOpen: String {
+        guard let
+            scheduleDay = scheduleDay,
+            firstOpen = scheduleDay.firstOpen,
+            firstClose = scheduleDay.firstClose else
+        {
+            return "Loading..."
+        }
+        
+        return "\(firstOpen.time) - \(firstClose.time)"
+    }
+    
     var estimatedWaitTime: String { return "Estimated wait time" }
     
     /// Used for getting directions in Maps App

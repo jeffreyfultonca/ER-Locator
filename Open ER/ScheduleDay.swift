@@ -38,6 +38,10 @@ class ScheduleDay: CloudKitRecordable {
     
     // MARK: - Computed Properties
     
+    var erReference: CKReference {
+        return record["er"] as! CKReference
+    }
+    
     // CloudKitRecordModelable
     var asCKRecord: CKRecord {
         record["date"] = date

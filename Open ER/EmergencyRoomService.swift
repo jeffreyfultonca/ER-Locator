@@ -36,7 +36,7 @@ class EmergencyRoomService: EmergencyRoomProvider {
         location: CLLocation,
         limitTo limit: Int?,
         resultQueue: NSOperationQueue?,
-        result: ERsFetchResult -> ())
+        result: ERsFetchResult -> ()) -> FetchOpenERsNearestLocationRequest
     {
         // TODO: Replace nil check/default to default param as soon as Swift compilier allows it with protocols.
         let resultQueue = resultQueue ?? NSOperationQueue()
@@ -54,5 +54,7 @@ class EmergencyRoomService: EmergencyRoomProvider {
         }
         
         workQueue.addOperation(fetchOpenERsNearestLocation)
+        
+        return FetchOpenERsNearestLocationRequest(operation: fetchOpenERsNearestLocation, queue: workQueue)
     }
 }
