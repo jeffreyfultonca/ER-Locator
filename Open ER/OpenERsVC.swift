@@ -111,8 +111,7 @@ class OpenERsVC: UIViewController,
     }
     
     func reloadERs() {
-        // I think this will cause the mapview to immediately receive a location update
-        // even if the system already has one.
+        // Cause the mapview delegate to immediately receive a location update.
         mapView.showsUserLocation = false
         shouldUpdateUIOnUserLocationUpdate = true
         mapView.showsUserLocation = true
@@ -195,8 +194,7 @@ class OpenERsVC: UIViewController,
         { result in
             switch result {
             case .Failure(let error):
-                print(error)
-                self.ers.removeAll()
+                self.ers = self.emergencyRoomProvider.fetchCachedERsSortedByProximityToLocation(location)
                 self.error = error
                 
             case .Success(let ers):

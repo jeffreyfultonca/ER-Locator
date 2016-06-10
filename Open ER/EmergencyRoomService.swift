@@ -12,7 +12,7 @@ import CloudKit
 class EmergencyRoomService: EmergencyRoomProvider {
     
     // MARK: - Dependencies
-    let persistenceProvider: PersistenceProvider
+    var persistenceProvider: PersistenceProvider
     
     // MARK: - Stored Properties
     private let workQueue = NSOperationQueue()
@@ -56,5 +56,9 @@ class EmergencyRoomService: EmergencyRoomProvider {
         workQueue.addOperation(fetchOpenERsNearestLocation)
         
         return FetchOpenERsNearestLocationRequest(operation: fetchOpenERsNearestLocation, queue: workQueue)
+    }
+    
+    func fetchCachedERsSortedByProximityToLocation(location: CLLocation) -> [ER] {
+        return persistenceProvider.emergencyRooms.nearestLocation(location, limitTo: nil)
     }
 }

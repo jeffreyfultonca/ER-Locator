@@ -45,6 +45,11 @@ class FetchOpenERsNearestLocationOperation: AsyncOperation {
         let hideNetworkActivityIndicator = NetworkActivityIndicatorOperation(setVisible: false)
         
         let completion = NSBlockOperation {
+            // TODO: Put this somewhere else.
+            if case .Success(let ers) = fetchEmergencyRoomsSortedByProximity.result {
+                PersistenceService().emergencyRooms = ers
+            }
+            
             switch (fetchScheduleDaysOpenNow.result, fetchEmergencyRoomsSortedByProximity.result) {
             case (.Failure(let scheduleDaysError), .Failure):
                 self.completeOperationWithResult( .Failure(scheduleDaysError) )

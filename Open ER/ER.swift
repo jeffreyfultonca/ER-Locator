@@ -9,7 +9,7 @@
 import MapKit
 import CloudKit
 
-class ER: NSObject, CloudKitRecordable, MKAnnotation {
+class ER: NSObject, CloudKitRecordable, MKAnnotation, NSCoding {
     
     // MARK: - Stored Properties
     
@@ -42,7 +42,7 @@ class ER: NSObject, CloudKitRecordable, MKAnnotation {
             firstOpen = scheduleDay.firstOpen,
             firstClose = scheduleDay.firstClose else
         {
-            return "Loading..."
+            return "Call Ahead"
         }
         
         return "\(firstOpen.time) - \(firstClose.time)"
@@ -76,5 +76,20 @@ class ER: NSObject, CloudKitRecordable, MKAnnotation {
     
     static func sortedByProximityToLocation(location: CLLocation) -> CKLocationSortDescriptor {
         return CKLocationSortDescriptor(key: "location", relativeLocation: location)
+    }
+    
+    // MARK: - NSCoding
+    
+    struct PropertyKey {
+        static let Record = "RecordKey"
+    }
+    
+    func encodeWithCoder(aCoder: NSCoder) {
+        aCoder.encodeObject(record, forKey: PropertyKey.Record)
+    }
+    
+    required convenience init?(coder aDecoder: NSCoder) {
+        let record = aDecoder.decodeObjectForKey(PropertyKey.Record) as! CKRecord
+        self.init(record: record)
     }
 }

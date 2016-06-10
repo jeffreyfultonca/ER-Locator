@@ -31,4 +31,6 @@ protocol EmergencyRoomProvider {
         resultQueue: NSOperationQueue?,
         result: (ERsFetchResult)->()
     ) -> FetchOpenERsNearestLocationRequest
+    
+    func fetchCachedERsSortedByProximityToLocation(location: CLLocation) -> [ER]
 }

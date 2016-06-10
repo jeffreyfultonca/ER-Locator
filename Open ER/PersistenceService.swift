@@ -14,8 +14,14 @@ class PersistenceService: PersistenceProvider {
     var defaults = NSUserDefaults.standardUserDefaults()
     
     var emergencyRooms: [ER] {
-        get { return defaults.arrayForKey(ER.recordType) as? [ER] ?? [ER]() }
-        set { defaults.setObject(newValue, forKey: ER.recordType) }
+        get {
+            guard let data = defaults.objectForKey(ER.recordType) as? NSData else { return [ER]() }
+            return NSKeyedUnarchiver.unarchiveObjectWithData(data) as? [ER] ?? [ER]()
+        }
+        set {
+            let archivedObject = NSKeyedArchiver.archivedDataWithRootObject(newValue)
+            defaults.setObject(archivedObject, forKey: ER.recordType)
+        }
     }
     
     func updateLocalDatastore(result: (UpdateLocalDatastoreResult -> ())? = nil) {
