@@ -6,16 +6,32 @@
 //  Copyright © 2016 Jeffrey Fulton. All rights reserved.
 //
 
-enum UpdateLocalDatastoreResult {
+import Foundation
+
+enum SyncLocalDatastoreWithRemoteResult {
     case Failure(ErrorType)
     case NoData
     case NewData
+    case SyncAlreadyInProgress
 }
 
 protocol PersistenceProvider {
-    var emergencyRooms: [ER] { get set }
+    
+    // MARK: - Storage
+    var emergencyRooms: Set<ER> { get set }
+    var emergencyRoomsMostRecentlyModifiedAt: NSDate? { get set }
+    
+    var todaysScheduleDays: Set<ScheduleDay> { get set }
+//    var todaysScheduleDaysMostRecentlyModifiedAt: NSDate? { get set }
+    
+    // MARK: - Sync
+    var syncing: Bool { get }
+    
+    var lastSuccessSyncAt: NSDate? { get set }
     
     /// Update local datastore with any changes from remote datastore and report back status. i.e. Failure, NoData, NewData.
-    func updateLocalDatastore(result: (UpdateLocalDatastoreResult -> () )?)
+    func syncLocalDatastoreWithRemote(
+        resultQueue: NSOperationQueue,
+        result: ( SyncLocalDatastoreWithRemoteResult -> () )?
+    )
 }
-

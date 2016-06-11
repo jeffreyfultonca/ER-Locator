@@ -8,12 +8,10 @@
 
 import CoreLocation
 
-enum ERsFetchResult {
-    case Failure(ErrorType)
-    case Success([ER])
-}
-
 protocol EmergencyRoomProvider {
+    
+    var emergencyRooms: [ER] { get }
+    
     /**
      Provides a limited array of currently open ERs sorted by proximity to location.
      
@@ -28,9 +26,14 @@ protocol EmergencyRoomProvider {
     func fetchOpenERsNearestLocation(
         location: CLLocation,
         limitTo: Int?,
-        resultQueue: NSOperationQueue?,
-        result: (ERsFetchResult)->()
-    ) -> FetchOpenERsNearestLocationRequest
+        resultQueue: NSOperationQueue,
+        result: (CloudKitRecordableFetchResult<ER>)->()
+    ) -> CloudKitRecordableFetchRequest<FetchOpenERsNearestLocationOperation>
     
-    func fetchCachedERsSortedByProximityToLocation(location: CLLocation) -> [ER]
+    func fetchERsWithTodaysScheduleDayNearestLocation(
+        location: CLLocation,
+        limitTo: Int?,
+        resultQueue: NSOperationQueue,
+        result: (CloudKitRecordableFetchResult<ER>)->()
+    ) -> CloudKitRecordableFetchRequest<FetchERsWithTodaysScheduleDayNearestLocationOperation>
 }

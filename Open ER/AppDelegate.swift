@@ -12,12 +12,12 @@ import UIKit
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-
+    
+    // MARK: - Dependencies
+    lazy var persistenceProvider: PersistenceProvider = PersistenceService.sharedInstance
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
-        
-        injectDependenciesIntoRootViewController()
         
         return true
     }
@@ -39,29 +39,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationDidBecomeActive(application: UIApplication) {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
         
+        persistenceProvider.syncLocalDatastoreWithRemote(NSOperationQueue.mainQueue(), result: nil)
     }
 
     func applicationWillTerminate(application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
-    }
-
-
-    // MARK: - DependencyEnforcable
-    
-    /// Provide dependencies to the rootViewController which in turn will be responsible to provide dependencies to it's children ViewControllers.
-    func injectDependenciesIntoRootViewController() {
-        
-        guard let
-            navController = window?.rootViewController as? UINavigationController,
-            openERsVC = navController.topViewController as? OpenERsVC else
-        {
-            fatalError("Could not access OpenERsVC to provide dependencies in appDelegate.")
-        }
-        
-        let emergencyRoomProvider = EmergencyRoomService(persistenceProvider: PersistenceService())
-        
-        openERsVC.emergencyRoomProvider = emergencyRoomProvider
-        openERsVC.scheduleDayProvider = ScheduleDayService()
     }
 }
 

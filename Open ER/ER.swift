@@ -20,6 +20,7 @@ class ER: NSObject, CloudKitRecordable, MKAnnotation, NSCoding {
     var location: CLLocation
     
     var scheduleDay: ScheduleDay?
+    var todaysScheduleDay: ScheduleDay?
     
     // MARK: - Lifecycle
     
@@ -38,14 +39,22 @@ class ER: NSObject, CloudKitRecordable, MKAnnotation, NSCoding {
     
     var hoursOpen: String {
         guard let
-            scheduleDay = scheduleDay,
+            scheduleDay = todaysScheduleDay,
             firstOpen = scheduleDay.firstOpen,
             firstClose = scheduleDay.firstClose else
         {
             return "Call Ahead"
         }
         
-        return "\(firstOpen.time) - \(firstClose.time)"
+        // Check for 24 Hour availablility
+        if firstOpen.isBeginningOfDay && firstClose.isEndOf(firstOpen) {
+            return "24 Hours"
+        }
+        
+        // Represent end of day as 11:59pm rather than 12:00am (next day)
+        let firstCloseTime = ( firstClose.isEndOf(firstOpen) ) ? "11:59am" : firstClose.time
+        
+        return "\(firstOpen.time) - \(firstCloseTime)"
     }
     
     var estimatedWaitTime: String { return "Estimated wait time" }

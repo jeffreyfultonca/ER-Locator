@@ -8,7 +8,7 @@
 
 import CloudKit
 
-class FetchOpenERsNearestLocationOperation: AsyncOperation {
+class FetchOpenERsNearestLocationOperation: AsyncOperation, CloudKitRecordableOperationable {
     
     // MARK: - Stored Properties
     private var location: CLLocation
@@ -16,7 +16,7 @@ class FetchOpenERsNearestLocationOperation: AsyncOperation {
     
     private var queue = NSOperationQueue()
     
-    var result: FetchCloudKitRecordableResult<ER> = .Failure(Error.OperationNotComplete)
+    var result: CloudKitRecordableFetchResult<ER> = .Failure(Error.OperationNotComplete)
     
     // MARK: - Lifecycle
     
@@ -27,7 +27,12 @@ class FetchOpenERsNearestLocationOperation: AsyncOperation {
         super.init()
     }
     
+    required convenience init(fromExistingOperation existingOperation: FetchOpenERsNearestLocationOperation) {
+        self.init(location: existingOperation.location, limitTo: existingOperation.limit)
+    }
+    
     override func main() {
+        // TODO: Does this need to be injected? I think every dependency should be injected in operations.
         let cloudDatabase = CKContainer.defaultContainer().publicCloudDatabase
         
         let showNetworkActivityIndicator = NetworkActivityIndicatorOperation(setVisible: true)
@@ -45,11 +50,6 @@ class FetchOpenERsNearestLocationOperation: AsyncOperation {
         let hideNetworkActivityIndicator = NetworkActivityIndicatorOperation(setVisible: false)
         
         let completion = NSBlockOperation {
-            // TODO: Put this somewhere else.
-            if case .Success(let ers) = fetchEmergencyRoomsSortedByProximity.result {
-                PersistenceService().emergencyRooms = ers
-            }
-            
             switch (fetchScheduleDaysOpenNow.result, fetchEmergencyRoomsSortedByProximity.result) {
             case (.Failure(let scheduleDaysError), .Failure):
                 self.completeOperationWithResult( .Failure(scheduleDaysError) )
@@ -109,42 +109,8 @@ class FetchOpenERsNearestLocationOperation: AsyncOperation {
         return Array( openERs.prefix(limit) )
     }
     
-    private func completeOperationWithResult(result: FetchCloudKitRecordableResult<ER>) {
+    private func completeOperationWithResult(result: CloudKitRecordableFetchResult<ER>) {
         self.result = result
         completeOperation()
     }
 }
-
-class FetchOpenERsNearestLocationRequest {
-    private var operation: FetchOpenERsNearestLocationOperation
-    private var queue: NSOperationQueue
-    
-    var finished: Bool {
-        return operation.finished
-    }
-    
-    var priority: NSOperationQueuePriority = .Normal {
-        didSet(oldPriority) {
-            guard operation.executing == false else { return }
-            
-            let newOperation = FetchOpenERsNearestLocationOperation(
-                location: operation.location,
-                limitTo: operation.limit
-            )
-            operation.cancel()
-            operation = newOperation
-            queue.addOperation(operation)
-        }
-    }
-    
-    init(operation: FetchOpenERsNearestLocationOperation, queue: NSOperationQueue) {
-        self.operation = operation
-        self.queue = queue
-    }
-    
-    func cancel() {
-        operation.cancel()
-    }
-    
-}
-

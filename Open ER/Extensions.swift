@@ -173,6 +173,16 @@ extension String {
     }
 }
 
+extension SequenceType where Generator.Element: CloudKitRecordable {
+    var mostRecentlyModifiedAt: NSDate? {
+        let recordsWithModificationDates = self.filter { $0.record.modificationDate != nil }
+        let modificationDates = recordsWithModificationDates.map { $0.record.modificationDate! }
+        let sortedModificationDates = modificationDates.sort(>)
+        
+        return sortedModificationDates.first
+    }
+}
+
 extension SequenceType where Generator.Element: ER {
     func nearestLocation(location: CLLocation, limitTo limit: Int?) -> [ER] {
         let sortedERs = self.sort { $0.location.distanceFromLocation(location) < $1.location.distanceFromLocation(location) }
@@ -180,6 +190,15 @@ extension SequenceType where Generator.Element: ER {
         return Array(sortedERs.prefix(limit))
     }
 }
+
+extension SequenceType where Generator.Element: ScheduleDay {
+    var scheduledToday: Set<ScheduleDay> {
+        let today = NSDate().beginningOfDay
+        let todaysScheduleDays = self.filter { $0.date == today }
+        return Set(todaysScheduleDays)
+    }
+}
+
 
 extension NSOperation {
     func withDependency(dependency: NSOperation) -> Self {

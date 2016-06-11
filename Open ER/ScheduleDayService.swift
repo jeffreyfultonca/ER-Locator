@@ -9,8 +9,14 @@
 import Foundation
 
 class ScheduleDayService: ScheduleDayProvider {
+    static let sharedInstance = ScheduleDayService()
+    private init() {}  // Enforce singleton
     
-    func fetchScheduleDayForER(er: ER, onDate date: NSDate, handler: (ScheduleDayFetchResult) -> ()) {
-        // ???
+    // MARK: - Dependencies
+    var persistenceProvider: PersistenceProvider = PersistenceService.sharedInstance
+    
+    var todaysScheduleDays: [ScheduleDay] {
+        return Array(persistenceProvider.todaysScheduleDays)
     }
+    
 }

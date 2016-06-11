@@ -16,3 +16,7 @@ enum Error: ErrorType {
     case OperationNotComplete
     case OperationTimedOut
 }
+
+struct Notification {
+    static let LocalDatastoreUpdatedWithNewData = "LocalDatastoreUpdatedWithNewData"
+}

@@ -13,7 +13,7 @@ class ERsListVC: UIViewController,
     UITableViewDelegate
 {
     // MARK: - Dependencies
-    var erService = ERService.sharedInstance
+    var emergencyRoomProvider: EmergencyRoomProvider = EmergencyRoomService.sharedInstance
     
     // MARK: - Outlets
     @IBOutlet var tableView: UITableView!
@@ -27,7 +27,18 @@ class ERsListVC: UIViewController,
         super.viewDidLoad()
 
         setupTableView()
-        fetchERs()
+        ers = emergencyRoomProvider.emergencyRooms.sort { $0.name < $1.name }
+        
+        NSNotificationCenter.defaultCenter().addObserver(
+            self,
+            selector: #selector(reloadERs),
+            name: Notification.LocalDatastoreUpdatedWithNewData,
+            object: nil
+        )
+    }
+    
+    deinit {
+        NSNotificationCenter.defaultCenter().removeObserver(self)
     }
     
     // MARK: - Helpers
@@ -40,21 +51,8 @@ class ERsListVC: UIViewController,
         tableView.rowHeight = UITableViewAutomaticDimension
     }
     
-    func fetchERs() {
-        // TODO: Show loading
-        erService.fetchAllERs(failure: processError, success: processERs)
-    }
-    
-    func processError(error: ErrorType) {
-        // TODO: Hide loading
-        
-        // TODO: Handler possible errors.
-        print(error)
-    }
-    
-    func processERs(ers: [ER]) {
-        // TODO: Hide loading
-        self.ers = ers
+    func reloadERs() {
+        ers = emergencyRoomProvider.emergencyRooms.sort { $0.name < $1.name }
         tableView.reloadData()
     }
     

@@ -10,19 +10,22 @@
 import CloudKit
 
 class EmergencyRoomService: EmergencyRoomProvider {
+    static let sharedInstance = EmergencyRoomService()
+    private init() {} // Enforce singleton.
     
     // MARK: - Dependencies
-    var persistenceProvider: PersistenceProvider
+    var persistenceProvider: PersistenceProvider = PersistenceService.sharedInstance
+    var scheduleDayProvider: ScheduleDayProvider = ScheduleDayService.sharedInstance
     
     // MARK: - Stored Properties
     private let workQueue = NSOperationQueue()
     
-    init(persistenceProvider: PersistenceProvider) {
-        self.persistenceProvider = persistenceProvider
+    var emergencyRooms: [ER]  {
+        return Array(persistenceProvider.emergencyRooms)
     }
     
     /**
-     Provides a limited array of currently open ERs sorted by proximity to location.
+     Provides a limited number of currently open ERs sorted by proximity to location.
      
      - Important:
      Supplied result closure will be scheduled internal background queue.
@@ -30,17 +33,17 @@ class EmergencyRoomService: EmergencyRoomProvider {
      - parameters:
         - location: Used to sort result.
         - limitTo: Maximum number of ERs to fetch. Defaults to all results.
-        - resultQueue: An operation queue for scheduling result closure. Defaults to internal background queue.
+        - resultQueue: An operation queue for scheduling result closure.
+        - result: Closure accepting CloudKitRecordableFetchResult parameter to access results.
+     
+     - returns: CloudKitRecordableFetchRequest to manage request.
      */
     func fetchOpenERsNearestLocation(
         location: CLLocation,
         limitTo limit: Int?,
-        resultQueue: NSOperationQueue?,
-        result: ERsFetchResult -> ()) -> FetchOpenERsNearestLocationRequest
+        resultQueue: NSOperationQueue,
+        result: CloudKitRecordableFetchResult<ER> -> ()) -> CloudKitRecordableFetchRequest<FetchOpenERsNearestLocationOperation>
     {
-        // TODO: Replace nil check/default to default param as soon as Swift compilier allows it with protocols.
-        let resultQueue = resultQueue ?? NSOperationQueue()
-        
         let fetchOpenERsNearestLocation = FetchOpenERsNearestLocationOperation(location: location, limitTo: limit)
         
         fetchOpenERsNearestLocation.completionBlock = {
@@ -55,10 +58,46 @@ class EmergencyRoomService: EmergencyRoomProvider {
         
         workQueue.addOperation(fetchOpenERsNearestLocation)
         
-        return FetchOpenERsNearestLocationRequest(operation: fetchOpenERsNearestLocation, queue: workQueue)
+        return CloudKitRecordableFetchRequest(operation: fetchOpenERsNearestLocation, queue: workQueue)
     }
     
-    func fetchCachedERsSortedByProximityToLocation(location: CLLocation) -> [ER] {
-        return persistenceProvider.emergencyRooms.nearestLocation(location, limitTo: nil)
+    /**
+     Provides a limited number of Emergency Rooms with todays ScheduleDay, if available, sorted by proximity to location.
+     
+     - parameters:
+         - location: Used to sort result.
+         - limitTo: Maximum number of ERs to fetch. Defaults to all results.
+         - resultQueue: An operation queue for scheduling result closure.
+         - result: Closure accepting CloudKitRecordableFetchResult parameter to access results.
+     
+     - returns: CloudKitRecordableFetchRequest to manage request.
+     */
+    func fetchERsWithTodaysScheduleDayNearestLocation(
+        location: CLLocation,
+        limitTo limit: Int?,
+        resultQueue: NSOperationQueue,
+        result: (CloudKitRecordableFetchResult<ER>) -> ())
+        -> CloudKitRecordableFetchRequest<FetchERsWithTodaysScheduleDayNearestLocationOperation>
+    {
+        let fetchERsWithTodaysScheduleDayNearestLocation = FetchERsWithTodaysScheduleDayNearestLocationOperation(
+            emergencyRoomProvider: self,
+            scheduleDayProvider: self.scheduleDayProvider,
+            location: location,
+            limitTo: limit
+        )
+        
+        fetchERsWithTodaysScheduleDayNearestLocation.completionBlock = {
+            switch fetchERsWithTodaysScheduleDayNearestLocation.result {
+            case .Failure(let error):
+                resultQueue.addOperationWithBlock { result( .Failure(error) ) }
+                
+            case .Success(let ers):
+                resultQueue.addOperationWithBlock { result( .Success(ers)) }
+            }
+        }
+        
+        workQueue.addOperation(fetchERsWithTodaysScheduleDayNearestLocation)
+        
+        return CloudKitRecordableFetchRequest(operation: fetchERsWithTodaysScheduleDayNearestLocation, queue: workQueue)
     }
 }

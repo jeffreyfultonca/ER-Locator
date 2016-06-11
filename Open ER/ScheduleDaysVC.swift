@@ -146,35 +146,32 @@ class ScheduleDaysVC: UIViewController,
     }
     
     func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
-        guard let cell = cell as? ScheduleDayCell else {
-            print("Not ScheduleDayCell; nothing to do.")
-            return
-        }
+        guard let cell = cell as? ScheduleDayCell else { return }
         
         let date = dateForIndexPath(indexPath)
         
         if datesSaving.contains(date) {
-            print("Saving in progress")
+//            print("Saving in progress")
             cell.configureAsSavingWithDate(date)
         }
         // Check ScheduleDayCache
         else if let scheduleDay = scheduleDayCache[date] {
-            print("Loaded from cache: \(date)")
+//            print("Loaded from cache: \(date)")
             cell.configureWithScheduleDay(scheduleDay)
         }
         // Loading if request in progress
         else if datesRequested.contains(date) {
-            print("Request in progress: \(date)")
+//            print("Request in progress: \(date)")
             cell.configureAsLoadingWithDate(date)
         }
         // Closed if already fetched and not cached or requested
         else if datesFetched.contains(date) {
-            print("Already fetched: \(date)")
+//            print("Already fetched: \(date)")
             cell.configureAsClosedWithDate(date)
         }
             // Fetch from CloudKit
         else {
-            print("Fetching from CloudKit: \(date)")
+//            print("Fetching from CloudKit: \(date)")
             fetchAndUpdateCellAtIndexPath(indexPath)
         }
     }

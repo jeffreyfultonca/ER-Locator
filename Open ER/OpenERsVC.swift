@@ -10,14 +10,13 @@ import UIKit
 import MapKit
 
 class OpenERsVC: UIViewController,
-    DependencyEnforcing,
     UITableViewDelegate,
     UITableViewDataSource,
     MKMapViewDelegate
 {
     // MARK: - Dependencies
-    var emergencyRoomProvider: EmergencyRoomProvider!
-    var scheduleDayProvider: ScheduleDayProvider!
+    var emergencyRoomProvider: EmergencyRoomProvider = EmergencyRoomService.sharedInstance
+    var persistenceProvider: PersistenceProvider = PersistenceService.sharedInstance
     
     // MARK: - Outlets
     @IBOutlet var mapView: MKMapView!
@@ -25,7 +24,8 @@ class OpenERsVC: UIViewController,
     
     @IBOutlet var toolbarView: UIView!
     @IBOutlet var toolbarLabel: UILabel!
-    @IBOutlet var toolbarDetailLabel: UILabel!
+    @IBOutlet var syncStatusLabel: UILabel!
+    @IBOutlet var syncStatusActivityIndicator: UIActivityIndicatorView!
     
     @IBOutlet var tableViewTopMapViewCenterConstraint: NSLayoutConstraint!
     
@@ -42,25 +42,24 @@ class OpenERsVC: UIViewController,
     var ers = [ER]()
     var error: ErrorType?
     
-    var fetchOpenERsNearestLocationRequest: FetchOpenERsNearestLocationRequest?
-    
     // MARK: - Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        enforceDependencies()
-        
         locationManager.requestWhenInUseAuthorization()
+        
+        ers = emergencyRoomProvider.emergencyRooms.sort { $0.name < $1.name }
         
         NSNotificationCenter.defaultCenter().addObserver(
             self,
             selector: #selector(reloadERs),
-            name: UIApplicationDidBecomeActiveNotification,
+            name: Notification.LocalDatastoreUpdatedWithNewData,
             object: nil
         )
         
         setupTableView()
+        refreshSyncStatusLabel()
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -82,11 +81,6 @@ class OpenERsVC: UIViewController,
     }
     
     // MARK: - Helpers
-    
-    func enforceDependencies() {
-        guard emergencyRoomProvider != nil else { fatalError("emergencyRoomProvider dependency not met") }
-        guard scheduleDayProvider != nil else { fatalError("scheduleDayProvider dependency not met") }
-    }
     
     func setupTableView() {
         tableView.delegate = self
@@ -117,9 +111,10 @@ class OpenERsVC: UIViewController,
         mapView.showsUserLocation = true
     }
     
-    func refreshUI(animated: Bool) {
+    func refreshUI(animated animated: Bool) {
         refreshMapViewAnnotations(animated)
         refreshTableView()
+        refreshSyncStatusLabel()
     }
     
     func refreshMapViewAnnotations(animated: Bool) {
@@ -138,6 +133,26 @@ class OpenERsVC: UIViewController,
         tableView.reloadSections(sections, withRowAnimation: .Fade)
     }
     
+    func refreshSyncStatusLabel() {
+        if persistenceProvider.syncing {
+            syncStatusLabel.text = "Updating..."
+            syncStatusActivityIndicator.startAnimating()
+            
+        } else if let error = error {
+            // TODO: Give more meaningful message.
+            syncStatusLabel.text = "Uh oh... \(error)"
+            syncStatusActivityIndicator.stopAnimating()
+            
+        } else if let lastSuccessfulSyncAt = persistenceProvider.lastSuccessSyncAt {
+            syncStatusLabel.text =  "Updated \(lastSuccessfulSyncAt.time)"
+            syncStatusActivityIndicator.stopAnimating()
+            
+        } else {
+            syncStatusLabel.text =  "🐶"
+            syncStatusActivityIndicator.stopAnimating()
+        }
+    }
+    
     // MARK: - UITableView Datasource
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -145,22 +160,15 @@ class OpenERsVC: UIViewController,
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        
         if ers.isEmpty {
-            
             let cell = tableView.dequeueReusableCellWithIdentifier("messageCell", forIndexPath: indexPath) as! MessageCell
-            
-            if let _ = error {
-                cell.messageLabel.text = "We are unable to download the Emergency Room schedule."
-                cell.activityIndicatorView.stopAnimating()
-                
-            } else if let request = fetchOpenERsNearestLocationRequest where request.finished {
-                cell.messageLabel.text = "Sorry, we could not find any open emergency rooms nearby."
-                cell.activityIndicatorView.stopAnimating()
-                
-            } else {
-                cell.messageLabel.text = "Finding nearest open emergency rooms..."
+
+            if persistenceProvider.syncing {
+                cell.messageLabel.text = "Finding emergency rooms..."
                 cell.activityIndicatorView.startAnimating()
+            } else {
+                cell.messageLabel.text = "Strange... there doesn't seem to be any Emergency Rooms in our records?"
+                cell.activityIndicatorView.stopAnimating()
             }
             
             return cell
@@ -187,24 +195,24 @@ class OpenERsVC: UIViewController,
         
         shouldUpdateUIOnUserLocationUpdate = false
         
-        fetchOpenERsNearestLocationRequest = emergencyRoomProvider.fetchOpenERsNearestLocation(
+        refreshUI(animated: true)
+        
+        emergencyRoomProvider.fetchERsWithTodaysScheduleDayNearestLocation(
             location,
-            limitTo: 3,
-            resultQueue: NSOperationQueue.mainQueue() )
+            limitTo: nil,
+            resultQueue: NSOperationQueue.mainQueue())
         { result in
             switch result {
             case .Failure(let error):
-                self.ers = self.emergencyRoomProvider.fetchCachedERsSortedByProximityToLocation(location)
                 self.error = error
                 
             case .Success(let ers):
+                self.error = nil
                 self.ers = ers
             }
             
-            self.refreshUI(true)
+            self.refreshUI(animated: true)
         }
-        
-        refreshUI(true)
     }
     
     func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
@@ -293,7 +301,7 @@ class OpenERsVC: UIViewController,
     // MARK: - Segues
     
     @IBAction func unwindToOpenERsVC(segue: UIStoryboardSegue) {
-        self.reloadERs()
+        PersistenceService.sharedInstance.syncLocalDatastoreWithRemote(NSOperationQueue.mainQueue(), result: nil)
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {

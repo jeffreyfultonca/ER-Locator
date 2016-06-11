@@ -8,7 +8,7 @@
 
 import CloudKit
 
-class ScheduleDay: CloudKitRecordable {
+class ScheduleDay: NSObject, CloudKitRecordable, NSCoding {
     
     // MARK: - Stored Properties
     
@@ -74,5 +74,20 @@ class ScheduleDay: CloudKitRecordable {
     static var OpenNowPredicate: NSPredicate {
         let now = NSDate()
         return NSPredicate(format: "firstOpen <= %@ AND firstClose > %@", now, now)
+    }
+    
+    // MARK: - NSCoding
+    
+    struct PropertyKey {
+        static let Record = "RecordKey"
+    }
+    
+    func encodeWithCoder(aCoder: NSCoder) {
+        aCoder.encodeObject(record, forKey: PropertyKey.Record)
+    }
+    
+    required convenience init?(coder aDecoder: NSCoder) {
+        let record = aDecoder.decodeObjectForKey(PropertyKey.Record) as! CKRecord
+        self.init(record: record)
     }
 }

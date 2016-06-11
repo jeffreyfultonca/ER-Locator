@@ -47,7 +47,7 @@ class ERService {
     }
     
     /// Handler closures execute on main thread.
-    func fetchOpenERsNearestLocation(location: CLLocation, handler: (ERsFetchResult)->() ) {
+    func fetchOpenERsNearestLocation(location: CLLocation, handler: (CloudKitRecordableFetchResult<ER>)->() ) {
         
         // Limit to 3.
         // Sort by proximity.

@@ -19,5 +19,5 @@ enum ScheduleDayFetchResult {
 }
 
 protocol ScheduleDayProvider {
-    func fetchScheduleDayForER(er: ER, onDate date: NSDate, handler: (ScheduleDayFetchResult)->() )
+    var todaysScheduleDays: [ScheduleDay] { get }
 }

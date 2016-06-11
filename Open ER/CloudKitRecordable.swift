@@ -26,7 +26,6 @@ protocol CloudKitRecordable {
     init(record: CKRecord)
 }
 
-// Add RecordID computed property for convenience.
 extension CloudKitRecordable {
     /**
      String used to determine CloudKit RecordType for this record.

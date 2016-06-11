@@ -8,11 +8,6 @@
 
 import CloudKit
 
-enum FetchCloudKitRecordableResult<T: CloudKitRecordable> {
-    case Failure(ErrorType)
-    case Success([T])
-}
-
 /**
  Generic NSOperation subclass used to concurrently fetch CKRecords from a CloudKit database and parse them into CloudKitRecordable objects.
  
@@ -28,9 +23,9 @@ class FetchCloudKitRecordableOperation<T: CloudKitRecordable>: AsyncOperation {
     private let resultsLimit: Int?
     
     // Cancel CloudKit Request after this interval.
-    var timeoutIntervalInSeconds: Double = 5
+    var timeoutIntervalInSeconds: Double = 30
     
-    var result: FetchCloudKitRecordableResult<T> = .Failure(Error.OperationNotComplete)
+    var result: CloudKitRecordableFetchResult<T> = .Failure(Error.OperationNotComplete)
     
     // MARK: - Lifecycle
     
@@ -80,10 +75,61 @@ class FetchCloudKitRecordableOperation<T: CloudKitRecordable>: AsyncOperation {
         }
     }
     
-    // MARK: - Helpers
+    // MARK: Helpers
     
-    func completeOperationWithResult(result: FetchCloudKitRecordableResult<T>) {
+    private func completeOperationWithResult(result: CloudKitRecordableFetchResult<T>) {
         self.result = result
         completeOperation()
     }
 }
+
+// MARK: - Result
+
+enum CloudKitRecordableFetchResult<T: CloudKitRecordable> {
+    case Failure(ErrorType)
+    case Success([T])
+}
+
+// MARK: - Request
+
+protocol CloudKitRecordableOperationable {
+    var finished: Bool { get }
+    var executing: Bool { get }
+    
+    init(fromExistingOperation: Self)
+    
+    func cancel()
+}
+
+class CloudKitRecordableFetchRequest<T: CloudKitRecordableOperationable> {
+    private var operation: T
+    private var queue: NSOperationQueue
+    
+    var finished: Bool {
+        return operation.finished
+    }
+    
+    var priority: NSOperationQueuePriority = .Normal {
+        didSet(oldPriority) {
+            guard operation.executing == false else { return }
+            
+            let newOperation = T(fromExistingOperation: operation)
+            
+            operation.cancel()
+            operation = newOperation
+            if let operation = operation as? NSOperation {
+                queue.addOperation(operation)
+            }
+        }
+    }
+    
+    init(operation: T, queue: NSOperationQueue) {
+        self.operation = operation
+        self.queue = queue
+    }
+    
+    func cancel() {
+        operation.cancel()
+    }
+}
+
