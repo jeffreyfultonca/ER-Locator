@@ -13,23 +13,16 @@ protocol EmergencyRoomProvider {
     var emergencyRooms: [ER] { get }
     
     /**
-     Provides a limited array of currently open ERs sorted by proximity to location.
-     
-     - Important:
-     Supplied result closure will be scheduled internal background queue.
+     Provides a limited number of Emergency Rooms with todays ScheduleDay, if available, sorted by proximity to location.
      
      - parameters:
          - location: Used to sort result.
          - limitTo: Maximum number of ERs to fetch. Defaults to all results.
-         - resultQueue: An operation queue for scheduling result closure. Defaults to internal background queue.
+         - resultQueue: An operation queue for scheduling result closure.
+         - result: Closure accepting CloudKitRecordableFetchResult parameter to access results.
+     
+     - returns: CloudKitRecordableFetchRequest to manage request.
      */
-    func fetchOpenERsNearestLocation(
-        location: CLLocation,
-        limitTo: Int?,
-        resultQueue: NSOperationQueue,
-        result: (CloudKitRecordableFetchResult<ER>)->()
-    ) -> CloudKitRecordableFetchRequest<FetchOpenERsNearestLocationOperation>
-    
     func fetchERsWithTodaysScheduleDayNearestLocation(
         location: CLLocation,
         limitTo: Int?,

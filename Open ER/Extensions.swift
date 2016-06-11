@@ -146,6 +146,14 @@ extension NSDate {
 }
 
 extension UIColor {
+    static func pinColorForOpenER() -> UIColor {
+        return UIColor.redColor()
+    }
+    
+    static func pinColorForClosedER() -> UIColor {
+        return UIColor.redColor().colorWithAlphaComponent(0.25)
+    }
+    
     static func saving() -> UIColor {
         return UIColor.loading()
     }
@@ -184,10 +192,23 @@ extension SequenceType where Generator.Element: CloudKitRecordable {
 }
 
 extension SequenceType where Generator.Element: ER {
-    func nearestLocation(location: CLLocation, limitTo limit: Int?) -> [ER] {
-        let sortedERs = self.sort { $0.location.distanceFromLocation(location) < $1.location.distanceFromLocation(location) }
-        guard let limit = limit else { return sortedERs }
-        return Array(sortedERs.prefix(limit))
+    func nearestLocation(location: CLLocation?) -> [ER] {
+        guard let location = location else { return self as! [ER] }
+        return self.sort { $0.location.distanceFromLocation(location) < $1.location.distanceFromLocation(location) }
+    }
+    
+    func limit(limit: Int?) -> [ER] {
+        let ers = self as! [ER]
+        guard let limit = limit else { return ers }
+        return Array(ers.prefix(limit))
+    }
+    
+    var openNow: [ER] {
+        return self.filter { $0.openNow }
+    }
+    
+    var possiblyClosed: [ER] {
+        return self.filter { $0.openNow == false }
     }
 }
 
@@ -198,7 +219,6 @@ extension SequenceType where Generator.Element: ScheduleDay {
         return Set(todaysScheduleDays)
     }
 }
-
 
 extension NSOperation {
     func withDependency(dependency: NSOperation) -> Self {

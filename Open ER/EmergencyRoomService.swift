@@ -25,43 +25,6 @@ class EmergencyRoomService: EmergencyRoomProvider {
     }
     
     /**
-     Provides a limited number of currently open ERs sorted by proximity to location.
-     
-     - Important:
-     Supplied result closure will be scheduled internal background queue.
-     
-     - parameters:
-        - location: Used to sort result.
-        - limitTo: Maximum number of ERs to fetch. Defaults to all results.
-        - resultQueue: An operation queue for scheduling result closure.
-        - result: Closure accepting CloudKitRecordableFetchResult parameter to access results.
-     
-     - returns: CloudKitRecordableFetchRequest to manage request.
-     */
-    func fetchOpenERsNearestLocation(
-        location: CLLocation,
-        limitTo limit: Int?,
-        resultQueue: NSOperationQueue,
-        result: CloudKitRecordableFetchResult<ER> -> ()) -> CloudKitRecordableFetchRequest<FetchOpenERsNearestLocationOperation>
-    {
-        let fetchOpenERsNearestLocation = FetchOpenERsNearestLocationOperation(location: location, limitTo: limit)
-        
-        fetchOpenERsNearestLocation.completionBlock = {
-            switch fetchOpenERsNearestLocation.result {
-            case .Failure(let error):
-                resultQueue.addOperationWithBlock { result( .Failure(error) ) }
-                
-            case .Success(let ers):
-                resultQueue.addOperationWithBlock { result( .Success(ers)) }
-            }
-        }
-        
-        workQueue.addOperation(fetchOpenERsNearestLocation)
-        
-        return CloudKitRecordableFetchRequest(operation: fetchOpenERsNearestLocation, queue: workQueue)
-    }
-    
-    /**
      Provides a limited number of Emergency Rooms with todays ScheduleDay, if available, sorted by proximity to location.
      
      - parameters:

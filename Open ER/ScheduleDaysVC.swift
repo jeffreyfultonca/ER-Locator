@@ -55,19 +55,9 @@ class ScheduleDaysVC: UIViewController,
       
         if shouldScrollToTodayAppear {
             scrollTableToDate(today, animated: false)
-//            tableView.contentOffset.y += 0.0
         }
         
         saveLastSelectedScheduleDate()
-    }
-    
-    override func viewDidAppear(animated: Bool) {
-        super.viewDidAppear(animated)
-        
-//        if shouldScrollToTodayAppear {
-//            shouldScrollToTodayAppear = false
-//            scrollTableToDate(today, animated: true)
-//        }
     }
     
     // MARK: - Helpers

@@ -23,7 +23,7 @@ class FetchCloudKitRecordableOperation<T: CloudKitRecordable>: AsyncOperation {
     private let resultsLimit: Int?
     
     // Cancel CloudKit Request after this interval.
-    var timeoutIntervalInSeconds: Double = 30
+    var timeoutIntervalInSeconds: Double = 3000
     
     var result: CloudKitRecordableFetchResult<T> = .Failure(Error.OperationNotComplete)
     

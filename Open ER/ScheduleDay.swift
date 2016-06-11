@@ -90,4 +90,13 @@ class ScheduleDay: NSObject, CloudKitRecordable, NSCoding {
         let record = aDecoder.decodeObjectForKey(PropertyKey.Record) as! CKRecord
         self.init(record: record)
     }
+    
+    // Equateable for NSObject
+    override func isEqual(object: AnyObject?) -> Bool {
+        guard let object = object as? ScheduleDay else { return false }
+        
+        let same = self.recordID == object.recordID
+        print("ScheduleDay.isEqual: \(same)")
+        return same
+    }
 }

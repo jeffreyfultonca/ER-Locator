@@ -47,7 +47,7 @@ class FetchERsWithTodaysScheduleDayNearestLocationOperation: NSOperation, CloudK
     }
     
     override func main() {
-        let ers = emergencyRoomProvider.emergencyRooms.nearestLocation(location, limitTo: nil)
+        let ers = emergencyRoomProvider.emergencyRooms.nearestLocation(location)
         let todaysScheduleDays = self.scheduleDayProvider.todaysScheduleDays
         
         // Get todays ScheduleDay for each ER if available.

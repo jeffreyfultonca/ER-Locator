@@ -22,7 +22,6 @@ protocol PersistenceProvider {
     var emergencyRoomsMostRecentlyModifiedAt: NSDate? { get set }
     
     var todaysScheduleDays: Set<ScheduleDay> { get set }
-//    var todaysScheduleDaysMostRecentlyModifiedAt: NSDate? { get set }
     
     // MARK: - Sync
     var syncing: Bool { get }

@@ -9,8 +9,9 @@
 import UIKit
 import MapKit
 
-class ERDetailVC: UIViewController {
-    
+class ERDetailVC: UIViewController,
+    MKMapViewDelegate
+{
     // MARK: - Outlets
     @IBOutlet var mapView: MKMapView!
     
@@ -35,7 +36,27 @@ class ERDetailVC: UIViewController {
     }
     
     func setupMapView() {
+        mapView.delegate = self
         mapView.showAnnotations([er], animated: false)
+    }
+    
+    // MARK: - MKMapViewDelegate
+    
+    func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
+        guard let er = annotation as? ER else { return nil }
+        
+        let reuseIdentifier = "pinAnnotationView"
+        
+        let pinAnnotationView = mapView.dequeueReusableAnnotationViewWithIdentifier(reuseIdentifier) as? MKPinAnnotationView ?? MKPinAnnotationView(annotation: annotation, reuseIdentifier: reuseIdentifier)
+        
+        pinAnnotationView.canShowCallout = true
+        pinAnnotationView.animatesDrop = false
+        
+        // Color
+        pinAnnotationView.pinTintColor = er.openNow ?
+            UIColor.pinColorForOpenER() : UIColor.pinColorForClosedER()
+        
+        return pinAnnotationView
     }
     
     // MARK: - Actions

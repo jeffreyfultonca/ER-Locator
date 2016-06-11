@@ -19,7 +19,6 @@ class ER: NSObject, CloudKitRecordable, MKAnnotation, NSCoding {
     var phone: String
     var location: CLLocation
     
-    var scheduleDay: ScheduleDay?
     var todaysScheduleDay: ScheduleDay?
     
     // MARK: - Lifecycle
@@ -36,12 +35,13 @@ class ER: NSObject, CloudKitRecordable, MKAnnotation, NSCoding {
     // MKAnnotation
     var coordinate: CLLocationCoordinate2D { return self.location.coordinate }
     var title: String? { return self.name }
+    var subtitle: String? { return self.openNow ? "Open Now" : "Possibly Closed" }
     
     var hoursOpen: String {
         guard let
-            scheduleDay = todaysScheduleDay,
-            firstOpen = scheduleDay.firstOpen,
-            firstClose = scheduleDay.firstClose else
+            todaysScheduleDay = todaysScheduleDay,
+            firstOpen = todaysScheduleDay.firstOpen,
+            firstClose = todaysScheduleDay.firstClose else
         {
             return "Call Ahead"
         }
@@ -55,6 +55,19 @@ class ER: NSObject, CloudKitRecordable, MKAnnotation, NSCoding {
         let firstCloseTime = ( firstClose.isEndOf(firstOpen) ) ? "11:59am" : firstClose.time
         
         return "\(firstOpen.time) - \(firstCloseTime)"
+    }
+    
+    var openNow: Bool {
+        guard let
+            todaysScheduleDay = todaysScheduleDay,
+            firstOpen = todaysScheduleDay.firstOpen,
+            firstClose = todaysScheduleDay.firstClose else
+        {
+            return false
+        }
+        
+        let now = NSDate()
+        return firstOpen < now && firstClose > now
     }
     
     var estimatedWaitTime: String { return "Estimated wait time" }
