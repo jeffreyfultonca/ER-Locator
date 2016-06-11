@@ -91,12 +91,16 @@ class ScheduleDay: NSObject, CloudKitRecordable, NSCoding {
         self.init(record: record)
     }
     
-    // Equateable for NSObject
+    // Hashable, Equatable
+    
+    // Required for determining uniqueness in Sets
+    override var hashValue: Int {
+        return recordID.recordName.hashValue
+    }
+    
+    // Required for ==
     override func isEqual(object: AnyObject?) -> Bool {
-        guard let object = object as? ScheduleDay else { return false }
-        
-        let same = self.recordID == object.recordID
-        print("ScheduleDay.isEqual: \(same)")
-        return same
+        guard let rhs = object as? ScheduleDay else { return false }
+        return self.recordID == rhs.recordID
     }
 }

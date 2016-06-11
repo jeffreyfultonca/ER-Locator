@@ -114,4 +114,17 @@ class ER: NSObject, CloudKitRecordable, MKAnnotation, NSCoding {
         let record = aDecoder.decodeObjectForKey(PropertyKey.Record) as! CKRecord
         self.init(record: record)
     }
+    
+    // Hashable, Equatable
+    
+    // Required for determining uniqueness in Sets
+    override var hashValue: Int {
+        return recordID.recordName.hashValue
+    }
+    
+    // Required for ==
+    override func isEqual(object: AnyObject?) -> Bool {
+        guard let rhs = object as? ScheduleDay else { return false }
+        return self.recordID == rhs.recordID
+    }
 }

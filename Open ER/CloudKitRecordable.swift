@@ -38,11 +38,4 @@ extension CloudKitRecordable {
      Convenience accessor to associated `CKRecord`'s `CKRecordID`.
     */
     var recordID: CKRecordID { return record.recordID }
-    
-    func isEqual(object: AnyObject?) -> Bool {
-        guard let object = object as? Self else { return false }
-        let same = self.recordID == object.recordID
-        print("CloudKitRecordable.isEqual: \(same)")
-        return same
-    }
 }
