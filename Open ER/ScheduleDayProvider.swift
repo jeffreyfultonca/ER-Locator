@@ -8,16 +8,21 @@
 
 import Foundation
 
-enum ScheduleDaysFetchResult {
-    case Failure(ErrorType)
-    case Success([ScheduleDay])
-}
-
-enum ScheduleDayFetchResult {
-    case Failure(ErrorType)
-    case Success(ScheduleDay?)
-}
-
 protocol ScheduleDayProvider {
     var todaysScheduleDays: [ScheduleDay] { get }
+    
+    func fetchScheduleDaysForER(
+        er: ER,
+        onDate: NSDate,
+        resultQueue: NSOperationQueue,
+        result: (CloudKitRecordableFetchResult<ScheduleDay>)->()
+    ) -> CloudKitRecordableFetchRequest<FetchScheduleDaysForEROnDateOperation>
+    
+    func saveScheduleDay(
+        scheduleDay: ScheduleDay,
+        resultQueue: NSOperationQueue,
+        result: (CloudKitRecordableSaveResult<ScheduleDay>)->()
+    )
+    
+    func createScheduleDayForER(er: ER, onDate date: NSDate) -> ScheduleDay
 }

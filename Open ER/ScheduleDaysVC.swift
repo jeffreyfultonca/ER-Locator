@@ -13,7 +13,7 @@ class ScheduleDaysVC: UIViewController,
     UITableViewDelegate
 {
     // MARK: - Dependencies
-    var erService = ERService.sharedInstance
+    var scheduleDayProvider: ScheduleDayProvider = ScheduleDayService.sharedInstance
     
     // MARK: - Outlets
     @IBOutlet var tableView: UITableView!
@@ -44,7 +44,6 @@ class ScheduleDaysVC: UIViewController,
         super.viewDidLoad()
         
         guard er != nil else { fatalError("er dependency not met.") }
-        
         navigationItem.title = "\(er.name) Schedule"
         
         setupTableView()
@@ -173,7 +172,11 @@ class ScheduleDaysVC: UIViewController,
         self.datesRequested.insert(date)
         
         // Fetch from CloudKit
-        erService.fetchScheduleDayForER(er, onDate: date) { result in
+        scheduleDayProvider.fetchScheduleDaysForER(
+            er,
+            onDate: date,
+            resultQueue: NSOperationQueue.mainQueue())
+        { result in
             
             // Remove from requested list
             self.datesRequested.remove(date)
@@ -186,11 +189,11 @@ class ScheduleDaysVC: UIViewController,
                 print(error)
                 cell?.configureWithError(error, andDate: date)
                 
-            case .Success(let scheduleDay):
+            case .Success(let scheduleDays):
                 // Successfully fetched
                 self.datesFetched.insert(date)
                 
-                guard let scheduleDay = scheduleDay else {
+                guard let scheduleDay = scheduleDays.first else {
                     // Nil result means closed
                     cell?.configureAsClosedWithDate(date)
                     return
@@ -220,7 +223,7 @@ class ScheduleDaysVC: UIViewController,
         let cell = tableView.cellForRowAtIndexPath(indexPath) as? ScheduleDayCell
         cell?.configureAsSavingWithDate(date)
         
-        erService.saveScheduleDay(scheduleDay) { result in
+        scheduleDayProvider.saveScheduleDay(scheduleDay, resultQueue: NSOperationQueue.mainQueue()) { result in
             
             // Successfully saved
             self.datesSaving.remove(date)
@@ -230,9 +233,9 @@ class ScheduleDaysVC: UIViewController,
                 print(error)
                 cell?.configureWithError(error, andDate: date)
                 
-            case .Success(let scheduleDay):
+            case .Success(let scheduleDays):
                 print("Successfully saved: \(scheduleDay)")
-                cell?.configureWithScheduleDay(scheduleDay)
+                cell?.configureWithScheduleDay(scheduleDays.first!)
             }
         }
     }
@@ -272,7 +275,7 @@ class ScheduleDaysVC: UIViewController,
                     
                 // Create new ScheduleDay if needed.
                 } else {
-                    let scheduleDay = erService.createScheduleDayForER(er, onDate: date)
+                    let scheduleDay = scheduleDayProvider.createScheduleDayForER(er, onDate: date)
                     scheduleDayCache[date] = scheduleDay
                     vc.scheduleDay = scheduleDay
                 }

@@ -66,7 +66,6 @@ class ERsListVC: UIViewController,
         let cell = tableView.dequeueReusableCellWithIdentifier("erCell", forIndexPath: indexPath)
         
         let er = ers[indexPath.row]
-        
         cell.textLabel?.text = er.name
         
         return cell

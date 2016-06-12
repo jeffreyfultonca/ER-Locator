@@ -32,7 +32,7 @@ class SyncLocalDatastoreWithRemoteOperation: AsyncOperation {
         // ERs modified  since last sync
         let ersMostRecentlyModifiedAt = persistenceProvider.emergencyRoomsMostRecentlyModifiedAt ?? NSDate.distantPast()
         let ersModifiedSinceDatePredicate = NSPredicate(format: "modificationDate > %@", ersMostRecentlyModifiedAt)
-        let fetchERs = FetchCloudKitRecordableOperation<ER>(
+        let fetchERs = CloudKitRecordableFetchOperation<ER>(
             cloudDatabase: cloudDatabase,
             predicate: ersModifiedSinceDatePredicate
         )
@@ -41,7 +41,7 @@ class SyncLocalDatastoreWithRemoteOperation: AsyncOperation {
         // TODO: Limit modificationDate to Today...
         let todaysScheduleDaysMostRecentlyModifiedAt = persistenceProvider.todaysScheduleDays.mostRecentlyModifiedAt ?? NSDate.distantPast()
         let todaysScheduleDaysModifiedSinceDatePredicate = NSPredicate(format: "modificationDate > %@ && date == %@", todaysScheduleDaysMostRecentlyModifiedAt, NSDate().beginningOfDay)
-        let fetchScheduleDays = FetchCloudKitRecordableOperation<ScheduleDay>(
+        let fetchScheduleDays = CloudKitRecordableFetchOperation<ScheduleDay>(
             cloudDatabase: cloudDatabase,
             predicate: todaysScheduleDaysModifiedSinceDatePredicate
         )

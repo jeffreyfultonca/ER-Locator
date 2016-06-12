@@ -1,5 +1,5 @@
 //
-//  FetchCloudKitRecordableOperation.swift
+//  CloudKitRecordableFetchOperation.swift
 //  Open ER
 //
 //  Created by Jeffrey Fulton on 2016-06-09.
@@ -13,7 +13,7 @@ import CloudKit
  
  Parameters: See CKQueryOperation documentation as all paramaters correspond.
  */
-class FetchCloudKitRecordableOperation<T: CloudKitRecordable>: AsyncOperation {
+class CloudKitRecordableFetchOperation<T: CloudKitRecordable>: AsyncOperation {
     
     // MARK: - Stored Properties
     private let cloudDatabase: CKDatabase
@@ -23,7 +23,7 @@ class FetchCloudKitRecordableOperation<T: CloudKitRecordable>: AsyncOperation {
     private let resultsLimit: Int?
     
     // Cancel CloudKit Request after this interval.
-    var timeoutIntervalInSeconds: Double = 3000
+    var timeoutIntervalInSeconds: Double = 30
     
     var result: CloudKitRecordableFetchResult<T> = .Failure(Error.OperationNotComplete)
     
