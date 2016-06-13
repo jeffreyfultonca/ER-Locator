@@ -32,6 +32,7 @@ class CloudKitRecordableSaveOperation<T: CloudKitRecordable>: AsyncOperation {
         )
         
         modifyRecordsOperation.database = cloudDatabase
+        modifyRecordsOperation.savePolicy = .ChangedKeys
         
         modifyRecordsOperation.modifyRecordsCompletionBlock = { modifiedRecords, recordIDs, error in
             guard error == nil else {

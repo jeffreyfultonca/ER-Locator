@@ -21,17 +21,17 @@ class ScheduleDaysVC: UIViewController,
     // MARK: - Properties
     let today = NSDate.now.beginningOfDay
     var er: ER!
-    var scheduleDayCache = [NSDate: ScheduleDay]()
+//    var scheduleDayCache = [NSDate: ScheduleDay]()
     
-    /// Used to reload tableView cell if set.
-    var lastSelectedDate: NSDate?
+    /// Used to save and reload tableView cell on return from ScheduleDayDetailVC.
+    var lastSelectedScheduleDay: ScheduleDay?
     
-    /// Used to limit network requests
-    var datesSaving = Set<NSDate>()
-    var datesRequested = Set<NSDate>()
-    var datesFetched = Set<NSDate>()
+    /// Used to properly configure cells and change request priority during rapid scrolling.
+    var saveRequestDates = Set<NSDate>()
+    var fetchRequests = Dictionary<NSDate, CloudKitRecordableFetchRequestable>()
     
     // MARK: - Month Sections
+    // Used to show faux infinite scrolling.
     static let monthCountConstant = 120 // Enable single value to be used in both count and offset properties.
     let monthCount = monthCountConstant // 50 years in either direction.
     let monthOffset = monthCountConstant / -2 // Set today to middle of possible values
@@ -56,19 +56,15 @@ class ScheduleDaysVC: UIViewController,
             scrollTableToDate(today, animated: false)
         }
         
-        saveLastSelectedScheduleDate()
+        saveLastSelectedScheduleDay()
     }
     
     // MARK: - Helpers
     
-    func saveLastSelectedScheduleDate() {
-        guard let lastSelectedDate = lastSelectedDate else { return }
+    func saveLastSelectedScheduleDay() {
+        guard let lastSelectedScheduleDay = lastSelectedScheduleDay else { return }
         
-        if let scheduleDay = scheduleDayCache[lastSelectedDate] {
-            saveAndUpdateCellForScheduleDay(scheduleDay)
-        }
-        
-        self.lastSelectedDate = nil
+        saveAndUpdateCellForScheduleDay(lastSelectedScheduleDay)
     }
     
     // MARK: - TableView
@@ -85,6 +81,7 @@ class ScheduleDaysVC: UIViewController,
     }
     
     func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        // TODO: Is this doing anything? Is UITableViewAutomaticDimension the default?
         return UITableViewAutomaticDimension
     }
     
@@ -134,96 +131,65 @@ class ScheduleDaysVC: UIViewController,
         return cell
     }
     
-    func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
+    func tableView(
+        tableView: UITableView,
+        willDisplayCell cell: UITableViewCell,
+        forRowAtIndexPath indexPath: NSIndexPath)
+    {
         guard let cell = cell as? ScheduleDayCell else { return }
         
         let date = dateForIndexPath(indexPath)
         
-        if datesSaving.contains(date) {
-//            print("Saving in progress")
+        if saveRequestDates.contains(date) {
+            // Currently saving.
             cell.configureAsSavingWithDate(date)
+        
         }
-        // Check ScheduleDayCache
-        else if let scheduleDay = scheduleDayCache[date] {
-//            print("Loaded from cache: \(date)")
-            cell.configureWithScheduleDay(scheduleDay)
-        }
-        // Loading if request in progress
-        else if datesRequested.contains(date) {
-//            print("Request in progress: \(date)")
-            cell.configureAsLoadingWithDate(date)
-        }
-        // Closed if already fetched and not cached or requested
-        else if datesFetched.contains(date) {
-//            print("Already fetched: \(date)")
-            cell.configureAsClosedWithDate(date)
-        }
-            // Fetch from CloudKit
+        else if var previousFetchRequest = fetchRequests[date] where previousFetchRequest.finished == false {
+            // Raise request priority so onscreen requests process first
+            previousFetchRequest.priority = .High
+            
+        } 
         else {
-//            print("Fetching from CloudKit: \(date)")
-            fetchAndUpdateCellAtIndexPath(indexPath)
-//            preFetchAndUpdateCellsSurroundingIndexPath(indexPath)
-        }
-    }
-    
-    func fetchAndUpdateCellAtIndexPath(indexPath: NSIndexPath) {
-        let date = dateForIndexPath(indexPath)
-        
-        // Prevent duplicate network requests
-        self.datesRequested.insert(date)
-        
-        scheduleDayProvider.fetchScheduleDaysForER(
-            er,
-            onDate: date,
-            resultQueue: NSOperationQueue.mainQueue())
-        { result in
-            
-            // Remove from requested list
-            self.datesRequested.remove(date)
-            
-            // Cell will be nil if not currently visible
-            let cell = self.tableView.cellForRowAtIndexPath(indexPath) as? ScheduleDayCell
-            
-            switch result {
-            case .Failure(let error):
-                print(error)
-                cell?.configureWithError(error, andDate: date)
+            // Fetch ScheduleDay and store request in fetchRequests for later re-prioritization.
+            fetchRequests[date] = scheduleDayProvider.fetchScheduleDaysForER(
+                er,
+                onDate: date,
+                resultQueue: NSOperationQueue.mainQueue() )
+            { result in
                 
-            case .Success(let scheduleDays):
-                // Successfully fetched
-                self.datesFetched.insert(date)
+                // Remove fetchRequest
+                self.fetchRequests[date] = nil
                 
-                guard let scheduleDay = scheduleDays.first else {
-                    // Nil result means closed
-                    cell?.configureAsClosedWithDate(date)
-                    return
+                // Get cell for indexPath as original cell may have been reused for a different ScheduleDay by now.
+                let cell = self.tableView.cellForRowAtIndexPath(indexPath) as? ScheduleDayCell
+                
+                switch result {
+                case .Failure(let error):
+                    cell?.configureWithError(error, andDate: date)
+                    
+                case .Success(let scheduleDays):
+                    guard let scheduleDay = scheduleDays.first else {
+                        cell?.configureAsClosedWithDate(date)
+                        return
+                    }
+                    
+                    cell?.configureWithScheduleDay(scheduleDay)
                 }
-                
-                // Add to cache
-                self.scheduleDayCache[date] = scheduleDay
-                
-                cell?.configureWithScheduleDay(scheduleDay)
             }
         }
     }
     
-    func preFetchAndUpdateCellsSurroundingIndexPath(indexPath: NSIndexPath) {
+    func tableView(
+        tableView: UITableView,
+        didEndDisplayingCell cell: UITableViewCell,
+        forRowAtIndexPath indexPath: NSIndexPath)
+    {
+        // Lower request priority so onscreen requests process first.
+        let date = dateForIndexPath(indexPath)
         
-        // Get dates padded around indexPath date for batching purposes.
-        
-        let centerDate = dateForIndexPath(indexPath)
-        let paddingDays = NSTimeInterval(60 * 60 * 24 * 15)
-        let startDay = Day(date: centerDate.dateByAddingTimeInterval(-paddingDays) )
-        let endDay = Day(date: centerDate.dateByAddingTimeInterval(paddingDays) )
-        
-        let dates = startDay...endDay
-        
-        
-        
-        // Prevent duplicate network requests
-//        self.datesRequested.unionInPlace(dates)
-        
-        // Fetch from CloudKit
+        guard var fetchRequest = fetchRequests[date] else { return }
+        fetchRequest.priority = .Normal
     }
     
     func saveAndUpdateCellForScheduleDay(scheduleDay: ScheduleDay) {
@@ -231,21 +197,24 @@ class ScheduleDaysVC: UIViewController,
         let date = scheduleDay.date
         
         // Mark as saving.
-        datesSaving.insert(date)
+        saveRequestDates.insert(date)
         
         // Set cell to 'Saving' if visible
-        guard let indexPath = indexPathForDate(date) else {
-            print("Could not access indexPathForDate: \(date)")
-            return
-        }
+        guard let indexPath = indexPathForDate(date) else { return }
         
         let cell = tableView.cellForRowAtIndexPath(indexPath) as? ScheduleDayCell
         cell?.configureAsSavingWithDate(date)
         
-        scheduleDayProvider.saveScheduleDay(scheduleDay, resultQueue: NSOperationQueue.mainQueue()) { result in
+        scheduleDayProvider.saveScheduleDay(
+            scheduleDay,
+            resultQueue: NSOperationQueue.mainQueue())
+        { result in
             
             // Successfully saved
-            self.datesSaving.remove(date)
+            self.saveRequestDates.remove(date)
+            
+            let cell = self.tableView.cellForRowAtIndexPath(indexPath) as? ScheduleDayCell
+            cell?.configureAsSavingWithDate(date)
             
             switch result {
             case .Failure(let error):
@@ -253,8 +222,12 @@ class ScheduleDaysVC: UIViewController,
                 cell?.configureWithError(error, andDate: date)
                 
             case .Success(let scheduleDays):
+                guard let scheduleDay = scheduleDays.first else {
+                    return print("Error: Could not access saved ScheduleDay.")
+                }
+                
                 print("Successfully saved: \(scheduleDay)")
-                cell?.configureWithScheduleDay(scheduleDays.first!)
+                cell?.configureWithScheduleDay(scheduleDay)
             }
         }
     }
@@ -270,7 +243,7 @@ class ScheduleDaysVC: UIViewController,
             
             let date = dateForIndexPath(indexPath)
             
-            guard datesFetched.contains(date) else {
+            if let fetchRequest = fetchRequests[date] where fetchRequest.finished == false {
                 print("Not finished fetching ScheduleDay for date... try again when complete.")
                 return false
             }
@@ -285,19 +258,36 @@ class ScheduleDaysVC: UIViewController,
                 vc = segue.destinationViewController as? ScheduleDayDetailVC,
                 indexPath = tableView.indexPathForSelectedRow
             {
+                // This is really complicated because there is no synchronous way to get ScheduleDays...
+                // Perhaps there should be... or we cache them here... or attach to each cell?
                 let date = dateForIndexPath(indexPath)
-                self.lastSelectedDate = date
                 
-                // Provide cached ScheduleDay if exists.
-                if let scheduleDay = scheduleDayCache[date] {
-                    vc.scheduleDay = scheduleDay
+                let group = dispatch_group_create()
+                
+                dispatch_group_enter(group)
+                self.scheduleDayProvider.fetchScheduleDaysForER(
+                    self.er,
+                    onDate: date,
+                    resultQueue: NSOperationQueue() )
+                { result in
+                    defer { dispatch_group_leave(group) }
                     
-                // Create new ScheduleDay if needed.
-                } else {
-                    let scheduleDay = scheduleDayProvider.createScheduleDayForER(er, onDate: date)
-                    scheduleDayCache[date] = scheduleDay
-                    vc.scheduleDay = scheduleDay
+                    switch result {
+                    case .Failure(let error):
+                        print(error)
+                        
+                    case .Success(let scheduleDays):
+                        let scheduleDay = scheduleDays.first ?? self.scheduleDayProvider.createScheduleDayForER(
+                            self.er,
+                            onDate: date
+                        )
+                        
+                        vc.scheduleDay = scheduleDay
+                        self.lastSelectedScheduleDay = scheduleDay
+                    }
                 }
+                
+                dispatch_group_wait(group, DISPATCH_TIME_FOREVER)
             }
         }
     }

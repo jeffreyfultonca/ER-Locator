@@ -92,16 +92,27 @@ enum CloudKitRecordableFetchResult<T: CloudKitRecordable> {
 
 // MARK: - Request
 
+enum CloudKitRecordableFetchRequestPriority {
+    case Normal
+    case High
+}
+
 protocol CloudKitRecordableOperationable {
     var finished: Bool { get }
     var executing: Bool { get }
     
-    init(fromExistingOperation: Self)
+    init(fromExistingOperation: Self, withPriority: CloudKitRecordableFetchRequestPriority)
     
     func cancel()
 }
 
-class CloudKitRecordableFetchRequest<T: CloudKitRecordableOperationable> {
+protocol CloudKitRecordableFetchRequestable {
+    var finished: Bool { get }
+    var priority: CloudKitRecordableFetchRequestPriority { get set }
+}
+
+class CloudKitRecordableFetchRequest<T: CloudKitRecordableOperationable>: CloudKitRecordableFetchRequestable {
+    
     private var operation: T
     private var queue: NSOperationQueue
     
@@ -109,11 +120,11 @@ class CloudKitRecordableFetchRequest<T: CloudKitRecordableOperationable> {
         return operation.finished
     }
     
-    var priority: NSOperationQueuePriority = .Normal {
+    var priority: CloudKitRecordableFetchRequestPriority = .Normal {
         didSet(oldPriority) {
             guard operation.executing == false else { return }
             
-            let newOperation = T(fromExistingOperation: operation)
+            let newOperation = T(fromExistingOperation: operation, withPriority: priority)
             
             operation.cancel()
             operation = newOperation

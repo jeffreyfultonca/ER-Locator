@@ -16,6 +16,7 @@ class OpenERsVC: UIViewController,
 {
     // MARK: - Dependencies
     var emergencyRoomProvider: EmergencyRoomProvider = EmergencyRoomService.sharedInstance
+    var scheduleDayProvider: ScheduleDayProvider = ScheduleDayService.sharedInstance
     var persistenceProvider: PersistenceProvider = PersistenceService.sharedInstance
     
     // MARK: - Outlets
@@ -48,7 +49,14 @@ class OpenERsVC: UIViewController,
         set {
             // Sort ERs into mutually exclusing collections.
             self.additionalOpenERs = newValue.openNow
-            if additionalOpenERs.count > 0 { self.nearestOpenERs = [self.additionalOpenERs.removeFirst()] }
+            
+            // Attempt to move nearestOpenER.
+            if additionalOpenERs.isEmpty {
+                self.nearestOpenERs.removeAll()
+            } else {
+                self.nearestOpenERs = [self.additionalOpenERs.removeFirst()]
+            }
+            
             self.possiblyClosedERs = newValue.possiblyClosed
         }
     }
@@ -140,7 +148,11 @@ class OpenERsVC: UIViewController,
         
         // Adjust region to show annotations and user's current location.
         let userLocation = mapView.userLocation
+        
+        // Show openNow ERs if possible falling back to nearest closed
         var annotationsToShow: [MKAnnotation] = allERs.openNow.nearestLocation(userLocation.location).limit(3)
+        if annotationsToShow.isEmpty { annotationsToShow = allERs.nearestLocation(userLocation.location).limit(3) }
+        
         annotationsToShow.append(userLocation)
         mapView.adjustRegionToDisplayAnnotations(annotationsToShow, animated: true)
     }
@@ -389,7 +401,8 @@ class OpenERsVC: UIViewController,
     // MARK: - Segues
     
     @IBAction func unwindToOpenERsVC(segue: UIStoryboardSegue) {
-        PersistenceService.sharedInstance.syncLocalDatastoreWithRemote(NSOperationQueue.mainQueue(), result: nil)
+        scheduleDayProvider.clearCache()
+        persistenceProvider.syncLocalDatastoreWithRemote(NSOperationQueue.mainQueue(), result: nil)
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {

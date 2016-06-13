@@ -124,7 +124,7 @@ class ER: NSObject, CloudKitRecordable, MKAnnotation, NSCoding {
     
     // Required for ==
     override func isEqual(object: AnyObject?) -> Bool {
-        guard let rhs = object as? ScheduleDay else { return false }
+        guard let rhs = object as? ER else { return false }
         return self.recordID == rhs.recordID
     }
 }

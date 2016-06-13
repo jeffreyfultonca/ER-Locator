@@ -26,7 +26,8 @@ class FetchERsWithTodaysScheduleDayNearestLocationOperation: NSOperation, CloudK
         emergencyRoomProvider: EmergencyRoomProvider,
         scheduleDayProvider: ScheduleDayProvider,
         location: CLLocation,
-        limitTo limit: Int? = nil)
+        limitTo limit: Int? = nil,
+        priority: CloudKitRecordableFetchRequestPriority = .Normal)
     {
         self.emergencyRoomProvider = emergencyRoomProvider
         self.scheduleDayProvider = scheduleDayProvider
@@ -35,9 +36,23 @@ class FetchERsWithTodaysScheduleDayNearestLocationOperation: NSOperation, CloudK
         self.limit = limit
         
         super.init()
+        
+        // TODO: This is duplicated between all the CloudKitRecordableOperationable classes. Move somewhere common?
+        switch priority {
+        case .Normal:
+            qualityOfService = .Utility
+            queuePriority = .Normal
+        
+        case .High:
+            qualityOfService = .UserInitiated
+            queuePriority = .High
+        }
     }
     
-    required convenience init(fromExistingOperation existingOperation: FetchERsWithTodaysScheduleDayNearestLocationOperation) {
+    required convenience init(
+        fromExistingOperation existingOperation: FetchERsWithTodaysScheduleDayNearestLocationOperation,
+        withPriority priority: CloudKitRecordableFetchRequestPriority)
+    {
         self.init(
             emergencyRoomProvider: existingOperation.emergencyRoomProvider,
             scheduleDayProvider:  existingOperation.scheduleDayProvider,
