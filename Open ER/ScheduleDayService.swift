@@ -22,6 +22,11 @@ class ScheduleDayService: ScheduleDayProvider {
         return Array(persistenceProvider.todaysScheduleDays)
     }
     
+    // In-memory cache for Scheduler only
+    private var inMemoryScheduleDayCache = [NSDate: ScheduleDay]()
+    
+    // MARK: - Fetching
+    
     func fetchScheduleDaysForER(
         er: ER,
         onDate date: NSDate,
@@ -51,7 +56,7 @@ class ScheduleDayService: ScheduleDayProvider {
         return CloudKitRecordableFetchRequest(operation: fetchScheduleDaysForEROnDate, queue: workQueue)
     }
     
-    // Saving
+    // MARK: - Saving
     
     func saveScheduleDay(
         scheduleDay: ScheduleDay,
@@ -93,7 +98,7 @@ class ScheduleDayService: ScheduleDayProvider {
         ], waitUntilFinished: false)
     }
     
-    // Create
+    // MARK: - Creating
     
     func createScheduleDayForER(er: ER, onDate date: NSDate) -> ScheduleDay {
         let scheduleDayRecord = CKRecord(recordType: ScheduleDay.recordType)

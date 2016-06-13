@@ -162,6 +162,7 @@ class ScheduleDaysVC: UIViewController,
         else {
 //            print("Fetching from CloudKit: \(date)")
             fetchAndUpdateCellAtIndexPath(indexPath)
+//            preFetchAndUpdateCellsSurroundingIndexPath(indexPath)
         }
     }
     
@@ -171,7 +172,6 @@ class ScheduleDaysVC: UIViewController,
         // Prevent duplicate network requests
         self.datesRequested.insert(date)
         
-        // Fetch from CloudKit
         scheduleDayProvider.fetchScheduleDaysForER(
             er,
             onDate: date,
@@ -205,6 +205,25 @@ class ScheduleDaysVC: UIViewController,
                 cell?.configureWithScheduleDay(scheduleDay)
             }
         }
+    }
+    
+    func preFetchAndUpdateCellsSurroundingIndexPath(indexPath: NSIndexPath) {
+        
+        // Get dates padded around indexPath date for batching purposes.
+        
+        let centerDate = dateForIndexPath(indexPath)
+        let paddingDays = NSTimeInterval(60 * 60 * 24 * 15)
+        let startDay = Day(date: centerDate.dateByAddingTimeInterval(-paddingDays) )
+        let endDay = Day(date: centerDate.dateByAddingTimeInterval(paddingDays) )
+        
+        let dates = startDay...endDay
+        
+        
+        
+        // Prevent duplicate network requests
+//        self.datesRequested.unionInPlace(dates)
+        
+        // Fetch from CloudKit
     }
     
     func saveAndUpdateCellForScheduleDay(scheduleDay: ScheduleDay) {

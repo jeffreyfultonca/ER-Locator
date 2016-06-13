@@ -30,10 +30,9 @@ extension MKMapView {
 
 // MARK: - NSDate
 
-func <(lhs: NSDate, rhs: NSDate) -> Bool { return lhs.compare(rhs) == .OrderedAscending }
-func <=(lhs: NSDate, rhs: NSDate) -> Bool { return lhs < rhs || lhs == rhs }
-func >(lhs: NSDate, rhs: NSDate) -> Bool { return lhs.compare(rhs) == .OrderedDescending }
-func >=(lhs: NSDate, rhs: NSDate) -> Bool { return lhs > rhs || lhs == rhs }
+extension NSDate: Comparable {}
+public func ==(lhs: NSDate, rhs: NSDate) -> Bool { return lhs.compare(rhs) == .OrderedSame }
+public func <(lhs: NSDate, rhs: NSDate) -> Bool { return lhs.compare(rhs) == .OrderedAscending }
 
 extension NSDate {
     static var now: NSDate { return NSDate() }

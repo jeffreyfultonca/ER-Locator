@@ -34,6 +34,7 @@
 		008BF3ED1CB1A31600946E4A /* ERCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 008BF3EC1CB1A31600946E4A /* ERCell.swift */; };
 		0092C9EC1D09B0C5005EA647 /* CloudKitRecordableFetchOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0092C9EB1D09B0C5005EA647 /* CloudKitRecordableFetchOperation.swift */; };
 		00935E541CB72B9A00A9FF71 /* ScheduleDayDetailVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00935E531CB72B9A00A9FF71 /* ScheduleDayDetailVC.swift */; };
+		00A0747D1D0E2C2D005B9072 /* Day.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00A0747C1D0E2C2D005B9072 /* Day.swift */; };
 		00B3569C1D0C7BFD00B62E0D /* FetchERsWithTodaysScheduleDayNearestLocationOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00B3569B1D0C7BFD00B62E0D /* FetchERsWithTodaysScheduleDayNearestLocationOperation.swift */; };
 		00C197931CB2D39600786B5A /* TimeSlotView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00C197921CB2D39600786B5A /* TimeSlotView.swift */; };
 		00C197971CB2E65200786B5A /* CloudKitRecordable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00C197961CB2E65200786B5A /* CloudKitRecordable.swift */; };
@@ -76,6 +77,7 @@
 		008BF3EC1CB1A31600946E4A /* ERCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ERCell.swift; sourceTree = "<group>"; };
 		0092C9EB1D09B0C5005EA647 /* CloudKitRecordableFetchOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CloudKitRecordableFetchOperation.swift; sourceTree = "<group>"; };
 		00935E531CB72B9A00A9FF71 /* ScheduleDayDetailVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScheduleDayDetailVC.swift; sourceTree = "<group>"; };
+		00A0747C1D0E2C2D005B9072 /* Day.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Day.swift; sourceTree = "<group>"; };
 		00B3569B1D0C7BFD00B62E0D /* FetchERsWithTodaysScheduleDayNearestLocationOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FetchERsWithTodaysScheduleDayNearestLocationOperation.swift; sourceTree = "<group>"; };
 		00C197921CB2D39600786B5A /* TimeSlotView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimeSlotView.swift; sourceTree = "<group>"; };
 		00C197961CB2E65200786B5A /* CloudKitRecordable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CloudKitRecordable.swift; sourceTree = "<group>"; };
@@ -240,6 +242,7 @@
 				00656B5D1CB44DF00000C4D4 /* Constants.swift */,
 				00611C211CB0972B00C08B07 /* Extensions.swift */,
 				00656B5F1CB481DF0000C4D4 /* Functions.swift */,
+				00A0747C1D0E2C2D005B9072 /* Day.swift */,
 			);
 			name = Globals;
 			sourceTree = "<group>";
@@ -368,6 +371,7 @@
 				00E885291D0D32B100FAD950 /* FetchScheduleDaysForEROnDateOperation.swift in Sources */,
 				00104BFA1CBC1735007C453C /* RangeSlider.swift in Sources */,
 				00611C011CB080FA00C08B07 /* AppDelegate.swift in Sources */,
+				00A0747D1D0E2C2D005B9072 /* Day.swift in Sources */,
 				00DC0A9C1CB1E90100014279 /* ScheduleDaysVC.swift in Sources */,
 				00104BFB1CBC1735007C453C /* RangeSliderThumbLayer.swift in Sources */,
 				0032EEAB1D067A8B000F9F10 /* PersistenceProvider.swift in Sources */,
