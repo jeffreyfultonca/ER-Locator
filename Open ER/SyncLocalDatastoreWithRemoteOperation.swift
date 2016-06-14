@@ -18,6 +18,10 @@ class SyncLocalDatastoreWithRemoteOperation: AsyncOperation {
     private var queue = NSOperationQueue()
     
     var result: SyncLocalDatastoreWithRemoteResult = .Failure(Error.OperationNotComplete)
+    override func cancel() {
+        result = .Failure(Error.OperationCancelled)
+        super.cancel()
+    }
     
     // MARK: - Lifecycle
     

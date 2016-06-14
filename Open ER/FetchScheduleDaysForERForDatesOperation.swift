@@ -1,5 +1,5 @@
 //
-//  FetchScheduleDaysForEROnDateOperation.swift
+//  FetchScheduleDaysForERForDatesOperation.swift
 //  Open ER
 //
 //  Created by Jeffrey Fulton on 2016-06-12.
@@ -8,31 +8,32 @@
 
 import CloudKit
 
-class FetchScheduleDaysForEROnDateOperation: AsyncOperation, CloudKitRecordableOperationable {
+class FetchScheduleDaysForERForDatesOperation: AsyncOperation, CloudKitRecordableOperationable {
     
     // MARK: - Stored Properties
-    private let inMemoryScheduleDayCache: InMemoryScheduleDayCache
     private let cloudDatabase: CKDatabase
     private let er: ER
-    private let date: NSDate
+    private let dates: [NSDate]
     
     private var queue = NSOperationQueue()
     
     var result: CloudKitRecordableFetchResult<ScheduleDay> = .Failure(Error.OperationNotComplete)
+    override func cancel() {
+        result = .Failure(Error.OperationCancelled)
+        super.cancel()
+    }
     
     // MARK: - Lifecycle
     
     init(
-        inMemoryScheduleDayCache: InMemoryScheduleDayCache,
         cloudDatabase: CKDatabase,
         er: ER,
-        date: NSDate,
+        dates: [NSDate],
         priority: CloudKitRecordableFetchRequestPriority = .Normal)
     {
-        self.inMemoryScheduleDayCache = inMemoryScheduleDayCache
         self.cloudDatabase = cloudDatabase
         self.er = er
-        self.date = date
+        self.dates = dates
         
         super.init()
         
@@ -49,35 +50,21 @@ class FetchScheduleDaysForEROnDateOperation: AsyncOperation, CloudKitRecordableO
     }
     
     required convenience init(
-        fromExistingOperation existingOperation: FetchScheduleDaysForEROnDateOperation,
+        fromExistingOperation existingOperation: FetchScheduleDaysForERForDatesOperation,
         withPriority priority: CloudKitRecordableFetchRequestPriority)
     {
         self.init(
-            inMemoryScheduleDayCache: existingOperation.inMemoryScheduleDayCache,
             cloudDatabase: existingOperation.cloudDatabase,
             er: existingOperation.er,
-            date: existingOperation.date,
+            dates: existingOperation.dates,
             priority: priority
         )
     }
     
     override func main() {
-        // Check in-memory cache first
-        let key = er.hashValue.description + date.hashValue.description
-        if let scheduleDay = inMemoryScheduleDayCache[key] {
-            self.completeOperationWithResult( .Success([scheduleDay]) )
-            return
-        }
-        
-        // Otherwise fetch from CloudKit
-        
         let showNetworkActivityIndicator = NetworkActivityIndicatorOperation(setVisible: true)
         
-        let predicate = NSPredicate(
-            format: "er == %@ AND date >= %@ AND date < %@",
-            er.recordID, date.beginningOfDay, date.endOfDay
-        )
-        
+        let predicate = NSPredicate(format: "er == %@ AND date IN %@", er.recordID, dates)
         let sortDescriptors = [NSSortDescriptor(key: "modificationDate", ascending: true)]
         
         let fetchScheduleDays = CloudKitRecordableFetchOperation<ScheduleDay>(

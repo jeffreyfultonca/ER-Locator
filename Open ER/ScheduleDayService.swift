@@ -15,7 +15,7 @@ class ScheduleDayService: ScheduleDayProvider {
     
     // `private` to enforce singleton.
     private init() {
-        workQueue.maxConcurrentOperationCount = 14 // Approximately one 5.5 inch iPhone screen worth.
+        workQueue.maxConcurrentOperationCount = 1 // Approximately one 5.5 inch iPhone screen worth.
     }
     
     // MARK: - Dependencies
@@ -34,63 +34,56 @@ class ScheduleDayService: ScheduleDayProvider {
     
     // MARK: - Fetching
     /**
-     Asynchronously fetch from cache falling back to CloudKit network query.
+     Synchronously fetch ScheduleDay from in-memory cache.
+     */
+    
+    func fetchScheduleDayFromCacheForER(er: ER, onDate date: NSDate) -> ScheduleDay? {
+        let key = er.hashValue.description + date.hashValue.description
+        return inMemoryScheduleDayCache[key]
+    }
+    
+    /**
+     Asynchronously fetch ScheduleDay from CloudKit.
      */
     func fetchScheduleDaysForER(
         er: ER,
-        onDate date: NSDate,
+        forDates dates: [NSDate],
         resultQueue: NSOperationQueue,
         result: (CloudKitRecordableFetchResult<ScheduleDay>) -> ())
         -> CloudKitRecordableFetchRequestable
     {
         let cloudDatabase = CKContainer.defaultContainer().publicCloudDatabase
-        let fetchScheduleDaysForEROnDate = FetchScheduleDaysForEROnDateOperation(
-            inMemoryScheduleDayCache: inMemoryScheduleDayCache,
+        let fetchScheduleDaysForERForDates = FetchScheduleDaysForERForDatesOperation(
             cloudDatabase: cloudDatabase,
             er: er,
-            date: date,
+            dates: dates,
             priority: .High
         )
         
-        fetchScheduleDaysForEROnDate.completionBlock = {
-            switch fetchScheduleDaysForEROnDate.result {
+        fetchScheduleDaysForERForDates.completionBlock = {
+            switch fetchScheduleDaysForERForDates.result {
             case .Failure(let error):
                 resultQueue.addOperationWithBlock { result( .Failure(error) ) }
                 
             case .Success(let scheduleDays):
-                // Create ScheduleDay (closed) if none returned and add to cache
-                let scheduleDay = scheduleDays.first ?? self.createScheduleDayForER(er, onDate: date)
-                let key = er.hashValue.description + scheduleDay.date.hashValue.description
-                self.inMemoryScheduleDayCache[key] = scheduleDay
+                // Add ScheduleDay record to cache for each requested date.
+                
+                dates.forEach { requestedDate in
+                    // Create ScheduleDay (closed) if none returned and add to cache for each
+                    let scheduleDay = scheduleDays.filter({ $0.date == requestedDate }).first ??
+                        self.createScheduleDayForER(er, onDate: requestedDate)
+                    let key = er.hashValue.description + scheduleDay.date.hashValue.description
+                    self.inMemoryScheduleDayCache[key] = scheduleDay
+                }
                 
                 resultQueue.addOperationWithBlock { result( .Success(scheduleDays) ) }
             }
         }
 
-        workQueue.addOperation(fetchScheduleDaysForEROnDate)
+        workQueue.addOperation(fetchScheduleDaysForERForDates)
         
-        return CloudKitRecordableFetchRequest(operation: fetchScheduleDaysForEROnDate, queue: workQueue)
+        return CloudKitRecordableFetchRequest(operation: fetchScheduleDaysForERForDates, queue: workQueue)
     }
-    
-    //        func preFetchAndUpdateCellsSurroundingIndexPath(indexPath: NSIndexPath) {
-    //
-    //            // Get dates padded around indexPath date for batching purposes.
-    //
-    //            let centerDate = dateForIndexPath(indexPath)
-    //            let paddingDays = NSTimeInterval(60 * 60 * 24 * 15)
-    //            let startDay = Day(date: centerDate.dateByAddingTimeInterval(-paddingDays) )
-    //            let endDay = Day(date: centerDate.dateByAddingTimeInterval(paddingDays) )
-    //
-    //            let dates = startDay...endDay
-    //
-    //
-    //
-    //            // Prevent duplicate network requests
-    //            //        self.datesRequested.unionInPlace(dates)
-    //
-    //            // Fetch from CloudKit
-    //        }
-
     
     // MARK: - Saving
     

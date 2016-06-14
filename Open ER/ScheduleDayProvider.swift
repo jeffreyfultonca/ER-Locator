@@ -13,9 +13,11 @@ protocol ScheduleDayProvider {
     
     func clearCache()
     
+    func fetchScheduleDayFromCacheForER(er: ER, onDate: NSDate) -> ScheduleDay?
+    
     func fetchScheduleDaysForER(
         er: ER,
-        onDate: NSDate,
+        forDates: [NSDate],
         resultQueue: NSOperationQueue,
         result: (CloudKitRecordableFetchResult<ScheduleDay>)->()
     ) -> CloudKitRecordableFetchRequestable

@@ -122,6 +122,7 @@ class CloudKitRecordableFetchRequest<T: CloudKitRecordableOperationable>: CloudK
     
     var priority: CloudKitRecordableFetchRequestPriority = .Normal {
         didSet(oldPriority) {
+            guard priority != oldPriority else { return }
             guard operation.executing == false else { return }
             
             let newOperation = T(fromExistingOperation: operation, withPriority: priority)

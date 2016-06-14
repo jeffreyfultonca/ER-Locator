@@ -131,6 +131,8 @@ class ScheduleDaysVC: UIViewController,
         return cell
     }
     
+    private var inMemoryScheduleDayCache = InMemoryScheduleDayCache()
+    
     func tableView(
         tableView: UITableView,
         willDisplayCell cell: UITableViewCell,
@@ -144,39 +146,74 @@ class ScheduleDaysVC: UIViewController,
             // Currently saving.
             cell.configureAsSavingWithDate(date)
         
-        }
-        else if var previousFetchRequest = fetchRequests[date] where previousFetchRequest.finished == false {
+        } else if var previousFetchRequest = fetchRequests[date] where previousFetchRequest.finished == false {
             // Raise request priority so onscreen requests process first
-            previousFetchRequest.priority = .High
+            previousFetchRequest.priority = .High // Has no effect if request has already started executing.
+         
+        } else if let scheduleDay = scheduleDayProvider.fetchScheduleDayFromCacheForER(er, onDate: date) {
+            // Load from cache
+            cell.configureWithScheduleDay(scheduleDay)
             
-        } 
-        else {
-            // Fetch ScheduleDay and store request in fetchRequests for later re-prioritization.
-            fetchRequests[date] = scheduleDayProvider.fetchScheduleDaysForER(
+        } else {
+            // Get range of dates
+            let numberOfDaysToPad: Double = 15
+            let startDate = date.dateByAddingTimeInterval(60 * 60 * 24 * -numberOfDaysToPad)
+            let endDate = date.dateByAddingTimeInterval(60 * 60 * 24 * numberOfDaysToPad)
+            
+            let dateRange = DateRange(
+                calendar: NSCalendar.currentCalendar(),
+                startDate: startDate,
+                endDate: endDate,
+                stepUnits: .Day,
+                stepValue: 1
+            )
+            
+            let requestedDates = Array<NSDate>(dateRange)
+            
+            // Get FetchRequest for range
+            let fetchRequest = scheduleDayProvider.fetchScheduleDaysForER(
                 er,
-                onDate: date,
-                resultQueue: NSOperationQueue.mainQueue() )
+                forDates: requestedDates,
+                resultQueue: NSOperationQueue.mainQueue())
             { result in
                 
-                // Remove fetchRequest
-                self.fetchRequests[date] = nil
-                
-                // Get cell for indexPath as original cell may have been reused for a different ScheduleDay by now.
-                let cell = self.tableView.cellForRowAtIndexPath(indexPath) as? ScheduleDayCell
-                
-                switch result {
-                case .Failure(let error):
-                    cell?.configureWithError(error, andDate: date)
+                requestedDates.forEach { requestedDate in
+                    // Remove requests for dates
+                    self.fetchRequests[requestedDate] = nil
                     
-                case .Success(let scheduleDays):
-                    guard let scheduleDay = scheduleDays.first else {
-                        cell?.configureAsClosedWithDate(date)
-                        return
+                    // Configure visible cells corresponding to requested dates
+                    // Re-get cell for indexPath as original cell may have been reused for a different ScheduleDay by now.
+                    guard let requestedIndexPath = self.indexPathForDate(requestedDate) else { return }
+                    let cell = self.tableView.cellForRowAtIndexPath(requestedIndexPath) as? ScheduleDayCell // Returns nil if not visible.
+                    
+                    switch result {
+                    case .Failure(let error as Error):
+                        switch error {
+                        case .OperationCancelled:
+                            // Do nothing? Or set to loading?
+                            break
+                            
+                        default:
+                            cell?.configureWithError(error, andDate: requestedDate)
+                        }
+                        
+                    case .Failure(let error):
+                        cell?.configureWithError(error, andDate: requestedDate)
+                        
+                    case .Success(let scheduleDays):
+                        // Find associated ScheduleDay
+                        guard let scheduleDay = scheduleDays.filter({ $0.date == requestedDate }).first else {
+                            cell?.configureAsClosedWithDate(requestedDate)
+                            return
+                        }
+                        
+                        cell?.configureWithScheduleDay(scheduleDay)
                     }
-                    
-                    cell?.configureWithScheduleDay(scheduleDay)
                 }
             }
+            
+            // Store fetchRequest for each requested date to prevent future attempts for the same dates
+            requestedDates.forEach { fetchRequests[$0] = fetchRequest }
         }
     }
     
@@ -191,6 +228,8 @@ class ScheduleDaysVC: UIViewController,
         guard var fetchRequest = fetchRequests[date] else { return }
         fetchRequest.priority = .Normal
     }
+    
+    // MARK: Saving
     
     func saveAndUpdateCellForScheduleDay(scheduleDay: ScheduleDay) {
         
@@ -242,11 +281,7 @@ class ScheduleDaysVC: UIViewController,
             }
             
             let date = dateForIndexPath(indexPath)
-            
-            if let fetchRequest = fetchRequests[date] where fetchRequest.finished == false {
-                print("Not finished fetching ScheduleDay for date... try again when complete.")
-                return false
-            }
+            return scheduleDayProvider.fetchScheduleDayFromCacheForER(er, onDate: date) != nil
         }
         
         return true
@@ -254,41 +289,13 @@ class ScheduleDaysVC: UIViewController,
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "showScheduleDayDetail" {
-            if let
-                vc = segue.destinationViewController as? ScheduleDayDetailVC,
-                indexPath = tableView.indexPathForSelectedRow
-            {
-                // This is really complicated because there is no synchronous way to get ScheduleDays...
-                // Perhaps there should be... or we cache them here... or attach to each cell?
-                let date = dateForIndexPath(indexPath)
-                
-                let group = dispatch_group_create()
-                
-                dispatch_group_enter(group)
-                self.scheduleDayProvider.fetchScheduleDaysForER(
-                    self.er,
-                    onDate: date,
-                    resultQueue: NSOperationQueue() )
-                { result in
-                    defer { dispatch_group_leave(group) }
-                    
-                    switch result {
-                    case .Failure(let error):
-                        print(error)
-                        
-                    case .Success(let scheduleDays):
-                        let scheduleDay = scheduleDays.first ?? self.scheduleDayProvider.createScheduleDayForER(
-                            self.er,
-                            onDate: date
-                        )
-                        
-                        vc.scheduleDay = scheduleDay
-                        self.lastSelectedScheduleDay = scheduleDay
-                    }
-                }
-                
-                dispatch_group_wait(group, DISPATCH_TIME_FOREVER)
-            }
+            let vc = segue.destinationViewController as! ScheduleDayDetailVC
+            let indexPath = tableView.indexPathForSelectedRow!
+            let date = dateForIndexPath(indexPath)
+            let scheduleDay = scheduleDayProvider.fetchScheduleDayFromCacheForER(er, onDate: date)!
+            
+            vc.scheduleDay = scheduleDay
+            self.lastSelectedScheduleDay = scheduleDay
         }
     }
 }

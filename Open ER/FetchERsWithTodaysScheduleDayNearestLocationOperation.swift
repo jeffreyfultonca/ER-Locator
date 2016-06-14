@@ -19,6 +19,10 @@ class FetchERsWithTodaysScheduleDayNearestLocationOperation: NSOperation, CloudK
     private var limit: Int?
     
     var result: CloudKitRecordableFetchResult<ER> = .Failure(Error.OperationNotComplete)
+    override func cancel() {
+        result = .Failure(Error.OperationCancelled)
+        super.cancel()
+    }
     
     // MARK: - Lifecycle
     
