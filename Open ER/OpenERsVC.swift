@@ -23,6 +23,8 @@ class OpenERsVC: UIViewController,
     @IBOutlet var mapView: MKMapView!
     @IBOutlet var tableView: UITableView!
     
+    @IBOutlet var schedulerButton: UIBarButtonItem!
+    
     @IBOutlet var toolbarView: UIView!
     @IBOutlet var toolbarLabel: UILabel!
     @IBOutlet var syncStatusLabel: UILabel!
@@ -79,12 +81,15 @@ class OpenERsVC: UIViewController,
             object: nil
         )
         
+        schedulerButton.enabled = false
         setupTableView()
         refreshSyncStatusLabel()
     }
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
+        
+        determineScheduleAccess()
         
         if let indexPath = tableView.indexPathForSelectedRow {
             tableView.deselectRowAtIndexPath(indexPath, animated: true)
@@ -102,6 +107,13 @@ class OpenERsVC: UIViewController,
     }
     
     // MARK: - Helpers
+    
+    /// Confirm user currently signed into iCloud on device has Scheduler role to access Scheduler; enabling and disabling the Scheduler button accordingly.
+    func determineScheduleAccess() {
+        persistenceProvider.determineSchedulerAccess(completionQueue: NSOperationQueue.mainQueue()) { access in
+            self.schedulerButton.enabled = access
+        }
+    }
     
     func setupTableView() {
         tableView.delegate = self

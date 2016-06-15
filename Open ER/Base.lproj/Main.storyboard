@@ -227,7 +227,7 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Emergency Room Locator" id="3So-en-Nda">
-                        <barButtonItem key="rightBarButtonItem" image="Calendar" id="8Sz-gq-cqi">
+                        <barButtonItem key="rightBarButtonItem" enabled="NO" image="Calendar" id="8Sz-gq-cqi">
                             <connections>
                                 <segue destination="Rr0-6a-NLm" kind="presentation" identifier="showScheduler" modalTransitionStyle="flipHorizontal" id="ezQ-Xd-HWQ"/>
                             </connections>
@@ -235,6 +235,7 @@
                     </navigationItem>
                     <connections>
                         <outlet property="mapView" destination="mEY-Zk-EPh" id="SAt-iT-slo"/>
+                        <outlet property="schedulerButton" destination="8Sz-gq-cqi" id="a1y-vk-oaG"/>
                         <outlet property="syncStatusActivityIndicator" destination="L0y-at-lUv" id="f7a-IH-TMe"/>
                         <outlet property="syncStatusLabel" destination="9uu-Ea-IkM" id="6TK-Wq-V9U"/>
                         <outlet property="tableView" destination="dWX-FJ-PHd" id="j1S-XM-g2V"/>

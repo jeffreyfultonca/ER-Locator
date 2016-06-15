@@ -33,4 +33,8 @@ protocol PersistenceProvider {
         resultQueue: NSOperationQueue,
         result: ( SyncLocalDatastoreWithRemoteResult -> () )?
     )
+    
+    // Scheduler Access
+    
+    func determineSchedulerAccess(completionQueue completionQueue: NSOperationQueue, completion: (Bool) -> Void )
 }

@@ -107,5 +107,22 @@ class PersistenceService: PersistenceProvider {
         
         syncQueue.addOperation(syncOperation)
     }
+    
+    // Scheduler Access
+    
+    func determineSchedulerAccess(
+        completionQueue completionQueue: NSOperationQueue,
+        completion: (Bool) -> Void)
+    {
+        let publicDatabase = CKContainer.defaultContainer().publicCloudDatabase
+        let predicate = NSPredicate(value: true)
+        let query = CKQuery(recordType: "SchedulerRole", predicate: predicate)
+        
+        publicDatabase.performQuery(query, inZoneWithID: nil, completionHandler: { records, queryError in
+            let access = queryError == nil && records != nil
+            completionQueue.addOperationWithBlock { completion(access) }
+        })
+        
+    }
 }
 
