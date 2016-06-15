@@ -15,7 +15,8 @@ class ScheduleDayService: ScheduleDayProvider {
     
     // `private` to enforce singleton.
     private init() {
-        workQueue.maxConcurrentOperationCount = 1 // Approximately one 5.5 inch iPhone screen worth.
+        // Fetch requests are batched by month. There can only be two months displayed on screen simultaneously, any more than that should be set to lower priority if queued.
+        workQueue.maxConcurrentOperationCount = 2
     }
     
     // MARK: - Dependencies
@@ -65,18 +66,21 @@ class ScheduleDayService: ScheduleDayProvider {
             case .Failure(let error):
                 resultQueue.addOperationWithBlock { result( .Failure(error) ) }
                 
-            case .Success(let scheduleDays):
+            case .Success(let scheduleDaysFetched):
                 // Add ScheduleDay record to cache for each requested date.
+                
+                var scheduleDaysToReturn = [ScheduleDay]()
                 
                 dates.forEach { requestedDate in
                     // Create ScheduleDay (closed) if none returned and add to cache for each
-                    let scheduleDay = scheduleDays.filter({ $0.date == requestedDate }).first ??
+                    let scheduleDay = scheduleDaysFetched.filter({ $0.date == requestedDate }).first ??
                         self.createScheduleDayForER(er, onDate: requestedDate)
+                    scheduleDaysToReturn.append(scheduleDay)
                     let key = er.hashValue.description + scheduleDay.date.hashValue.description
                     self.inMemoryScheduleDayCache[key] = scheduleDay
                 }
                 
-                resultQueue.addOperationWithBlock { result( .Success(scheduleDays) ) }
+                resultQueue.addOperationWithBlock { result( .Success(scheduleDaysToReturn) ) }
             }
         }
 

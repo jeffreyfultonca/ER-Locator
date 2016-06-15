@@ -15,6 +15,26 @@ struct DateRange : SequenceType {
     var stepUnits: NSCalendarUnit
     var stepValue: Int
     
+    init(
+        calendar: NSCalendar,
+        startDate: NSDate,
+        endDate: NSDate,
+        stepUnits: NSCalendarUnit,
+        stepValue: Int )
+    {
+        self.calendar = calendar
+        // Less one day to make inclusive
+        self.startDate = calendar.dateByAddingUnit(
+            stepUnits,
+            value: -stepValue,
+            toDate: startDate,
+            options: []
+        )!
+        self.endDate = endDate
+        self.stepUnits = stepUnits
+        self.stepValue = stepValue
+    }
+    
     func generate() -> Generator {
         return Generator(range: self)
     }
@@ -29,7 +49,7 @@ struct DateRange : SequenceType {
                 value: range.stepValue,
                 toDate: range.startDate,
                 options: []
-                )!
+            )!
             
             guard nextDate <= range.endDate else { return nil }
             

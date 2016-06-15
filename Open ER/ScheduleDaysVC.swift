@@ -21,14 +21,13 @@ class ScheduleDaysVC: UIViewController,
     // MARK: - Properties
     let today = NSDate.now.beginningOfDay
     var er: ER!
-//    var scheduleDayCache = [NSDate: ScheduleDay]()
     
     /// Used to save and reload tableView cell on return from ScheduleDayDetailVC.
     var lastSelectedScheduleDay: ScheduleDay?
     
     /// Used to properly configure cells and change request priority during rapid scrolling.
     var saveRequestDates = Set<NSDate>()
-    var fetchRequests = Dictionary<NSDate, CloudKitRecordableFetchRequestable>()
+    var fetchRequests = Dictionary<Int, CloudKitRecordableFetchRequestable>()
     
     // MARK: - Month Sections
     // Used to show faux infinite scrolling.
@@ -36,7 +35,7 @@ class ScheduleDaysVC: UIViewController,
     let monthCount = monthCountConstant // 50 years in either direction.
     let monthOffset = monthCountConstant / -2 // Set today to middle of possible values
     
-    var shouldScrollToTodayAppear = true
+    var shouldScrollToTodayOnViewWillAppear = true
     
     // MARK: - Lifecycle
     
@@ -52,8 +51,9 @@ class ScheduleDaysVC: UIViewController,
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
       
-        if shouldScrollToTodayAppear {
-            scrollTableToDate(today, animated: false)
+        if shouldScrollToTodayOnViewWillAppear {
+            shouldScrollToTodayOnViewWillAppear = false
+            scrollTableToDate(today, position: .Top, animated: false)
         }
         
         saveLastSelectedScheduleDay()
@@ -86,9 +86,9 @@ class ScheduleDaysVC: UIViewController,
     }
     
     /// Set the cell for date param at top of table.
-    func scrollTableToDate(date: NSDate, animated: Bool) {
+    func scrollTableToDate(date: NSDate, position: UITableViewScrollPosition, animated: Bool) {
         if let indexPath = indexPathForDate(date){
-            tableView.scrollToRowAtIndexPath(indexPath, atScrollPosition: .Top, animated: animated)
+            tableView.scrollToRowAtIndexPath(indexPath, atScrollPosition: position, animated: animated)
         }
     }
     
@@ -145,46 +145,38 @@ class ScheduleDaysVC: UIViewController,
         if saveRequestDates.contains(date) {
             // Currently saving.
             cell.configureAsSavingWithDate(date)
+            return
         
-        } else if var previousFetchRequest = fetchRequests[date] where previousFetchRequest.finished == false {
+        } else if var previousFetchRequest = fetchRequests[indexPath.section]
+            where previousFetchRequest.finished == false {
+            
             // Raise request priority so onscreen requests process first
-            previousFetchRequest.priority = .High // Has no effect if request has already started executing.
-         
+            // Has no effect if request has already started executing.
+            previousFetchRequest.priority = .High
+            
         } else if let scheduleDay = scheduleDayProvider.fetchScheduleDayFromCacheForER(er, onDate: date) {
             // Load from cache
             cell.configureWithScheduleDay(scheduleDay)
             
         } else {
-            // Get range of dates
-            let numberOfDaysToPad: Double = 15
-            let startDate = date.dateByAddingTimeInterval(60 * 60 * 24 * -numberOfDaysToPad)
-            let endDate = date.dateByAddingTimeInterval(60 * 60 * 24 * numberOfDaysToPad)
+            // Get range of dates in month for this cell
+            let datesInMonth = date.datesInMonth
             
-            let dateRange = DateRange(
-                calendar: NSCalendar.currentCalendar(),
-                startDate: startDate,
-                endDate: endDate,
-                stepUnits: .Day,
-                stepValue: 1
-            )
-            
-            let requestedDates = Array<NSDate>(dateRange)
-            
-            // Get FetchRequest for range
-            let fetchRequest = scheduleDayProvider.fetchScheduleDaysForER(
+            // Get FetchRequest for range and store to prevent future attempts for the same section
+            fetchRequests[indexPath.section] = scheduleDayProvider.fetchScheduleDaysForER(
                 er,
-                forDates: requestedDates,
+                forDates: datesInMonth,
                 resultQueue: NSOperationQueue.mainQueue())
             { result in
                 
-                requestedDates.forEach { requestedDate in
-                    // Remove requests for dates
-                    self.fetchRequests[requestedDate] = nil
-                    
-                    // Configure visible cells corresponding to requested dates
-                    // Re-get cell for indexPath as original cell may have been reused for a different ScheduleDay by now.
-                    guard let requestedIndexPath = self.indexPathForDate(requestedDate) else { return }
-                    let cell = self.tableView.cellForRowAtIndexPath(requestedIndexPath) as? ScheduleDayCell // Returns nil if not visible.
+                // Remove requests for dates
+                self.fetchRequests[indexPath.section] = nil
+                
+                let indexPathsToRefresh = datesInMonth.map { self.indexPathForDate($0)! }
+                
+                indexPathsToRefresh.forEach { indexPathToRefresh in
+                    let cellToRefresh = tableView.cellForRowAtIndexPath(indexPathToRefresh) as? ScheduleDayCell
+                    let dateToRefresh = self.dateForIndexPath(indexPathToRefresh)
                     
                     switch result {
                     case .Failure(let error as Error):
@@ -192,28 +184,19 @@ class ScheduleDaysVC: UIViewController,
                         case .OperationCancelled:
                             // Do nothing? Or set to loading?
                             break
-                            
+
                         default:
-                            cell?.configureWithError(error, andDate: requestedDate)
+                            cellToRefresh?.configureWithError(error, andDate: dateToRefresh)
                         }
-                        
                     case .Failure(let error):
-                        cell?.configureWithError(error, andDate: requestedDate)
+                        cellToRefresh?.configureWithError(error, andDate: dateToRefresh)
                         
                     case .Success(let scheduleDays):
-                        // Find associated ScheduleDay
-                        guard let scheduleDay = scheduleDays.filter({ $0.date == requestedDate }).first else {
-                            cell?.configureAsClosedWithDate(requestedDate)
-                            return
-                        }
-                        
-                        cell?.configureWithScheduleDay(scheduleDay)
+                        guard let scheduleDay = scheduleDays.filter({ $0.date == dateToRefresh }).first else { break }
+                        cellToRefresh?.configureWithScheduleDay(scheduleDay)
                     }
                 }
             }
-            
-            // Store fetchRequest for each requested date to prevent future attempts for the same dates
-            requestedDates.forEach { fetchRequests[$0] = fetchRequest }
         }
     }
     
@@ -222,10 +205,13 @@ class ScheduleDaysVC: UIViewController,
         didEndDisplayingCell cell: UITableViewCell,
         forRowAtIndexPath indexPath: NSIndexPath)
     {
-        // Lower request priority so onscreen requests process first.
-        let date = dateForIndexPath(indexPath)
+        // Prevent re-prioritization of still visible cells by confirming different section number.
+        let visibleIndexPaths = tableView.indexPathsForVisibleRows!
+        let visibleSections = visibleIndexPaths.map { $0.section }
+        guard visibleSections.contains(indexPath.section) == false else { return }
         
-        guard var fetchRequest = fetchRequests[date] else { return }
+        // Re-prioritized if possible
+        guard var fetchRequest = fetchRequests[indexPath.section] else { return }
         fetchRequest.priority = .Normal
     }
     
@@ -269,6 +255,12 @@ class ScheduleDaysVC: UIViewController,
                 cell?.configureWithScheduleDay(scheduleDay)
             }
         }
+    }
+    
+    // MARK: - Actions
+    
+    @IBAction func todayTapped(sender: AnyObject) {
+        scrollTableToDate(today, position: .Top, animated: true)
     }
     
     // MARK: - Segues

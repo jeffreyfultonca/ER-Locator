@@ -60,6 +60,32 @@ extension NSDate {
         return calendar.ordinalityOfUnit(.Month, inUnit: .Year, forDate: self)
     }
     
+    var monthOrdinalForEra: Int {
+        return calendar.ordinalityOfUnit(.Month, inUnit: .Era, forDate: self)
+    }
+    
+    var datesInMonth: [NSDate] {
+        let calendar = NSCalendar.currentCalendar()
+        let components = calendar.components([.Month, .Year], fromDate: self)
+        
+        let startDate = calendar.dateFromComponents(components)!
+        
+        components.month += 1
+        components.day = 0 // Results in last day of previous month
+        
+        let endDate = calendar.dateFromComponents(components)!
+        
+        let dateRange = DateRange(
+            calendar: calendar,
+            startDate: startDate,
+            endDate: endDate,
+            stepUnits: .Day,
+            stepValue: 1
+        )
+        
+        return Array<NSDate>(dateRange)
+    }
+    
     // MARK: Day
     
     var beginningOfDay: NSDate {
@@ -92,8 +118,7 @@ extension NSDate {
     }
     
     func plusDays(days: Int) -> NSDate {
-        let interval = Double(days) * 24 * 60 * 60
-        return NSDate(timeInterval: interval, sinceDate: self)
+        return calendar.dateByAddingUnit(.Day, value: days, toDate: self, options: [])!
     }
     
     /// Returns the first day of the offset month.

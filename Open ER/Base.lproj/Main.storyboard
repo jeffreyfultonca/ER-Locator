@@ -320,7 +320,7 @@
             </objects>
             <point key="canvasLocation" x="2629" y="458"/>
         </scene>
-        <!--Schedule DaysVC-->
+        <!--Title-->
         <scene sceneID="Bhc-y8-QsE">
             <objects>
                 <viewController id="Nj5-DP-jEu" customClass="ScheduleDaysVC" customModule="Open_ER" customModuleProvider="target" sceneMemberID="viewController">
@@ -485,6 +485,13 @@
                             <constraint firstItem="Kra-Yb-azQ" firstAttribute="top" secondItem="aCm-dE-vB9" secondAttribute="bottom" id="mW3-hg-KW2"/>
                         </constraints>
                     </view>
+                    <navigationItem key="navigationItem" title="Title" id="wYl-gs-RCP">
+                        <barButtonItem key="rightBarButtonItem" title="Today" id="8iY-i5-hfe">
+                            <connections>
+                                <action selector="todayTapped:" destination="Nj5-DP-jEu" id="4Y8-zp-2Lu"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                     <connections>
                         <outlet property="tableView" destination="Kra-Yb-azQ" id="kge-At-cQ1"/>
                     </connections>
