@@ -13,7 +13,7 @@ class FetchEmergsWithTodaysScheduleDayNearestLocationOperation: NSOperation, Clo
     
     // MARK: - Stored Properties
     private var emergProvider: EmergProviding
-    private var scheduleDayProvider: ScheduleDayProvider
+    private var scheduleDayProvider: ScheduleDayProviding
     
     private var location: CLLocation
     private var limit: Int?
@@ -28,7 +28,7 @@ class FetchEmergsWithTodaysScheduleDayNearestLocationOperation: NSOperation, Clo
     
     init(
         emergProvider: EmergProviding,
-        scheduleDayProvider: ScheduleDayProvider,
+        scheduleDayProvider: ScheduleDayProviding,
         location: CLLocation,
         limitTo limit: Int? = nil,
         priority: CloudKitRecordableFetchRequestPriority = .Normal)

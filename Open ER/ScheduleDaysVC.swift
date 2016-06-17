@@ -13,7 +13,7 @@ class ScheduleDaysVC: UIViewController,
     UITableViewDelegate
 {
     // MARK: - Dependencies
-    var scheduleDayProvider: ScheduleDayProvider = ScheduleDayService.sharedInstance
+    var scheduleDayProvider: ScheduleDayProviding = ScheduleDayProvider.sharedInstance
     
     // MARK: - Outlets
     @IBOutlet var tableView: UITableView!

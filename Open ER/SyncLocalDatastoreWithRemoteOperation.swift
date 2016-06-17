@@ -12,7 +12,7 @@ class SyncLocalDatastoreWithRemoteOperation: AsyncOperation {
     
     // MARK: - Dependencies
     let cloudDatabase: CKDatabase
-    var persistenceProvider: PersistenceProvider
+    var persistenceProvider: PersistenceProviding
     
     // MARK: - Stored Properties
     private var queue = NSOperationQueue()
@@ -25,7 +25,7 @@ class SyncLocalDatastoreWithRemoteOperation: AsyncOperation {
     
     // MARK: - Lifecycle
     
-    init(cloudDatabase: CKDatabase, persistenceProvider: PersistenceProvider) {
+    init(cloudDatabase: CKDatabase, persistenceProvider: PersistenceProviding) {
         self.cloudDatabase = cloudDatabase
         self.persistenceProvider = persistenceProvider
     }

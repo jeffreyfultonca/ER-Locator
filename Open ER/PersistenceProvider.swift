@@ -10,7 +10,7 @@ import CloudKit
 
 // MARK: - PersistenceProviding protocol
 
-protocol PersistenceProvider {
+protocol PersistenceProviding {
     
     // MARK: - Storage
     var emergs: Set<Emerg> { get set }
@@ -40,10 +40,10 @@ enum SyncLocalDatastoreWithRemoteResult {
     case SyncAlreadyInProgress
 }
 
-// MARK: - PersistenceProvider singleton implementation
+// MARK: - PersistenceProviding singleton implementation
 
-class PersistenceService: PersistenceProvider {
-    static let sharedInstance = PersistenceService()
+class PersistenceProvider: PersistenceProviding {
+    static let sharedInstance = PersistenceProvider()
     private init() {} // Enforce singleton.
     
     // MARK: - Dependencies

@@ -38,8 +38,8 @@ class EmergProvider: EmergProviding {
     private init() {} // Enforce singleton.
     
     // MARK: - Dependencies
-    var persistenceProvider: PersistenceProvider = PersistenceService.sharedInstance
-    var scheduleDayProvider: ScheduleDayProvider = ScheduleDayService.sharedInstance
+    var persistenceProvider: PersistenceProviding = PersistenceProvider.sharedInstance
+    var scheduleDayProvider: ScheduleDayProviding = ScheduleDayProvider.sharedInstance
     
     // MARK: - Stored Properties
     private let workQueue = NSOperationQueue()

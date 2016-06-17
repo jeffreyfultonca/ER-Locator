@@ -17,8 +17,8 @@ class OpenEmergsVC: UIViewController,
     // MARK: - Dependencies
     
     var emergProvider: EmergProviding = EmergProvider.sharedInstance
-    var scheduleDayProvider: ScheduleDayProvider = ScheduleDayService.sharedInstance
-    var persistenceProvider: PersistenceProvider = PersistenceService.sharedInstance
+    var scheduleDayProvider: ScheduleDayProviding = ScheduleDayProvider.sharedInstance
+    var persistenceProvider: PersistenceProviding = PersistenceProvider.sharedInstance
     
     // MARK: - Outlets
     

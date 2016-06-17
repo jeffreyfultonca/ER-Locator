@@ -8,7 +8,7 @@
 
 import CloudKit
 
-protocol ScheduleDayProvider {
+protocol ScheduleDayProviding {
     var todaysScheduleDays: [ScheduleDay] { get }
     
     func clearCache()
@@ -33,8 +33,8 @@ protocol ScheduleDayProvider {
 
 typealias InMemoryScheduleDayCache = [String: ScheduleDay]
 
-class ScheduleDayService: ScheduleDayProvider {
-    static let sharedInstance = ScheduleDayService()
+class ScheduleDayProvider: ScheduleDayProviding {
+    static let sharedInstance = ScheduleDayProvider()
     
     // `private` to enforce singleton.
     private init() {
@@ -43,7 +43,7 @@ class ScheduleDayService: ScheduleDayProvider {
     }
     
     // MARK: - Dependencies
-    var persistenceProvider: PersistenceProvider = PersistenceService.sharedInstance
+    var persistenceProvider: PersistenceProviding = PersistenceProvider.sharedInstance
     
     // MARK: - Stored Properties
     private let workQueue = NSOperationQueue()
