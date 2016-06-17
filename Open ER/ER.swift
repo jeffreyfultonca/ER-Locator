@@ -9,7 +9,7 @@
 import MapKit
 import CloudKit
 
-class ER: NSObject, CloudKitRecordable, MKAnnotation, NSCoding {
+class ER: NSObject, CloudKitModal, MKAnnotation,  NSCoding {
     
     // MARK: - Stored Properties
     
@@ -115,12 +115,14 @@ class ER: NSObject, CloudKitRecordable, MKAnnotation, NSCoding {
         self.init(record: record)
     }
     
-    // Hashable, Equatable
+    // Hashable
     
     // Required for determining uniqueness in Sets
     override var hashValue: Int {
         return recordID.recordName.hashValue
     }
+    
+    // Equatable with NSObject subclass
     
     // Required for ==
     override func isEqual(object: AnyObject?) -> Bool {

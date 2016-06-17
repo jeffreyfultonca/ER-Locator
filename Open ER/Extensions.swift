@@ -205,7 +205,7 @@ extension String {
     }
 }
 
-extension SequenceType where Generator.Element: CloudKitRecordable {
+extension SequenceType where Generator.Element: CloudKitModal {
     var mostRecentlyModifiedAt: NSDate? {
         let recordsWithModificationDates = self.filter { $0.record.modificationDate != nil }
         let modificationDates = recordsWithModificationDates.map { $0.record.modificationDate! }

@@ -1,5 +1,5 @@
 //
-//  CloudKitRecordable.swift
+//  CloudKitModal.swift
 //  Open ER
 //
 //  Created by Jeffrey Fulton on 2016-04-04.
@@ -16,7 +16,7 @@ import CloudKit
  our apps according to Apple. We are to define our 
  own models and handle the conversion to/from CloudKit.
  */
-protocol CloudKitRecordable: NSObjectProtocol {
+protocol CloudKitModal {
     static var recordType: String { get }
     
     var record: CKRecord { get }
@@ -26,7 +26,7 @@ protocol CloudKitRecordable: NSObjectProtocol {
     init(record: CKRecord)
 }
 
-extension CloudKitRecordable {
+extension CloudKitModal {
     /**
      String used to determine CloudKit RecordType for this record.
      

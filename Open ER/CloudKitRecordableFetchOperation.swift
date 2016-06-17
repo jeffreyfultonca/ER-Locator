@@ -9,11 +9,11 @@
 import CloudKit
 
 /**
- Generic NSOperation subclass used to concurrently fetch CKRecords from a CloudKit database and parse them into CloudKitRecordable objects.
+ Generic NSOperation subclass used to concurrently fetch CKRecords from a CloudKit database and parse them into CloudKitModal objects.
  
  Parameters: See CKQueryOperation documentation as all paramaters correspond.
  */
-class CloudKitRecordableFetchOperation<T: CloudKitRecordable>: AsyncOperation {
+class CloudKitRecordableFetchOperation<T: CloudKitModal>: AsyncOperation {
     
     // MARK: - Stored Properties
     private let cloudDatabase: CKDatabase
@@ -85,7 +85,7 @@ class CloudKitRecordableFetchOperation<T: CloudKitRecordable>: AsyncOperation {
 
 // MARK: - Result
 
-enum CloudKitRecordableFetchResult<T: CloudKitRecordable> {
+enum CloudKitRecordableFetchResult<T: CloudKitModal> {
     case Failure(ErrorType)
     case Success([T])
 }

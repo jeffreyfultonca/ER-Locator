@@ -8,7 +8,7 @@
 
 import CloudKit
 
-class ScheduleDay: NSObject, CloudKitRecordable, NSCoding {
+class ScheduleDay: NSObject, CloudKitModal, NSCoding {
     
     // MARK: - Stored Properties
     

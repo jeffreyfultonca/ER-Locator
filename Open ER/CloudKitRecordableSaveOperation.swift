@@ -8,7 +8,7 @@
 
 import CloudKit
 
-class CloudKitRecordableSaveOperation<T: CloudKitRecordable>: AsyncOperation {
+class CloudKitRecordableSaveOperation<T: CloudKitModal>: AsyncOperation {
     
     // MARK: - Stored Properties
     let cloudDatabase: CKDatabase
@@ -60,7 +60,7 @@ class CloudKitRecordableSaveOperation<T: CloudKitRecordable>: AsyncOperation {
 
 // MARK: - Result
 
-enum CloudKitRecordableSaveResult<T: CloudKitRecordable> {
+enum CloudKitRecordableSaveResult<T: CloudKitModal> {
     case Failure(ErrorType)
     case Success([T])
 }
