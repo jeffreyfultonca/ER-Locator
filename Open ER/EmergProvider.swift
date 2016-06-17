@@ -9,6 +9,8 @@
 
 import CloudKit
 
+// MARK: - EmergProviding Protocol
+
 protocol EmergProviding {
     
     /// Synchronous access to all known Emergs. Generally from an in-memory store or perhaps local storage.
@@ -33,20 +35,28 @@ protocol EmergProviding {
         ) -> CloudKitRecordableFetchRequest<FetchEmergsWithTodaysScheduleDayNearestLocationOperation>
 }
 
+// MARK: - Default Singleton Implementation
+
 class EmergProvider: EmergProviding {
     static let sharedInstance = EmergProvider()
     private init() {} // Enforce singleton.
     
     // MARK: - Dependencies
+    
     var persistenceProvider: PersistenceProviding = PersistenceProvider.sharedInstance
     var scheduleDayProvider: ScheduleDayProviding = ScheduleDayProvider.sharedInstance
     
     // MARK: - Stored Properties
+    
     private let workQueue = NSOperationQueue()
+    
+    // MARK: - Computed Properties
     
     var emergs: [Emerg]  {
         return Array(persistenceProvider.emergs)
     }
+    
+    // MARK: - Required Functions
     
     func fetchEmergsWithTodaysScheduleDayNearestLocation(
         location: CLLocation,

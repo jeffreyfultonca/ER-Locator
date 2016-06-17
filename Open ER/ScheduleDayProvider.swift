@@ -8,28 +8,35 @@
 
 import CloudKit
 
+// MARK: - ScheduleDayProviding Protocol
+
 protocol ScheduleDayProviding {
+    
+    /// Synchronous access to all known Emergs. Generally from an in-memory store or perhaps local storage.
     var todaysScheduleDays: [ScheduleDay] { get }
     
-    func clearCache()
+    /// Clear in memory cache of ScheduleDays. This cache is used for the Scheduler only and does not affect the `todaysScheduleDay` property.
+    func clearInMemoryCache()
     
-    func fetchScheduleDayFromCacheForEmerg(er: Emerg, onDate: NSDate) -> ScheduleDay?
+    func fetchScheduleDayFromCache(for: Emerg, on: NSDate) -> ScheduleDay?
     
-    func fetchScheduleDaysForEmerg(
-        er: Emerg,
-        forDates: [NSDate],
+    func fetchScheduleDays(
+        for: Emerg,
+        on: [NSDate],
         resultQueue: NSOperationQueue,
         result: (CloudKitRecordableFetchResult<ScheduleDay>)->()
     ) -> CloudKitRecordableFetchRequestable
     
-    func saveScheduleDay(
+    func save(
         scheduleDay: ScheduleDay,
         resultQueue: NSOperationQueue,
         result: (CloudKitRecordableSaveResult<ScheduleDay>)->()
     )
     
-    func createScheduleDayForEmerg(er: Emerg, onDate date: NSDate) -> ScheduleDay
+    func makeScheduleDay(for: Emerg, on: NSDate) -> ScheduleDay
 }
+
+// MARK: - Default Singleton Implementation
 
 typealias InMemoryScheduleDayCache = [String: ScheduleDay]
 
@@ -54,9 +61,10 @@ class ScheduleDayProvider: ScheduleDayProviding {
     
     // In-memory cache for used with Scheduler only
     private var inMemoryScheduleDayCache = InMemoryScheduleDayCache()
-    func clearCache() { inMemoryScheduleDayCache.removeAll() }
+    func clearInMemoryCache() { inMemoryScheduleDayCache.removeAll() }
     
     // MARK: - Fetching
+    
     /**
      Synchronously fetch ScheduleDay from in-memory cache.
      */

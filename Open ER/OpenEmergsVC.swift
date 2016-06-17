@@ -415,7 +415,7 @@ class OpenEmergsVC: UIViewController,
     // MARK: - Segues
     
     @IBAction func unwindToOpenEmergsVC(segue: UIStoryboardSegue) {
-        scheduleDayProvider.clearCache()
+        scheduleDayProvider.clearInMemoryCache()
         persistenceProvider.syncLocalDatastoreWithRemote(NSOperationQueue.mainQueue(), result: nil)
     }
     
