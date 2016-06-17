@@ -1,5 +1,5 @@
 //
-//  FetchScheduleDaysForERForDatesOperation.swift
+//  FetchScheduleDaysForEmergForDatesOperation.swift
 //  Open ER
 //
 //  Created by Jeffrey Fulton on 2016-06-12.
@@ -8,11 +8,11 @@
 
 import CloudKit
 
-class FetchScheduleDaysForERForDatesOperation: AsyncOperation, CloudKitRecordableOperationable {
+class FetchScheduleDaysForEmergForDatesOperation: AsyncOperation, CloudKitRecordableOperationable {
     
     // MARK: - Stored Properties
     private let cloudDatabase: CKDatabase
-    private let er: ER
+    private let er: Emerg
     private let dates: [NSDate]
     
     private var queue = NSOperationQueue()
@@ -27,7 +27,7 @@ class FetchScheduleDaysForERForDatesOperation: AsyncOperation, CloudKitRecordabl
     
     init(
         cloudDatabase: CKDatabase,
-        er: ER,
+        er: Emerg,
         dates: [NSDate],
         priority: CloudKitRecordableFetchRequestPriority = .Normal)
     {
@@ -50,7 +50,7 @@ class FetchScheduleDaysForERForDatesOperation: AsyncOperation, CloudKitRecordabl
     }
     
     required convenience init(
-        fromExistingOperation existingOperation: FetchScheduleDaysForERForDatesOperation,
+        fromExistingOperation existingOperation: FetchScheduleDaysForEmergForDatesOperation,
         withPriority priority: CloudKitRecordableFetchRequestPriority)
     {
         self.init(

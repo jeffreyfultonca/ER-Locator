@@ -1,5 +1,5 @@
 //
-//  ERCell.swift
+//  EmergCell.swift
 //  Open ER
 //
 //  Created by Jeffrey Fulton on 2016-04-03.
@@ -9,7 +9,7 @@
 import UIKit
 import CoreLocation
 
-class ERCell: UITableViewCell {
+class EmergCell: UITableViewCell {
     
     // MARK: - Outlets
     @IBOutlet var nameLabel: UILabel!
@@ -19,7 +19,7 @@ class ERCell: UITableViewCell {
     
     // MARK: - Helpers
     
-    func configureER(er: ER, fromLocation location: CLLocation?) {
+    func configure(for er: Emerg, relativeTo location: CLLocation?) {
         // Name
         nameLabel.text = er.name
         
@@ -32,7 +32,7 @@ class ERCell: UITableViewCell {
         }
         
         // Hours open
-        hoursLabel.text = er.hoursOpen
+        hoursLabel.text = er.hoursOpenMessage
         
         // Estimated Wait Time
         estWaitTimeLabel.text = er.estimatedWaitTime

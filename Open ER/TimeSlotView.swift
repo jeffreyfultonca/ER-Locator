@@ -8,29 +8,12 @@
 
 import UIKit
 
-class TimeSlotView {
+/**
+ Represents a ScheduleDay TimeSlot with state indicator/label, times, and color.
+ */
+struct TimeSlotView {
     
-    // MARK: - Properties
-    
-    var stateIndicator: UIView
-    var stateLabel: UILabel
-    var timesLabel: UILabel
-    
-    init(stateIndicator: UIView, stateLabel: UILabel, timesLabel: UILabel) {
-        self.stateIndicator = stateIndicator
-        self.stateLabel = stateLabel
-        self.timesLabel = timesLabel
-    }
-    
-    var hidden: Bool = false {
-        didSet {
-            stateIndicator.hidden = hidden
-            stateLabel.hidden = hidden
-            timesLabel.hidden = hidden
-        }
-    }
-    
-    // MARK: - State
+    // MARK: - State Enum
     enum State: String {
         case Saving
         case Loading
@@ -54,6 +37,33 @@ class TimeSlotView {
         }
     }
     
+    // MARK: - Stored Properties
+    
+    var stateIndicator: UIView
+    var stateLabel: UILabel
+    var timesLabel: UILabel
+    
+    // MARK: - Lifecycle
+    
+    init(stateIndicator: UIView, stateLabel: UILabel, timesLabel: UILabel) {
+        self.stateIndicator = stateIndicator
+        self.stateLabel = stateLabel
+        self.timesLabel = timesLabel
+    }
+    
+    // MARK: - Computed Properties
+    
+    /// Determines whether child views are displayed in UI using UIView.hidden property.
+    var isHidden: Bool = false {
+        didSet {
+            stateIndicator.hidden = isHidden
+            stateLabel.hidden = isHidden
+            timesLabel.hidden = isHidden
+        }
+    }
+    
+    /// Determines predefined view characteristics based on State enumerations. i.e. color, label test.
+    /// - note: Setting this property automatically sets isHidden property to false.
     var state: State = .Closed {
         didSet {
             stateIndicator.backgroundColor = state.color
@@ -62,7 +72,7 @@ class TimeSlotView {
             
             timesLabel.text = nil
             
-            hidden = false
+            isHidden = false
         }
     }
 }

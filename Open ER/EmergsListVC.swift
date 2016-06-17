@@ -1,5 +1,5 @@
 //
-//  ERsListVC.swift
+//  EmergsListVC.swift
 //  Open ER
 //
 //  Created by Jeffrey Fulton on 2016-04-03.
@@ -8,18 +8,18 @@
 
 import UIKit
 
-class ERsListVC: UIViewController,
+class EmergsListVC: UIViewController,
     UITableViewDataSource,
     UITableViewDelegate
 {
     // MARK: - Dependencies
-    var emergencyRoomProvider: EmergencyRoomProvider = EmergencyRoomService.sharedInstance
+    var emergProvider: EmergProviding = EmergProvider.sharedInstance
     
     // MARK: - Outlets
     @IBOutlet var tableView: UITableView!
     
     // MARK: - Properties
-    var ers = [ER]()
+    var ers = [Emerg]()
     
     // MARK: - Lifecycle
     
@@ -27,11 +27,11 @@ class ERsListVC: UIViewController,
         super.viewDidLoad()
 
         setupTableView()
-        ers = emergencyRoomProvider.emergencyRooms.sort { $0.name < $1.name }
+        ers = emergProvider.emergs.sort { $0.name < $1.name }
         
         NSNotificationCenter.defaultCenter().addObserver(
             self,
-            selector: #selector(reloadERs),
+            selector: #selector(reloadEmergs),
             name: Notification.LocalDatastoreUpdatedWithNewData,
             object: nil
         )
@@ -51,8 +51,8 @@ class ERsListVC: UIViewController,
         tableView.rowHeight = UITableViewAutomaticDimension
     }
     
-    func reloadERs() {
-        ers = emergencyRoomProvider.emergencyRooms.sort { $0.name < $1.name }
+    func reloadEmergs() {
+        ers = emergProvider.emergs.sort { $0.name < $1.name }
         tableView.reloadData()
     }
     

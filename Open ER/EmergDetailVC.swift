@@ -1,5 +1,5 @@
 //
-//  ERDetailVC.swift
+//  EmergDetailVC.swift
 //  Open ER
 //
 //  Created by Jeffrey Fulton on 2016-04-25.
@@ -9,21 +9,21 @@
 import UIKit
 import MapKit
 
-class ERDetailVC: UIViewController,
+class EmergDetailVC: UIViewController,
     MKMapViewDelegate
 {
     // MARK: - Outlets
     @IBOutlet var mapView: MKMapView!
     
     // MARK: - Properties
-    var er: ER!
+    var er: Emerg!
 
     // MARK: - Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        guard er != nil else { fatalError("ER dependency not met in ERDetailVC") }
+        guard er != nil else { fatalError("Emerg dependency not met in EmergDetailVC") }
         
         setupNavBar()
         setupMapView()
@@ -43,7 +43,7 @@ class ERDetailVC: UIViewController,
     // MARK: - MKMapViewDelegate
     
     func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
-        guard let er = annotation as? ER else { return nil }
+        guard let er = annotation as? Emerg else { return nil }
         
         let reuseIdentifier = "pinAnnotationView"
         
@@ -53,8 +53,8 @@ class ERDetailVC: UIViewController,
         pinAnnotationView.animatesDrop = false
         
         // Color
-        pinAnnotationView.pinTintColor = er.openNow ?
-            UIColor.pinColorForOpenER() : UIColor.pinColorForClosedER()
+        pinAnnotationView.pinTintColor = er.isOpenNow ?
+            UIColor.pinColorForOpenEmerg() : UIColor.pinColorForClosedEmerg()
         
         return pinAnnotationView
     }

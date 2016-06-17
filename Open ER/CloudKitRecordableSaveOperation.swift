@@ -24,7 +24,7 @@ class CloudKitRecordableSaveOperation<T: CloudKitModal>: AsyncOperation {
     }
     
     override func main() {
-        let ckRecords = recordsToSave.map { $0.asCKRecord }
+        let ckRecords = recordsToSave.map { $0.record }
         
         let modifyRecordsOperation = CKModifyRecordsOperation(
             recordsToSave: ckRecords,

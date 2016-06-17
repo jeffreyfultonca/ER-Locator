@@ -53,7 +53,7 @@ class ScheduleDayCell: UITableViewCell {
     
     // MARK: - Configuration
     
-    func configureWithDate(date: NSDate) {
+    private func configure(for date: NSDate) {
         // Hide all.
         hideAllTimeSlots()
         
@@ -61,12 +61,23 @@ class ScheduleDayCell: UITableViewCell {
         monthLabel.text = date.monthAbbreviationString
     }
     
-    func configureWithScheduleDay(scheduleDay: ScheduleDay) {
-        configureWithDate(scheduleDay.date)
+    func configure(for date: NSDate, as state: TimeSlotView.State) {
+        configure(for: date)
+        firstTimeSlotView.state = state
+    }
+    
+    func configure(for date: NSDate, with error: ErrorType) {
+        configure(for: date)
+        firstTimeSlotView.state = .Error
+        firstTimeSlotView.timesLabel.text = "\(error)"
+    }
+    
+    func configure(for scheduleDay: ScheduleDay) {
+        configure(for: scheduleDay.date)
         
-        // ScheduleDay can have up to 2 open times.
+        // ScheduleDay currently has only a single open timeslot.
         // O = Open, C = Closed.
-        // Allows for O, O/C, C/O, C/O/C, O/C/O.
+        // Allows for O, O/C, C/O, C/O/C.
         
         // Closed if firstTimeSlot is nil
         guard let firstTimeSlot = scheduleDay.firstTimeSlot else {
@@ -74,95 +85,60 @@ class ScheduleDayCell: UITableViewCell {
             return
         }
         
-        // O, O/C, C/O, or C/O/C if secondTimeSlot is nil
-        guard let secondTimeSlot = scheduleDay.secondTimeSlot else {
-            let open = firstTimeSlot.open
-            let close = firstTimeSlot.close
-            
-            // O: Open all day
-            if open.isBeginningOfDay && close.isEndOf(open) {
-                firstTimeSlotView.state = .Open
-                firstTimeSlotView.timesLabel.text = "24 Hours"
-            }
+        // O, O/C, C/O, or C/O/C
+        
+        let opening = firstTimeSlot.open
+        let closing = firstTimeSlot.close
+        
+        // O: Open all day
+        if opening.isBeginningOfDay && closing.isEndOf(opening) {
+            firstTimeSlotView.state = .Open
+            firstTimeSlotView.timesLabel.text = "24 Hours"
+        }
             // O/C
-            else if open.isBeginningOfDay /* && !close.isEndOfDay */ {
-                firstTimeSlotView.state = .Open
-                firstTimeSlotView.timesLabel.text = "\(open.time) - \(close.time)"
-                
-                secondTimeSlotView.state = .Closed
-                secondTimeSlotView.stateLabel.text = nil
-            }
-            // C/O
-            else if /* !open.isBeginningOfDay && */ close.isEndOf(open) {
-                firstTimeSlotView.state = .Closed
-                firstTimeSlotView.stateLabel.text = nil
-                
-                secondTimeSlotView.state = .Open
-                secondTimeSlotView.timesLabel.text = "\(open.time) - \(close.time)"
-            }
-            // C/O/C
-            else /* if !open.isBeginningOfDay && !close.isEndOfDay */ {
-                firstTimeSlotView.state = .Closed
-                firstTimeSlotView.stateLabel.text = nil
-                
-                secondTimeSlotView.state = .Open
-                secondTimeSlotView.timesLabel.text = "\(open.time) - \(close.time)"
-                
-                thirdTimeSlotView.state = .Closed
-                thirdTimeSlotView.stateLabel.text = nil
-            }
+        else if opening.isBeginningOfDay /* && !closing.isEndOfDay */ {
+            firstTimeSlotView.state = .Open
+            firstTimeSlotView.timesLabel.text = "\(opening.time) - \(closing.time)"
             
-            return
+            secondTimeSlotView.state = .Closed
+            secondTimeSlotView.stateLabel.text = nil
+        }
+            // C/O
+        else if /* !opening.isBeginningOfDay && */ closing.isEndOf(opening) {
+            firstTimeSlotView.state = .Closed
+            firstTimeSlotView.stateLabel.text = nil
+            
+            secondTimeSlotView.state = .Open
+            secondTimeSlotView.timesLabel.text = "\(opening.time) - \(closing.time)"
+        }
+            // C/O/C
+        else /* if !opening.isBeginningOfDay && !closing.isEndOfDay */ {
+            firstTimeSlotView.state = .Closed
+            firstTimeSlotView.stateLabel.text = nil
+            
+            secondTimeSlotView.state = .Open
+            secondTimeSlotView.timesLabel.text = "\(opening.time) - \(closing.time)"
+            
+            thirdTimeSlotView.state = .Closed
+            thirdTimeSlotView.stateLabel.text = nil
         }
         
-        // O/C/O
-        firstTimeSlotView.state = .Open
-        firstTimeSlotView.timesLabel.text = "\(firstTimeSlot.open.time) - \(firstTimeSlot.close.time)"
-        
-        secondTimeSlotView.state = .Closed
-        
-        thirdTimeSlotView.state = .Open
-        thirdTimeSlotView.timesLabel.text = "\(secondTimeSlot.open.time) - \(secondTimeSlot.close.time)"
-    }
-    
-    func configureAsSavingWithDate(date: NSDate) {
-        configureWithDate(date)
-        
-        firstTimeSlotView.state = .Saving
-    }
-    
-    func configureAsLoadingWithDate(date: NSDate) {
-        configureWithDate(date)
-        
-        firstTimeSlotView.state = .Loading
-    }
-    
-    func configureWithError(error: ErrorType, andDate date: NSDate) {
-        configureWithDate(date)
-        
-        firstTimeSlotView.state = .Error
-        firstTimeSlotView.timesLabel.text = "\(error)"
-    }
-    
-    func configureAsClosedWithDate(date: NSDate) {
-        configureWithDate(date)
-        
-        firstTimeSlotView.state = .Closed
+        return
     }
     
     // MARK: - Helpers
     
-    private func setHiddenAllTimeSlots(hidden: Bool) {
-        firstTimeSlotView.hidden = hidden
-        secondTimeSlotView.hidden = hidden
-        thirdTimeSlotView.hidden = hidden
+    private func setAllTimeSlots(hidden hidden: Bool) {
+        firstTimeSlotView.isHidden = hidden
+        secondTimeSlotView.isHidden = hidden
+        thirdTimeSlotView.isHidden = hidden
     }
     
     private func hideAllTimeSlots() {
-        setHiddenAllTimeSlots(true)
+        setAllTimeSlots(hidden: true)
     }
     
     private func showAllTimeSlots() {
-        setHiddenAllTimeSlots(false)
+        setAllTimeSlots(hidden: false)
     }
 }

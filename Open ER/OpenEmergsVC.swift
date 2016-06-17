@@ -1,5 +1,5 @@
 //
-//  OpenERsVC.swift
+//  OpenEmergsVC.swift
 //  Open ER
 //
 //  Created by Jeffrey Fulton on 2016-04-02.
@@ -9,17 +9,19 @@
 import UIKit
 import MapKit
 
-class OpenERsVC: UIViewController,
+class OpenEmergsVC: UIViewController,
     UITableViewDelegate,
     UITableViewDataSource,
     MKMapViewDelegate
 {
     // MARK: - Dependencies
-    var emergencyRoomProvider: EmergencyRoomProvider = EmergencyRoomService.sharedInstance
+    
+    var emergProvider: EmergProviding = EmergProvider.sharedInstance
     var scheduleDayProvider: ScheduleDayProvider = ScheduleDayService.sharedInstance
     var persistenceProvider: PersistenceProvider = PersistenceService.sharedInstance
     
     // MARK: - Outlets
+    
     @IBOutlet var mapView: MKMapView!
     @IBOutlet var tableView: UITableView!
     
@@ -42,24 +44,24 @@ class OpenERsVC: UIViewController,
     var shouldUpdateUIOnUserLocationUpdate = true
     var showTableView = true
     
-    private var nearestOpenERs = [ER]()
-    private var additionalOpenERs = [ER]()
-    private var possiblyClosedERs = [ER]()
+    private var nearestOpenEmergs = [Emerg]()
+    private var additionalOpenEmergs = [Emerg]()
+    private var possiblyClosedEmergs = [Emerg]()
     
-    private var allERs: [ER] {
-        get { return nearestOpenERs + additionalOpenERs + possiblyClosedERs }
+    private var allEmergs: [Emerg] {
+        get { return nearestOpenEmergs + additionalOpenEmergs + possiblyClosedEmergs }
         set {
-            // Sort ERs into mutually exclusing collections.
-            self.additionalOpenERs = newValue.openNow
+            // Sort Emergs into mutually exclusing collections.
+            self.additionalOpenEmergs = newValue.isOpenNow
             
-            // Attempt to move nearestOpenER.
-            if additionalOpenERs.isEmpty {
-                self.nearestOpenERs.removeAll()
+            // Attempt to move nearestOpenEmerg.
+            if additionalOpenEmergs.isEmpty {
+                self.nearestOpenEmergs.removeAll()
             } else {
-                self.nearestOpenERs = [self.additionalOpenERs.removeFirst()]
+                self.nearestOpenEmergs = [self.additionalOpenEmergs.removeFirst()]
             }
             
-            self.possiblyClosedERs = newValue.possiblyClosed
+            self.possiblyClosedEmergs = newValue.possiblyClosed
         }
     }
     
@@ -72,11 +74,11 @@ class OpenERsVC: UIViewController,
         
         locationManager.requestWhenInUseAuthorization()
         
-        possiblyClosedERs = emergencyRoomProvider.emergencyRooms.sort { $0.name < $1.name }
+        possiblyClosedEmergs = emergProvider.emergs.sort { $0.name < $1.name }
         
         NSNotificationCenter.defaultCenter().addObserver(
             self,
-            selector: #selector(reloadERs),
+            selector: #selector(reloadEmergs),
             name: Notification.LocalDatastoreUpdatedWithNewData,
             object: nil
         )
@@ -137,7 +139,7 @@ class OpenERsVC: UIViewController,
         mapView.layoutMargins.bottom = tableView.frame.height + toolbarView.frame.height
     }
     
-    func reloadERs() {
+    func reloadEmergs() {
         // Cause the mapview delegate to immediately receive a location update.
         mapView.showsUserLocation = false
         shouldUpdateUIOnUserLocationUpdate = true
@@ -152,18 +154,18 @@ class OpenERsVC: UIViewController,
     
     func refreshMapViewAnnotations(animated: Bool) {
         // Remove existing annotations from map.
-        let previousERAnnotations = mapView.annotations.filter { $0 is ER }
-        mapView.removeAnnotations(previousERAnnotations)
+        let previousEmergAnnotations = mapView.annotations.filter { $0 is Emerg }
+        mapView.removeAnnotations(previousEmergAnnotations)
         
         // Add annotations to the map.
-        mapView.addAnnotations(allERs)
+        mapView.addAnnotations(allEmergs)
         
         // Adjust region to show annotations and user's current location.
         let userLocation = mapView.userLocation
         
-        // Show openNow ERs if possible falling back to nearest closed
-        var annotationsToShow: [MKAnnotation] = allERs.openNow.nearestLocation(userLocation.location).limit(3)
-        if annotationsToShow.isEmpty { annotationsToShow = allERs.nearestLocation(userLocation.location).limit(3) }
+        // Show isOpenNow Emergs if possible falling back to nearest closed
+        var annotationsToShow: [MKAnnotation] = allEmergs.isOpenNow.nearestLocation(userLocation.location).limit(3)
+        if annotationsToShow.isEmpty { annotationsToShow = allEmergs.nearestLocation(userLocation.location).limit(3) }
         
         annotationsToShow.append(userLocation)
         mapView.adjustRegionToDisplayAnnotations(annotationsToShow, animated: true)
@@ -195,44 +197,44 @@ class OpenERsVC: UIViewController,
         }
     }
     
-    func erForIndexPath(indexPath: NSIndexPath) -> ER? {
-        let ers: [ER]
+    func erForIndexPath(indexPath: NSIndexPath) -> Emerg? {
+        let ers: [Emerg]
         
         switch sections[indexPath.section] {
         case .NearestOpen:
-            ers = nearestOpenERs
+            ers = nearestOpenEmergs
             
         case .AdditionalOpen:
-            ers = additionalOpenERs
+            ers = additionalOpenEmergs
             
         case .PossiblyClosed:
-            ers = possiblyClosedERs
+            ers = possiblyClosedEmergs
         }
         
         return ers.isEmpty ? nil : ers[indexPath.row]
     }
     
-    func indexPathForER(er: ER) -> NSIndexPath? {
+    func indexPathForEmerg(er: Emerg) -> NSIndexPath? {
         if let
             section = sections.indexOf(.NearestOpen),
-            row = nearestOpenERs.indexOf(er)
+            row = nearestOpenEmergs.indexOf(er)
         {
             return NSIndexPath(forRow: row, inSection: section)
             
         } else if let
             section = sections.indexOf(.AdditionalOpen),
-            row = additionalOpenERs.indexOf(er)
+            row = additionalOpenEmergs.indexOf(er)
         {
             return NSIndexPath(forRow: row, inSection: section)
             
         } else if let
             section = sections.indexOf(.PossiblyClosed),
-            row = possiblyClosedERs.indexOf(er)
+            row = possiblyClosedEmergs.indexOf(er)
         {
             return NSIndexPath(forRow: row, inSection: section)
             
         } else {
-            // ER not found
+            // Emerg not found
             return nil
         }
     }
@@ -258,31 +260,31 @@ class OpenERsVC: UIViewController,
     func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         switch sections[section] {
         case .NearestOpen:
-            return nearestOpenERs.isEmpty ? nil : Section.NearestOpen.rawValue
+            return nearestOpenEmergs.isEmpty ? nil : Section.NearestOpen.rawValue
         
         case .AdditionalOpen:
-            return additionalOpenERs.isEmpty ? nil : Section.AdditionalOpen.rawValue
+            return additionalOpenEmergs.isEmpty ? nil : Section.AdditionalOpen.rawValue
             
         case .PossiblyClosed:
-            return possiblyClosedERs.isEmpty ? nil : Section.PossiblyClosed.rawValue
+            return possiblyClosedEmergs.isEmpty ? nil : Section.PossiblyClosed.rawValue
         }
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch sections[section] {
         case .NearestOpen:
-            return nearestOpenERs.isEmpty ? 0 : nearestOpenERs.count
+            return nearestOpenEmergs.isEmpty ? 0 : nearestOpenEmergs.count
             
         case .AdditionalOpen:
-            return additionalOpenERs.isEmpty ? 0 : additionalOpenERs.count
+            return additionalOpenEmergs.isEmpty ? 0 : additionalOpenEmergs.count
             
         case .PossiblyClosed:
-            return possiblyClosedERs.isEmpty ? 1 : possiblyClosedERs.count
+            return possiblyClosedEmergs.isEmpty ? 1 : possiblyClosedEmergs.count
         }
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        if allERs.isEmpty {
+        if allEmergs.isEmpty {
             let cell = tableView.dequeueReusableCellWithIdentifier("messageCell", forIndexPath: indexPath) as! MessageCell
             
             if persistenceProvider.syncing {
@@ -296,17 +298,17 @@ class OpenERsVC: UIViewController,
             return cell
             
         } else {
-            let cell = tableView.dequeueReusableCellWithIdentifier("erCell", forIndexPath: indexPath) as! ERCell
+            let cell = tableView.dequeueReusableCellWithIdentifier("erCell", forIndexPath: indexPath) as! EmergCell
             
             let er = erForIndexPath(indexPath)!
-            cell.configureER(er, fromLocation: mapView.userLocation.location)
+            cell.configure(for: er, relativeTo: mapView.userLocation.location)
             
             return cell
         }
     }
     
     func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-        return allERs.isEmpty ? tableView.frame.height : UITableViewAutomaticDimension
+        return allEmergs.isEmpty ? tableView.frame.height : UITableViewAutomaticDimension
     }
     
     // MARK: - MKMapViewDelegate
@@ -319,7 +321,7 @@ class OpenERsVC: UIViewController,
         
         refreshUI(animated: true)
         
-        emergencyRoomProvider.fetchERsWithTodaysScheduleDayNearestLocation(
+        emergProvider.fetchEmergsWithTodaysScheduleDayNearestLocation(
             location,
             limitTo: nil,
             resultQueue: NSOperationQueue.mainQueue())
@@ -330,7 +332,7 @@ class OpenERsVC: UIViewController,
                 
             case .Success(let ers):
                 self.error = nil
-                self.allERs = ers
+                self.allEmergs = ers
             }
             
             self.refreshUI(animated: true)
@@ -338,7 +340,7 @@ class OpenERsVC: UIViewController,
     }
     
     func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
-        guard let er = annotation as? ER else { return nil }
+        guard let er = annotation as? Emerg else { return nil }
         
         let reuseIdentifier = "pinAnnotationView"
         
@@ -348,8 +350,8 @@ class OpenERsVC: UIViewController,
         pinAnnotationView.animatesDrop = false
         
         // Color
-        pinAnnotationView.pinTintColor = er.openNow ?
-            UIColor.pinColorForOpenER() : UIColor.pinColorForClosedER()
+        pinAnnotationView.pinTintColor = er.isOpenNow ?
+            UIColor.pinColorForOpenEmerg() : UIColor.pinColorForClosedEmerg()
         
         // Info Button
         let infoButton = UIButton(type: .DetailDisclosure)
@@ -363,14 +365,14 @@ class OpenERsVC: UIViewController,
         annotationView view: MKAnnotationView,
         calloutAccessoryControlTapped control: UIControl)
     {
-        guard let er = view.annotation as? ER else {
-            print("Could not access ER from annotationView.")
+        guard let er = view.annotation as? Emerg else {
+            print("Could not access Emerg from annotationView.")
             return
         }
         
-        // Get indexPath for ER
-        guard let indexPath = indexPathForER(er) else {
-            print("Could not find indexPath for ER.")
+        // Get indexPath for Emerg
+        guard let indexPath = indexPathForEmerg(er) else {
+            print("Could not find indexPath for Emerg.")
             return
         }
         
@@ -378,7 +380,7 @@ class OpenERsVC: UIViewController,
         tableView.selectRowAtIndexPath(indexPath, animated: true, scrollPosition: .None)
         
         // Trigger segue
-        performSegueWithIdentifier("showERDetail", sender: view)
+        performSegueWithIdentifier("showEmergDetail", sender: view)
     }
     
     // MARK: - Actions
@@ -412,22 +414,22 @@ class OpenERsVC: UIViewController,
     
     // MARK: - Segues
     
-    @IBAction func unwindToOpenERsVC(segue: UIStoryboardSegue) {
+    @IBAction func unwindToOpenEmergsVC(segue: UIStoryboardSegue) {
         scheduleDayProvider.clearCache()
         persistenceProvider.syncLocalDatastoreWithRemote(NSOperationQueue.mainQueue(), result: nil)
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        if segue.identifier == "showERDetail" {
+        if segue.identifier == "showEmergDetail" {
             
-            guard let vc = segue.destinationViewController as? ERDetailVC else {
+            guard let vc = segue.destinationViewController as? EmergDetailVC else {
                 return // Should and will probably crash.
             }
             
             // Triggered by MapView
             if let
                 annotationView = sender as? MKAnnotationView,
-                er = annotationView.annotation as? ER
+                er = annotationView.annotation as? Emerg
             {
                 vc.er = er
                 

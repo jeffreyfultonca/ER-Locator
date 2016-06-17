@@ -33,10 +33,10 @@ class SyncLocalDatastoreWithRemoteOperation: AsyncOperation {
     override func main() {
         let showNetworkActivityIndicator = NetworkActivityIndicatorOperation(setVisible: true)
         
-        // ERs modified  since last sync
-        let ersMostRecentlyModifiedAt = persistenceProvider.emergencyRoomsMostRecentlyModifiedAt ?? NSDate.distantPast()
+        // Emergs modified  since last sync
+        let ersMostRecentlyModifiedAt = persistenceProvider.emergsMostRecentlyModifiedAt ?? NSDate.distantPast()
         let ersModifiedSinceDatePredicate = NSPredicate(format: "modificationDate > %@", ersMostRecentlyModifiedAt)
-        let fetchERs = CloudKitRecordableFetchOperation<ER>(
+        let fetchEmergs = CloudKitRecordableFetchOperation<Emerg>(
             cloudDatabase: cloudDatabase,
             predicate: ersModifiedSinceDatePredicate
         )
@@ -53,10 +53,10 @@ class SyncLocalDatastoreWithRemoteOperation: AsyncOperation {
         let hideNetworkActivityIndicator = NetworkActivityIndicatorOperation(setVisible: false)
         
         let completion = NSBlockOperation {
-            if case .Success(let modifiedERs) = fetchERs.result where modifiedERs.count > 0 {
-                let existingERs = self.persistenceProvider.emergencyRooms
-                self.persistenceProvider.emergencyRooms = existingERs.union(modifiedERs)
-                self.persistenceProvider.emergencyRoomsMostRecentlyModifiedAt = modifiedERs.mostRecentlyModifiedAt
+            if case .Success(let modifiedEmergs) = fetchEmergs.result where modifiedEmergs.count > 0 {
+                let existingEmergs = self.persistenceProvider.emergs
+                self.persistenceProvider.emergs = existingEmergs.union(modifiedEmergs)
+                self.persistenceProvider.emergsMostRecentlyModifiedAt = modifiedEmergs.mostRecentlyModifiedAt
             }
             
             if case .Success(let modifiedScheduleDays) = fetchScheduleDays.result where modifiedScheduleDays.count > 0 {
@@ -64,7 +64,7 @@ class SyncLocalDatastoreWithRemoteOperation: AsyncOperation {
                 self.persistenceProvider.todaysScheduleDays = existingScheduleDays.union(modifiedScheduleDays).scheduledToday
             }
             
-            switch (fetchERs.result, fetchScheduleDays.result) {
+            switch (fetchEmergs.result, fetchScheduleDays.result) {
             case (.Failure(let error), .Failure):
                 self.completeOperationWithResult( .Failure(error) )
                 
@@ -81,20 +81,20 @@ class SyncLocalDatastoreWithRemoteOperation: AsyncOperation {
         }
         
         // Dependencies
-        fetchERs.addDependency(showNetworkActivityIndicator)
+        fetchEmergs.addDependency(showNetworkActivityIndicator)
         fetchScheduleDays.addDependency(showNetworkActivityIndicator)
         
-        hideNetworkActivityIndicator.addDependency(fetchERs)
+        hideNetworkActivityIndicator.addDependency(fetchEmergs)
         hideNetworkActivityIndicator.addDependency(fetchScheduleDays)
         
         completion.addDependency(hideNetworkActivityIndicator)
-        completion.addDependency(fetchERs)
+        completion.addDependency(fetchEmergs)
         completion.addDependency(fetchScheduleDays)
         
         // Start operations
         queue.addOperations([
             showNetworkActivityIndicator,
-            fetchERs,
+            fetchEmergs,
             fetchScheduleDays,
             hideNetworkActivityIndicator,
             completion

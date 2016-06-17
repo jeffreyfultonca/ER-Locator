@@ -170,11 +170,11 @@ extension NSDate {
 }
 
 extension UIColor {
-    static func pinColorForOpenER() -> UIColor {
+    static func pinColorForOpenEmerg() -> UIColor {
         return UIColor.redColor()
     }
     
-    static func pinColorForClosedER() -> UIColor {
+    static func pinColorForClosedEmerg() -> UIColor {
         return UIColor.redColor().colorWithAlphaComponent(0.25)
     }
     
@@ -215,24 +215,24 @@ extension SequenceType where Generator.Element: CloudKitModal {
     }
 }
 
-extension SequenceType where Generator.Element: ER {
-    func nearestLocation(location: CLLocation?) -> [ER] {
-        guard let location = location else { return self as! [ER] }
+extension SequenceType where Generator.Element: Emerg {
+    func nearestLocation(location: CLLocation?) -> [Emerg] {
+        guard let location = location else { return self as! [Emerg] }
         return self.sort { $0.location.distanceFromLocation(location) < $1.location.distanceFromLocation(location) }
     }
     
-    func limit(limit: Int?) -> [ER] {
-        let ers = self as! [ER]
+    func limit(limit: Int?) -> [Emerg] {
+        let ers = self as! [Emerg]
         guard let limit = limit else { return ers }
         return Array(ers.prefix(limit))
     }
     
-    var openNow: [ER] {
-        return self.filter { $0.openNow }
+    var isOpenNow: [Emerg] {
+        return self.filter { $0.isOpenNow }
     }
     
-    var possiblyClosed: [ER] {
-        return self.filter { $0.openNow == false }
+    var possiblyClosed: [Emerg] {
+        return self.filter { $0.isOpenNow == false }
     }
 }
 
