@@ -626,10 +626,10 @@
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="XP8-5Q-ppO" userLabel="Custom">
                                         <rect key="frame" x="450" y="0.0" width="150" height="120"/>
                                         <subviews>
-                                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="zNf-9z-dpI">
+                                            <stackView opaque="NO" contentMode="scaleToFill" misplaced="YES" axis="vertical" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="zNf-9z-dpI">
                                                 <rect key="frame" x="47" y="26" width="57" height="68"/>
                                                 <subviews>
-                                                    <imageView userInteractionEnabled="NO" contentMode="center" image="Sliders" translatesAutoresizingMaskIntoConstraints="NO" id="ZVz-jW-3Jo">
+                                                    <imageView userInteractionEnabled="NO" contentMode="center" misplaced="YES" image="Sliders" translatesAutoresizingMaskIntoConstraints="NO" id="ZVz-jW-3Jo">
                                                         <rect key="frame" x="4" y="0.0" width="48" height="48"/>
                                                         <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                         <constraints>

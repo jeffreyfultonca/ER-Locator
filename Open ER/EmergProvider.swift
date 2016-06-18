@@ -31,8 +31,8 @@ protocol EmergProviding {
         location: CLLocation,
         limitTo: Int?,
         resultQueue: NSOperationQueue,
-        result: (CloudKitRecordableFetchResult<Emerg>)->()
-        ) -> CloudKitRecordableFetchRequest<FetchEmergsWithTodaysScheduleDayNearestLocationOperation>
+        result: (FetchResult<Emerg>)->()
+        ) -> FetchRequest<FetchEmergsNearestLocationOperation>
 }
 
 // MARK: - Default Singleton Implementation
@@ -62,18 +62,18 @@ class EmergProvider: EmergProviding {
         location: CLLocation,
         limitTo limit: Int?,
         resultQueue: NSOperationQueue,
-        result: (CloudKitRecordableFetchResult<Emerg>) -> ())
-        -> CloudKitRecordableFetchRequest<FetchEmergsWithTodaysScheduleDayNearestLocationOperation>
+        result: (FetchResult<Emerg>) -> ())
+        -> FetchRequest<FetchEmergsNearestLocationOperation>
     {
-        let fetchEmergsWithTodaysScheduleDayNearestLocation = FetchEmergsWithTodaysScheduleDayNearestLocationOperation(
+        let fetchEmergsNearestLocation = FetchEmergsNearestLocationOperation(
             emergProvider: self,
             scheduleDayProvider: self.scheduleDayProvider,
             location: location,
             limitTo: limit
         )
         
-        fetchEmergsWithTodaysScheduleDayNearestLocation.completionBlock = {
-            switch fetchEmergsWithTodaysScheduleDayNearestLocation.result {
+        fetchEmergsNearestLocation.completionBlock = {
+            switch fetchEmergsNearestLocation.result {
             case .Failure(let error):
                 resultQueue.addOperationWithBlock { result( .Failure(error) ) }
                 
@@ -82,8 +82,8 @@ class EmergProvider: EmergProviding {
             }
         }
         
-        workQueue.addOperation(fetchEmergsWithTodaysScheduleDayNearestLocation)
+        workQueue.addOperation(fetchEmergsNearestLocation)
         
-        return CloudKitRecordableFetchRequest(operation: fetchEmergsWithTodaysScheduleDayNearestLocation, queue: workQueue)
+        return FetchRequest(operation: fetchEmergsNearestLocation, queue: workQueue)
     }
 }

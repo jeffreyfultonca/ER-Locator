@@ -34,8 +34,6 @@ class OpenEmergsVC: UIViewController,
     
     @IBOutlet var tableViewTopMapViewCenterConstraint: NSLayoutConstraint!
     
-    typealias AnimationClosure = () -> Void
-    
     // MARK: - Properties
     
     let locationManager = CLLocationManager()
@@ -147,12 +145,14 @@ class OpenEmergsVC: UIViewController,
     }
     
     func refreshUI(animated animated: Bool) {
-        refreshMapViewAnnotations(animated)
+        refreshMapViewAnnotations(animated: animated)
         refreshTableView()
         refreshSyncStatusLabel()
     }
     
-    func refreshMapViewAnnotations(animated: Bool) {
+    func refreshMapViewAnnotations(animated animated: Bool) {
+        // TODO: Improve experience or reloading
+        
         // Remove existing annotations from map.
         let previousEmergAnnotations = mapView.annotations.filter { $0 is Emerg }
         mapView.removeAnnotations(previousEmergAnnotations)
@@ -197,39 +197,39 @@ class OpenEmergsVC: UIViewController,
         }
     }
     
-    func erForIndexPath(indexPath: NSIndexPath) -> Emerg? {
-        let ers: [Emerg]
+    func emergForIndexPath(indexPath: NSIndexPath) -> Emerg? {
+        let emergs: [Emerg]
         
         switch sections[indexPath.section] {
         case .NearestOpen:
-            ers = nearestOpenEmergs
+            emergs = nearestOpenEmergs
             
         case .AdditionalOpen:
-            ers = additionalOpenEmergs
+            emergs = additionalOpenEmergs
             
         case .PossiblyClosed:
-            ers = possiblyClosedEmergs
+            emergs = possiblyClosedEmergs
         }
         
-        return ers.isEmpty ? nil : ers[indexPath.row]
+        return emergs.isEmpty ? nil : emergs[indexPath.row]
     }
     
-    func indexPathForEmerg(er: Emerg) -> NSIndexPath? {
+    func indexPath(for emerg: Emerg) -> NSIndexPath? {
         if let
             section = sections.indexOf(.NearestOpen),
-            row = nearestOpenEmergs.indexOf(er)
+            row = nearestOpenEmergs.indexOf(emerg)
         {
             return NSIndexPath(forRow: row, inSection: section)
             
         } else if let
             section = sections.indexOf(.AdditionalOpen),
-            row = additionalOpenEmergs.indexOf(er)
+            row = additionalOpenEmergs.indexOf(emerg)
         {
             return NSIndexPath(forRow: row, inSection: section)
             
         } else if let
             section = sections.indexOf(.PossiblyClosed),
-            row = possiblyClosedEmergs.indexOf(er)
+            row = possiblyClosedEmergs.indexOf(emerg)
         {
             return NSIndexPath(forRow: row, inSection: section)
             
@@ -300,8 +300,8 @@ class OpenEmergsVC: UIViewController,
         } else {
             let cell = tableView.dequeueReusableCellWithIdentifier("erCell", forIndexPath: indexPath) as! EmergCell
             
-            let er = erForIndexPath(indexPath)!
-            cell.configure(for: er, relativeTo: mapView.userLocation.location)
+            let emerg = emergForIndexPath(indexPath)!
+            cell.configure(for: emerg, relativeTo: mapView.userLocation.location)
             
             return cell
         }
@@ -340,7 +340,7 @@ class OpenEmergsVC: UIViewController,
     }
     
     func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
-        guard let er = annotation as? Emerg else { return nil }
+        guard let emerg = annotation as? Emerg else { return nil }
         
         let reuseIdentifier = "pinAnnotationView"
         
@@ -350,7 +350,7 @@ class OpenEmergsVC: UIViewController,
         pinAnnotationView.animatesDrop = false
         
         // Color
-        pinAnnotationView.pinTintColor = er.isOpenNow ?
+        pinAnnotationView.pinTintColor = emerg.isOpenNow ?
             UIColor.pinColorForOpenEmerg() : UIColor.pinColorForClosedEmerg()
         
         // Info Button
@@ -365,13 +365,13 @@ class OpenEmergsVC: UIViewController,
         annotationView view: MKAnnotationView,
         calloutAccessoryControlTapped control: UIControl)
     {
-        guard let er = view.annotation as? Emerg else {
+        guard let emerg = view.annotation as? Emerg else {
             print("Could not access Emerg from annotationView.")
             return
         }
         
         // Get indexPath for Emerg
-        guard let indexPath = indexPathForEmerg(er) else {
+        guard let indexPath = indexPath(for: emerg) else {
             print("Could not find indexPath for Emerg.")
             return
         }
@@ -388,7 +388,7 @@ class OpenEmergsVC: UIViewController,
     @IBAction func toolbarTapped(sender: AnyObject) {
         self.view.layoutIfNeeded()
         
-        let animationClosure: AnimationClosure = {
+        let animationClosure: () -> Void = {
             self.showTableView = !self.showTableView
             
             self.toolbarLabel.text = self.showTableView ? "Hide List" : "Show List"
@@ -429,12 +429,12 @@ class OpenEmergsVC: UIViewController,
             // Triggered by MapView
             if let
                 annotationView = sender as? MKAnnotationView,
-                er = annotationView.annotation as? Emerg
+                emerg = annotationView.annotation as? Emerg
             {
-                vc.er = er
+                vc.emerg = emerg
                 
             } else if let indexPath = tableView.indexPathForSelectedRow {
-                vc.er = erForIndexPath(indexPath)
+                vc.emerg = emergForIndexPath(indexPath)
             }
         }
     }

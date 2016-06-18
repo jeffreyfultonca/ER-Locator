@@ -18,22 +18,22 @@ protocol ScheduleDayProviding {
     /// Clear in memory cache of ScheduleDays. This cache is used for the Scheduler only and does not affect the `todaysScheduleDay` property.
     func clearInMemoryCache()
     
-    func fetchScheduleDayFromCache(for: Emerg, on: NSDate) -> ScheduleDay?
+    func fetchScheduleDayFromCache(for _: Emerg, on: NSDate) -> ScheduleDay?
     
     func fetchScheduleDays(
-        for: Emerg,
+        for _: Emerg,
         on: [NSDate],
         resultQueue: NSOperationQueue,
-        result: (CloudKitRecordableFetchResult<ScheduleDay>)->()
-    ) -> CloudKitRecordableFetchRequestable
+        result: (FetchResult<ScheduleDay>)->()
+    ) -> ReprioritizableRequest
     
     func save(
         scheduleDay: ScheduleDay,
         resultQueue: NSOperationQueue,
-        result: (CloudKitRecordableSaveResult<ScheduleDay>)->()
+        result: (SaveResult<ScheduleDay>)->()
     )
     
-    func makeScheduleDay(for: Emerg, on: NSDate) -> ScheduleDay
+    func makeScheduleDay(for _: Emerg, on: NSDate) -> ScheduleDay
 }
 
 // MARK: - Default Singleton Implementation
@@ -68,26 +68,25 @@ class ScheduleDayProvider: ScheduleDayProviding {
     /**
      Synchronously fetch ScheduleDay from in-memory cache.
      */
-    
-    func fetchScheduleDayFromCacheForEmerg(er: Emerg, onDate date: NSDate) -> ScheduleDay? {
-        let key = er.hashValue.description + date.hashValue.description
+    func fetchScheduleDayFromCache(for emerg: Emerg, on date: NSDate) -> ScheduleDay? {
+        let key = emerg.hashValue.description + date.hashValue.description
         return inMemoryScheduleDayCache[key]
     }
     
     /**
      Asynchronously fetch ScheduleDay from CloudKit.
      */
-    func fetchScheduleDaysForEmerg(
-        er: Emerg,
-        forDates dates: [NSDate],
-                 resultQueue: NSOperationQueue,
-                 result: (CloudKitRecordableFetchResult<ScheduleDay>) -> ())
-        -> CloudKitRecordableFetchRequestable
+    func fetchScheduleDays(
+        for emerg: Emerg,
+        on dates: [NSDate],
+        resultQueue: NSOperationQueue,
+        result: (FetchResult<ScheduleDay>) -> ())
+        -> ReprioritizableRequest
     {
         let cloudDatabase = CKContainer.defaultContainer().publicCloudDatabase
         let fetchScheduleDaysForEmergForDates = FetchScheduleDaysForEmergForDatesOperation(
             cloudDatabase: cloudDatabase,
-            er: er,
+            er: emerg,
             dates: dates,
             priority: .High
         )
@@ -105,9 +104,10 @@ class ScheduleDayProvider: ScheduleDayProviding {
                 dates.forEach { requestedDate in
                     // Create ScheduleDay (closed) if none returned and add to cache for each
                     let scheduleDay = scheduleDaysFetched.filter({ $0.date == requestedDate }).first ??
-                        self.createScheduleDayForEmerg(er, onDate: requestedDate)
+                        self.makeScheduleDay(for: emerg, on: requestedDate)
+                    
                     scheduleDaysToReturn.append(scheduleDay)
-                    let key = er.hashValue.description + scheduleDay.date.hashValue.description
+                    let key = emerg.hashValue.description + scheduleDay.date.hashValue.description
                     self.inMemoryScheduleDayCache[key] = scheduleDay
                 }
                 
@@ -117,21 +117,21 @@ class ScheduleDayProvider: ScheduleDayProviding {
         
         workQueue.addOperation(fetchScheduleDaysForEmergForDates)
         
-        return CloudKitRecordableFetchRequest(operation: fetchScheduleDaysForEmergForDates, queue: workQueue)
+        return FetchRequest(operation: fetchScheduleDaysForEmergForDates, queue: workQueue)
     }
     
     // MARK: - Saving
     
-    func saveScheduleDay(
+    func save(
         scheduleDay: ScheduleDay,
         resultQueue: NSOperationQueue,
-        result: (CloudKitRecordableSaveResult<ScheduleDay>) -> ())
+        result: (SaveResult<ScheduleDay>) -> ())
     {
         let cloudDatabase = CKContainer.defaultContainer().publicCloudDatabase
         
         let showNetworkActivityIndicator = NetworkActivityIndicatorOperation(setVisible: true)
         
-        let saveScheduleDaysOperation = CloudKitRecordableSaveOperation(
+        let saveScheduleDaysOperation = SaveOperation(
             cloudDatabase: cloudDatabase,
             recordsToSave: [scheduleDay]
         )
@@ -159,15 +159,15 @@ class ScheduleDayProvider: ScheduleDayProviding {
             showNetworkActivityIndicator,
             saveScheduleDaysOperation,
             hideNetworkActivityIndicator
-            ], waitUntilFinished: false)
+        ], waitUntilFinished: false)
     }
     
     // MARK: - Creating
     
-    func createScheduleDayForEmerg(er: Emerg, onDate date: NSDate) -> ScheduleDay {
+    func makeScheduleDay(for emerg: Emerg, on date: NSDate) -> ScheduleDay {
         let scheduleDayRecord = CKRecord(recordType: ScheduleDay.recordType)
         
-        scheduleDayRecord["er"] = CKReference(record: er.record, action: .None)
+        scheduleDayRecord["er"] = CKReference(record: emerg.record, action: .None)
         scheduleDayRecord["date"] = date
         
         let scheduleDay = ScheduleDay(record: scheduleDayRecord)

@@ -16,14 +16,14 @@ class EmergDetailVC: UIViewController,
     @IBOutlet var mapView: MKMapView!
     
     // MARK: - Properties
-    var er: Emerg!
+    var emerg: Emerg!
 
     // MARK: - Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        guard er != nil else { fatalError("Emerg dependency not met in EmergDetailVC") }
+        guard emerg != nil else { fatalError("Emerg dependency not met in EmergDetailVC") }
         
         setupNavBar()
         setupMapView()
@@ -32,18 +32,18 @@ class EmergDetailVC: UIViewController,
     // MARK: - Helpers
     
     func setupNavBar() {
-        navigationItem.title = er.name
+        navigationItem.title = emerg.name
     }
     
     func setupMapView() {
         mapView.delegate = self
-        mapView.showAnnotations([er], animated: false)
+        mapView.showAnnotations([emerg], animated: false)
     }
     
     // MARK: - MKMapViewDelegate
     
     func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
-        guard let er = annotation as? Emerg else { return nil }
+        guard let emerg = annotation as? Emerg else { return nil }
         
         let reuseIdentifier = "pinAnnotationView"
         
@@ -53,7 +53,7 @@ class EmergDetailVC: UIViewController,
         pinAnnotationView.animatesDrop = false
         
         // Color
-        pinAnnotationView.pinTintColor = er.isOpenNow ?
+        pinAnnotationView.pinTintColor = emerg.isOpenNow ?
             UIColor.pinColorForOpenEmerg() : UIColor.pinColorForClosedEmerg()
         
         return pinAnnotationView
@@ -63,7 +63,7 @@ class EmergDetailVC: UIViewController,
     
     @IBAction func callRowTapped(sender: AnyObject) {
         let sharedApp = UIApplication.sharedApplication()
-        let phoneNumber = er.phone.stringByRemovingNonNumericCharacters()
+        let phoneNumber = emerg.phone.stringByRemovingNonNumericCharacters()
         let phoneCallURL = NSURL(string: "tel://\(phoneNumber)")!
         
         guard sharedApp.canOpenURL(phoneCallURL) else {
@@ -77,9 +77,9 @@ class EmergDetailVC: UIViewController,
     @IBAction func directionsRowTapped(sender: AnyObject) {
         print(#function)
         
-        let placemark = MKPlacemark(coordinate: er.coordinate, addressDictionary: er.addressDictionary)
+        let placemark = MKPlacemark(coordinate: emerg.coordinate, addressDictionary: emerg.addressDictionary)
         let mapItem = MKMapItem(placemark: placemark)
-        mapItem.name = er.name
+        mapItem.name = emerg.name
         
         mapItem.openInMapsWithLaunchOptions([
             MKLaunchOptionsDirectionsModeKey: MKLaunchOptionsDirectionsModeDriving

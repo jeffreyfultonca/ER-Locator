@@ -1,5 +1,5 @@
 //
-//  CloudKitRecordableFetchOperation.swift
+//  FetchOperation.swift
 //  Open ER
 //
 //  Created by Jeffrey Fulton on 2016-06-09.
@@ -13,7 +13,7 @@ import CloudKit
  
  Parameters: See CKQueryOperation documentation as all paramaters correspond.
  */
-class CloudKitRecordableFetchOperation<T: CloudKitModal>: AsyncOperation {
+class FetchOperation<T: CloudKitModal>: AsyncOperation {
     
     // MARK: - Stored Properties
     private let cloudDatabase: CKDatabase
@@ -25,7 +25,7 @@ class CloudKitRecordableFetchOperation<T: CloudKitModal>: AsyncOperation {
     // Cancel CloudKit Request after this interval.
     var timeoutIntervalInSeconds: Double = 30
     
-    var result: CloudKitRecordableFetchResult<T> = .Failure(Error.OperationNotComplete)
+    var result: FetchResult<T> = .Failure(Error.OperationNotComplete)
     
     // MARK: - Lifecycle
     
@@ -58,11 +58,11 @@ class CloudKitRecordableFetchOperation<T: CloudKitModal>: AsyncOperation {
         
         queryOperation.queryCompletionBlock = { cursor, error in
             guard error == nil else {
-                return self.completeOperationWithResult( .Failure(error!) )
+                return self.completeOperation(.Failure(error!) )
             }
             
             let cloudKitRecordables = fetchedRecords.map { T(record: $0) }
-            self.completeOperationWithResult( .Success(cloudKitRecordables) )
+            self.completeOperation(.Success(cloudKitRecordables) )
         }
         
         queryOperation.start()
@@ -77,7 +77,7 @@ class CloudKitRecordableFetchOperation<T: CloudKitModal>: AsyncOperation {
     
     // MARK: Helpers
     
-    private func completeOperationWithResult(result: CloudKitRecordableFetchResult<T>) {
+    private func completeOperation(result: FetchResult<T>) {
         self.result = result
         completeOperation()
     }
@@ -85,34 +85,33 @@ class CloudKitRecordableFetchOperation<T: CloudKitModal>: AsyncOperation {
 
 // MARK: - Result
 
-enum CloudKitRecordableFetchResult<T: CloudKitModal> {
+enum FetchResult<T: CloudKitModal> {
     case Failure(ErrorType)
     case Success([T])
 }
 
 // MARK: - Request
 
-enum CloudKitRecordableFetchRequestPriority {
+enum RequestPriority {
     case Normal
     case High
 }
 
-protocol CloudKitRecordableOperationable {
+protocol ReprioritizableOperation {
     var finished: Bool { get }
     var executing: Bool { get }
     
-    init(fromExistingOperation: Self, withPriority: CloudKitRecordableFetchRequestPriority)
+    init(from existingOperation: Self, priority: RequestPriority)
     
     func cancel()
 }
 
-protocol CloudKitRecordableFetchRequestable {
+protocol ReprioritizableRequest {
     var finished: Bool { get }
-    var priority: CloudKitRecordableFetchRequestPriority { get set }
+    var priority: RequestPriority { get set }
 }
 
-class CloudKitRecordableFetchRequest<T: CloudKitRecordableOperationable>: CloudKitRecordableFetchRequestable {
-    
+class FetchRequest<T: ReprioritizableOperation>: ReprioritizableRequest {
     private var operation: T
     private var queue: NSOperationQueue
     
@@ -120,12 +119,12 @@ class CloudKitRecordableFetchRequest<T: CloudKitRecordableOperationable>: CloudK
         return operation.finished
     }
     
-    var priority: CloudKitRecordableFetchRequestPriority = .Normal {
+    var priority: RequestPriority = .Normal {
         didSet(oldPriority) {
             guard priority != oldPriority else { return }
             guard operation.executing == false else { return }
             
-            let newOperation = T(fromExistingOperation: operation, withPriority: priority)
+            let newOperation = T(from: operation, priority: priority)
             
             operation.cancel()
             operation = newOperation

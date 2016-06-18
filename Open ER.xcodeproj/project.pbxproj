@@ -29,10 +29,10 @@
 		00656B5E1CB44DF00000C4D4 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00656B5D1CB44DF00000C4D4 /* Constants.swift */; };
 		00656B601CB481DF0000C4D4 /* Functions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00656B5F1CB481DF0000C4D4 /* Functions.swift */; };
 		008BF3ED1CB1A31600946E4A /* ERCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 008BF3EC1CB1A31600946E4A /* ERCell.swift */; };
-		0092C9EC1D09B0C5005EA647 /* CloudKitRecordableFetchOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0092C9EB1D09B0C5005EA647 /* CloudKitRecordableFetchOperation.swift */; };
+		0092C9EC1D09B0C5005EA647 /* FetchOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0092C9EB1D09B0C5005EA647 /* FetchOperation.swift */; };
 		00935E541CB72B9A00A9FF71 /* ScheduleDayDetailVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00935E531CB72B9A00A9FF71 /* ScheduleDayDetailVC.swift */; };
 		00A0747D1D0E2C2D005B9072 /* Day.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00A0747C1D0E2C2D005B9072 /* Day.swift */; };
-		00B3569C1D0C7BFD00B62E0D /* FetchEmergsWithTodaysScheduleDayNearestLocationOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00B3569B1D0C7BFD00B62E0D /* FetchEmergsWithTodaysScheduleDayNearestLocationOperation.swift */; };
+		00B3569C1D0C7BFD00B62E0D /* FetchEmergsNearestLocationOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00B3569B1D0C7BFD00B62E0D /* FetchEmergsNearestLocationOperation.swift */; };
 		00C197931CB2D39600786B5A /* TimeSlotView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00C197921CB2D39600786B5A /* TimeSlotView.swift */; };
 		00C197971CB2E65200786B5A /* CloudKitModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00C197961CB2E65200786B5A /* CloudKitModal.swift */; };
 		00D85D551D108A23008148DB /* DateRange.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00D85D541D108A23008148DB /* DateRange.swift */; };
@@ -41,7 +41,7 @@
 		00DC0A9C1CB1E90100014279 /* ScheduleDaysVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00DC0A9B1CB1E90100014279 /* ScheduleDaysVC.swift */; };
 		00DC0A9E1CB1E9B500014279 /* ScheduleDay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00DC0A9D1CB1E9B500014279 /* ScheduleDay.swift */; };
 		00E885291D0D32B100FAD950 /* FetchScheduleDaysForEmergForDatesOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00E885281D0D32B100FAD950 /* FetchScheduleDaysForEmergForDatesOperation.swift */; };
-		00E8852B1D0D3C0C00FAD950 /* CloudKitRecordableSaveOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00E8852A1D0D3C0C00FAD950 /* CloudKitRecordableSaveOperation.swift */; };
+		00E8852B1D0D3C0C00FAD950 /* SaveOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00E8852A1D0D3C0C00FAD950 /* SaveOperation.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -70,10 +70,10 @@
 		00656B5D1CB44DF00000C4D4 /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		00656B5F1CB481DF0000C4D4 /* Functions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Functions.swift; sourceTree = "<group>"; };
 		008BF3EC1CB1A31600946E4A /* ERCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ERCell.swift; sourceTree = "<group>"; };
-		0092C9EB1D09B0C5005EA647 /* CloudKitRecordableFetchOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CloudKitRecordableFetchOperation.swift; sourceTree = "<group>"; };
+		0092C9EB1D09B0C5005EA647 /* FetchOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FetchOperation.swift; sourceTree = "<group>"; };
 		00935E531CB72B9A00A9FF71 /* ScheduleDayDetailVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScheduleDayDetailVC.swift; sourceTree = "<group>"; };
 		00A0747C1D0E2C2D005B9072 /* Day.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Day.swift; sourceTree = "<group>"; };
-		00B3569B1D0C7BFD00B62E0D /* FetchEmergsWithTodaysScheduleDayNearestLocationOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FetchEmergsWithTodaysScheduleDayNearestLocationOperation.swift; sourceTree = "<group>"; };
+		00B3569B1D0C7BFD00B62E0D /* FetchEmergsNearestLocationOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FetchEmergsNearestLocationOperation.swift; sourceTree = "<group>"; };
 		00C197921CB2D39600786B5A /* TimeSlotView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimeSlotView.swift; sourceTree = "<group>"; };
 		00C197961CB2E65200786B5A /* CloudKitModal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CloudKitModal.swift; sourceTree = "<group>"; };
 		00D85D541D108A23008148DB /* DateRange.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DateRange.swift; sourceTree = "<group>"; };
@@ -82,7 +82,7 @@
 		00DC0A9B1CB1E90100014279 /* ScheduleDaysVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScheduleDaysVC.swift; sourceTree = "<group>"; };
 		00DC0A9D1CB1E9B500014279 /* ScheduleDay.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScheduleDay.swift; sourceTree = "<group>"; };
 		00E885281D0D32B100FAD950 /* FetchScheduleDaysForEmergForDatesOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FetchScheduleDaysForEmergForDatesOperation.swift; sourceTree = "<group>"; };
-		00E8852A1D0D3C0C00FAD950 /* CloudKitRecordableSaveOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CloudKitRecordableSaveOperation.swift; sourceTree = "<group>"; };
+		00E8852A1D0D3C0C00FAD950 /* SaveOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SaveOperation.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -102,10 +102,10 @@
 			children = (
 				000A73281D08A4B70055BC06 /* NetworkActivityIndicatorOperation.swift */,
 				0032EEAF1D07263D000F9F10 /* AsyncOperation.swift */,
-				0092C9EB1D09B0C5005EA647 /* CloudKitRecordableFetchOperation.swift */,
-				00E8852A1D0D3C0C00FAD950 /* CloudKitRecordableSaveOperation.swift */,
+				0092C9EB1D09B0C5005EA647 /* FetchOperation.swift */,
+				00E8852A1D0D3C0C00FAD950 /* SaveOperation.swift */,
 				0017670A1D0B67C2009CF351 /* SyncLocalDatastoreWithRemoteOperation.swift */,
-				00B3569B1D0C7BFD00B62E0D /* FetchEmergsWithTodaysScheduleDayNearestLocationOperation.swift */,
+				00B3569B1D0C7BFD00B62E0D /* FetchEmergsNearestLocationOperation.swift */,
 				00E885281D0D32B100FAD950 /* FetchScheduleDaysForEmergForDatesOperation.swift */,
 			);
 			name = Operations;
@@ -339,8 +339,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0092C9EC1D09B0C5005EA647 /* CloudKitRecordableFetchOperation.swift in Sources */,
-				00B3569C1D0C7BFD00B62E0D /* FetchEmergsWithTodaysScheduleDayNearestLocationOperation.swift in Sources */,
+				0092C9EC1D09B0C5005EA647 /* FetchOperation.swift in Sources */,
+				00B3569C1D0C7BFD00B62E0D /* FetchEmergsNearestLocationOperation.swift in Sources */,
 				00DC0A981CB1E05800014279 /* EmergsListVC.swift in Sources */,
 				00D85D551D108A23008148DB /* DateRange.swift in Sources */,
 				00611C221CB0972B00C08B07 /* Extensions.swift in Sources */,
@@ -369,7 +369,7 @@
 				00104BFB1CBC1735007C453C /* RangeSliderThumbLayer.swift in Sources */,
 				0032EEAB1D067A8B000F9F10 /* PersistenceProvider.swift in Sources */,
 				00C197971CB2E65200786B5A /* CloudKitModal.swift in Sources */,
-				00E8852B1D0D3C0C00FAD950 /* CloudKitRecordableSaveOperation.swift in Sources */,
+				00E8852B1D0D3C0C00FAD950 /* SaveOperation.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

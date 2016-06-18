@@ -36,7 +36,7 @@ class SyncLocalDatastoreWithRemoteOperation: AsyncOperation {
         // Emergs modified  since last sync
         let ersMostRecentlyModifiedAt = persistenceProvider.emergsMostRecentlyModifiedAt ?? NSDate.distantPast()
         let ersModifiedSinceDatePredicate = NSPredicate(format: "modificationDate > %@", ersMostRecentlyModifiedAt)
-        let fetchEmergs = CloudKitRecordableFetchOperation<Emerg>(
+        let fetchEmergs = FetchOperation<Emerg>(
             cloudDatabase: cloudDatabase,
             predicate: ersModifiedSinceDatePredicate
         )
@@ -45,7 +45,7 @@ class SyncLocalDatastoreWithRemoteOperation: AsyncOperation {
         // TODO: Limit modificationDate to Today...
         let todaysScheduleDaysMostRecentlyModifiedAt = persistenceProvider.todaysScheduleDays.mostRecentlyModifiedAt ?? NSDate.distantPast()
         let todaysScheduleDaysModifiedSinceDatePredicate = NSPredicate(format: "modificationDate > %@ && date == %@", todaysScheduleDaysMostRecentlyModifiedAt, NSDate().beginningOfDay)
-        let fetchScheduleDays = CloudKitRecordableFetchOperation<ScheduleDay>(
+        let fetchScheduleDays = FetchOperation<ScheduleDay>(
             cloudDatabase: cloudDatabase,
             predicate: todaysScheduleDaysModifiedSinceDatePredicate
         )

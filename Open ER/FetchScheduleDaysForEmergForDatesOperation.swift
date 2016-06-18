@@ -8,7 +8,7 @@
 
 import CloudKit
 
-class FetchScheduleDaysForEmergForDatesOperation: AsyncOperation, CloudKitRecordableOperationable {
+class FetchScheduleDaysForEmergForDatesOperation: AsyncOperation, ReprioritizableOperation {
     
     // MARK: - Stored Properties
     private let cloudDatabase: CKDatabase
@@ -17,7 +17,7 @@ class FetchScheduleDaysForEmergForDatesOperation: AsyncOperation, CloudKitRecord
     
     private var queue = NSOperationQueue()
     
-    var result: CloudKitRecordableFetchResult<ScheduleDay> = .Failure(Error.OperationNotComplete)
+    var result: FetchResult<ScheduleDay> = .Failure(Error.OperationNotComplete)
     override func cancel() {
         result = .Failure(Error.OperationCancelled)
         super.cancel()
@@ -29,7 +29,7 @@ class FetchScheduleDaysForEmergForDatesOperation: AsyncOperation, CloudKitRecord
         cloudDatabase: CKDatabase,
         er: Emerg,
         dates: [NSDate],
-        priority: CloudKitRecordableFetchRequestPriority = .Normal)
+        priority: RequestPriority = .Normal)
     {
         self.cloudDatabase = cloudDatabase
         self.er = er
@@ -50,8 +50,8 @@ class FetchScheduleDaysForEmergForDatesOperation: AsyncOperation, CloudKitRecord
     }
     
     required convenience init(
-        fromExistingOperation existingOperation: FetchScheduleDaysForEmergForDatesOperation,
-        withPriority priority: CloudKitRecordableFetchRequestPriority)
+        from existingOperation: FetchScheduleDaysForEmergForDatesOperation,
+        priority: RequestPriority)
     {
         self.init(
             cloudDatabase: existingOperation.cloudDatabase,
@@ -67,7 +67,7 @@ class FetchScheduleDaysForEmergForDatesOperation: AsyncOperation, CloudKitRecord
         let predicate = NSPredicate(format: "er == %@ AND date IN %@", er.recordID, dates)
         let sortDescriptors = [NSSortDescriptor(key: "modificationDate", ascending: true)]
         
-        let fetchScheduleDays = CloudKitRecordableFetchOperation<ScheduleDay>(
+        let fetchScheduleDays = FetchOperation<ScheduleDay>(
             cloudDatabase: cloudDatabase,
             predicate: predicate,
             sortDescriptors: sortDescriptors
@@ -78,10 +78,10 @@ class FetchScheduleDaysForEmergForDatesOperation: AsyncOperation, CloudKitRecord
         fetchScheduleDays.completionBlock = {
             switch fetchScheduleDays.result {
             case .Failure(let error):
-                self.completeOperationWithResult( .Failure(error) )
+                self.completeOperation(.Failure(error))
             
             case .Success(let scheduleDays):
-                self.completeOperationWithResult( .Success(scheduleDays) )
+                self.completeOperation(.Success(scheduleDays))
             }
         }
         
@@ -97,7 +97,7 @@ class FetchScheduleDaysForEmergForDatesOperation: AsyncOperation, CloudKitRecord
         ], waitUntilFinished: false)
     }
     
-    private func completeOperationWithResult(result: CloudKitRecordableFetchResult<ScheduleDay>) {
+    private func completeOperation(result: FetchResult<ScheduleDay>) {
         self.result = result
         completeOperation()
     }

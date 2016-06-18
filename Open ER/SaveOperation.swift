@@ -1,5 +1,5 @@
 //
-//  CloudKitRecordableSaveOperation.swift
+//  SaveOperation.swift
 //  Open ER
 //
 //  Created by Jeffrey Fulton on 2016-06-12.
@@ -8,13 +8,13 @@
 
 import CloudKit
 
-class CloudKitRecordableSaveOperation<T: CloudKitModal>: AsyncOperation {
+class SaveOperation<T: CloudKitModal>: AsyncOperation {
     
     // MARK: - Stored Properties
     let cloudDatabase: CKDatabase
     let recordsToSave: [T]
     
-    var result: CloudKitRecordableSaveResult<T> = .Failure(Error.OperationNotComplete)
+    var result: SaveResult<T> = .Failure(Error.OperationNotComplete)
     
     init(cloudDatabase: CKDatabase, recordsToSave: [T]) {
         self.cloudDatabase = cloudDatabase
@@ -36,15 +36,15 @@ class CloudKitRecordableSaveOperation<T: CloudKitModal>: AsyncOperation {
         
         modifyRecordsOperation.modifyRecordsCompletionBlock = { modifiedRecords, recordIDs, error in
             guard error == nil else {
-                return self.completeOperationWithResult( .Failure(error!) )
+                return self.completeOperation(.Failure(error!))
             }
             
             guard let modifiedRecords = modifiedRecords else {
-                return self.completeOperationWithResult( .Failure(Error.UnableToAccessReturnedRecordsOfType(T.recordType)) )
+                return self.completeOperation(.Failure(Error.UnableToAccessReturnedRecordsOfType(T.recordType)))
             }
             
             let cloudKitRecordables = modifiedRecords.map { T(record: $0) }
-            self.completeOperationWithResult( .Success(cloudKitRecordables) )
+            self.completeOperation(.Success(cloudKitRecordables))
         }
         
         modifyRecordsOperation.start()
@@ -52,7 +52,7 @@ class CloudKitRecordableSaveOperation<T: CloudKitModal>: AsyncOperation {
     
     // MARK: Helpers
     
-    private func completeOperationWithResult(result: CloudKitRecordableSaveResult<T>) {
+    private func completeOperation(result: SaveResult<T>) {
         self.result = result
         completeOperation()
     }
@@ -60,7 +60,7 @@ class CloudKitRecordableSaveOperation<T: CloudKitModal>: AsyncOperation {
 
 // MARK: - Result
 
-enum CloudKitRecordableSaveResult<T: CloudKitModal> {
+enum SaveResult<T: CloudKitModal> {
     case Failure(ErrorType)
     case Success([T])
 }

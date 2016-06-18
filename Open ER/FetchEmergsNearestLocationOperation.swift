@@ -1,5 +1,5 @@
 //
-//  FetchEmergsWithTodaysScheduleDayNearestLocationOperation.swift
+//  FetchEmergsNearestLocationOperation.swift
 //  Open ER
 //
 //  Created by Jeffrey Fulton on 2016-06-11.
@@ -9,7 +9,7 @@
 import Foundation
 import CoreLocation
 
-class FetchEmergsWithTodaysScheduleDayNearestLocationOperation: NSOperation, CloudKitRecordableOperationable {
+class FetchEmergsNearestLocationOperation: NSOperation, ReprioritizableOperation {
     
     // MARK: - Stored Properties
     private var emergProvider: EmergProviding
@@ -18,7 +18,7 @@ class FetchEmergsWithTodaysScheduleDayNearestLocationOperation: NSOperation, Clo
     private var location: CLLocation
     private var limit: Int?
     
-    var result: CloudKitRecordableFetchResult<Emerg> = .Failure(Error.OperationNotComplete)
+    var result: FetchResult<Emerg> = .Failure(Error.OperationNotComplete)
     override func cancel() {
         result = .Failure(Error.OperationCancelled)
         super.cancel()
@@ -31,7 +31,7 @@ class FetchEmergsWithTodaysScheduleDayNearestLocationOperation: NSOperation, Clo
         scheduleDayProvider: ScheduleDayProviding,
         location: CLLocation,
         limitTo limit: Int? = nil,
-        priority: CloudKitRecordableFetchRequestPriority = .Normal)
+        priority: RequestPriority = .Normal)
     {
         self.emergProvider = emergProvider
         self.scheduleDayProvider = scheduleDayProvider
@@ -54,8 +54,8 @@ class FetchEmergsWithTodaysScheduleDayNearestLocationOperation: NSOperation, Clo
     }
     
     required convenience init(
-        fromExistingOperation existingOperation: FetchEmergsWithTodaysScheduleDayNearestLocationOperation,
-        withPriority priority: CloudKitRecordableFetchRequestPriority)
+        from existingOperation: FetchEmergsNearestLocationOperation,
+        priority: RequestPriority)
     {
         self.init(
             emergProvider: existingOperation.emergProvider,

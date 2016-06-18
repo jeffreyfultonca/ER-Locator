@@ -19,7 +19,7 @@ class EmergsListVC: UIViewController,
     @IBOutlet var tableView: UITableView!
     
     // MARK: - Properties
-    var ers = [Emerg]()
+    var emergs = [Emerg]()
     
     // MARK: - Lifecycle
     
@@ -27,7 +27,7 @@ class EmergsListVC: UIViewController,
         super.viewDidLoad()
 
         setupTableView()
-        ers = emergProvider.emergs.sort { $0.name < $1.name }
+        emergs = emergProvider.emergs.sort { $0.name < $1.name }
         
         NSNotificationCenter.defaultCenter().addObserver(
             self,
@@ -52,20 +52,20 @@ class EmergsListVC: UIViewController,
     }
     
     func reloadEmergs() {
-        ers = emergProvider.emergs.sort { $0.name < $1.name }
+        emergs = emergProvider.emergs.sort { $0.name < $1.name }
         tableView.reloadData()
     }
     
     // MARK: - UITableViewDataSource
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return ers.count
+        return emergs.count
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("erCell", forIndexPath: indexPath)
         
-        let er = ers[indexPath.row]
+        let er = emergs[indexPath.row]
         cell.textLabel?.text = er.name
         
         return cell
@@ -83,7 +83,7 @@ class EmergsListVC: UIViewController,
                 scheduleDaysVC = segue.destinationViewController as? ScheduleDaysVC,
                 selectedIndex = tableView.indexPathForSelectedRow
             {
-                scheduleDaysVC.er = ers[selectedIndex.row]
+                scheduleDaysVC.emerg = emergs[selectedIndex.row]
             }
         }
     }
