@@ -397,8 +397,7 @@ class OpenEmergsVC: UIViewController,
             self.view.layoutIfNeeded()
             self.adjustMapViewLayoutMargins()
             
-            // Adjust visible region of map to enclose all annotations.
-            self.mapView.adjustRegionToDisplayAnnotations(self.mapView.annotations, animated: true)
+            self.refreshMapViewAnnotations(animated: true)
         }
         
         UIView.animateWithDuration(
