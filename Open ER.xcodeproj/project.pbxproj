@@ -56,7 +56,7 @@
 		0032EEAF1D07263D000F9F10 /* AsyncOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AsyncOperation.swift; sourceTree = "<group>"; };
 		0032EEB11D075B51000F9F10 /* MessageCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageCell.swift; sourceTree = "<group>"; };
 		0036A94C1CCDECCE00BBD86F /* EmergDetailVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmergDetailVC.swift; sourceTree = "<group>"; };
-		00611BFD1CB080FA00C08B07 /* Open ER.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Open ER.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		00611BFD1CB080FA00C08B07 /* Emerg.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Emerg.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		00611C001CB080FA00C08B07 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		00611C021CB080FA00C08B07 /* OpenEmergsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenEmergsVC.swift; sourceTree = "<group>"; };
 		00611C051CB080FA00C08B07 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -153,7 +153,7 @@
 		00611BFE1CB080FA00C08B07 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				00611BFD1CB080FA00C08B07 /* Open ER.app */,
+				00611BFD1CB080FA00C08B07 /* Emerg.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -279,7 +279,7 @@
 			);
 			name = "Open ER";
 			productName = "Open ER";
-			productReference = 00611BFD1CB080FA00C08B07 /* Open ER.app */;
+			productReference = 00611BFD1CB080FA00C08B07 /* Emerg.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -488,7 +488,7 @@
 				INFOPLIST_FILE = "Open ER/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "ca.jeffreyfulton.Open-ER";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = Emerg;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -501,7 +501,7 @@
 				INFOPLIST_FILE = "Open ER/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "ca.jeffreyfulton.Open-ER";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = Emerg;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
