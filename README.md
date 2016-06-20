@@ -1,3 +1,3 @@
-# Open ER
+# ER Locator
 
-Find the nearest open Emergency Room in southern Manitoba, call ahead, and get directions.
+Find nearby Emergency Rooms in southern Manitoba, call ahead, and get directions.
