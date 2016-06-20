@@ -2,6 +2,10 @@
 
 A prototype developed by Jeffrey Fulton aimed at getting rural Manitobans to the nearest open emergency room as quickly as possible.
 
+![alt text](./ScreenShotMain.png "ER Locator main screen.")
+![alt text](./ScreenShotDetails.png "ER Locator ER details screen.")
+![alt text](./ScreenShotSchedule.png "ER Locator scheduling screen.")
+
 ## Problem
 
 Rural Manitobans in need of emergency medical services currently do not know which of the surrounding hospitals have emergency personnel on staff. Currently they need to call ahead to each one individually. Forgetting to call ahead can result in a patient driving to a hospital only to discover they need to backtrack in the opposite direction towards the hospital handling emergency services that day.
