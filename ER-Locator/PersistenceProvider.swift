@@ -14,30 +14,30 @@ protocol PersistenceProviding {
     
     // MARK: - Storage
     var ers: Set<ER> { get set }
-    var ersMostRecentlyModifiedAt: NSDate? { get set }
+    var ersMostRecentlyModifiedAt: Date? { get set }
     
     var todaysScheduleDays: Set<ScheduleDay> { get set }
     
     // MARK: - Sync
     var syncing: Bool { get }
     
-    var lastSuccessSyncAt: NSDate? { get set }
+    var lastSuccessSyncAt: Date? { get set }
     
     /// Update local datastore with any changes from remote datastore and report back status. i.e. Failure, NoData, NewData.
     func syncLocalDatastoreWithRemote(
-        resultQueue: NSOperationQueue,
-        result: ( SyncLocalDatastoreWithRemoteResult -> () )?
+        _ resultQueue: OperationQueue,
+        result: ( (SyncLocalDatastoreWithRemoteResult) -> () )?
     )
     
     // Scheduler Access
-    func determineSchedulerAccess(completionQueue completionQueue: NSOperationQueue, completion: (Bool) -> Void )
+    func determineSchedulerAccess(completionQueue: OperationQueue, completion: (Bool) -> Void )
 }
 
 enum SyncLocalDatastoreWithRemoteResult {
-    case Failure(ErrorType)
-    case NoData
-    case NewData
-    case SyncAlreadyInProgress
+    case failure(Error)
+    case noData
+    case newData
+    case syncAlreadyInProgress
 }
 
 // MARK: - PersistenceProviding singleton implementation
@@ -47,7 +47,7 @@ class PersistenceProvider: PersistenceProviding {
     private init() {} // Enforce singleton.
     
     // MARK: - Dependencies
-    lazy var defaults = NSUserDefaults.standardUserDefaults()
+    lazy var defaults = UserDefaults.standard
     lazy var erProvider: ERProviding = ERProvider.sharedInstance
     
     // MARK: - User Default Keys
@@ -65,31 +65,30 @@ class PersistenceProvider: PersistenceProviding {
     }
     
     // MARK: - Stored Properties
-    private let syncQueue = NSOperationQueue()
+    private let syncQueue = OperationQueue()
     
     // MARK: - Storage
     
     var ers: Set<ER> {
         get {
-            guard let data = defaults.objectForKey(UserDefaultKey.ERs) as? NSData else { return Set<ER>() }
-            return NSKeyedUnarchiver.unarchiveObjectWithData(data) as? Set<ER> ?? Set<ER>()
+            guard let data = defaults.object(forKey: UserDefaultKey.ERs) as? Data else { return Set<ER>() }
+            return NSKeyedUnarchiver.unarchiveObject(with: data) as? Set<ER> ?? Set<ER>()
         }
         set {
-            let archivedObject = NSKeyedArchiver.archivedDataWithRootObject(newValue)
-            defaults.setObject(archivedObject, forKey: UserDefaultKey.ERs)
+            let archivedObject = NSKeyedArchiver.archivedData(withRootObject: newValue)
+            defaults.set(archivedObject, forKey: UserDefaultKey.ERs)
         }
     }
     
-    var ersMostRecentlyModifiedAt: NSDate? {
-        get { return defaults.objectForKey(UserDefaultKey.ERsMostRecentlyModifiedAt) as? NSDate }
-        set { defaults.setObject(newValue, forKey: UserDefaultKey.ERsMostRecentlyModifiedAt) }
+    var ersMostRecentlyModifiedAt: Date? {
+        get { return defaults.object(forKey: UserDefaultKey.ERsMostRecentlyModifiedAt) as? Date }
+        set { defaults.set(newValue, forKey: UserDefaultKey.ERsMostRecentlyModifiedAt) }
     }
     
     var todaysScheduleDays: Set<ScheduleDay> {
         get {
-            guard let
-                data = defaults.objectForKey(UserDefaultKey.TodaysScheduleDays) as? NSData,
-                scheduleDays = NSKeyedUnarchiver.unarchiveObjectWithData(data) as? Set<ScheduleDay> else
+            guard let data = defaults.object(forKey: UserDefaultKey.TodaysScheduleDays) as? Data,
+                let scheduleDays = NSKeyedUnarchiver.unarchiveObject(with: data) as? Set<ScheduleDay> else
             {
                 return Set<ScheduleDay>()
             }
@@ -97,8 +96,8 @@ class PersistenceProvider: PersistenceProviding {
             return  scheduleDays.scheduledToday
         }
         set {
-            let archivedObject = NSKeyedArchiver.archivedDataWithRootObject(newValue)
-            defaults.setObject(archivedObject, forKey: UserDefaultKey.TodaysScheduleDays)
+            let archivedObject = NSKeyedArchiver.archivedData(withRootObject: newValue)
+            defaults.set(archivedObject, forKey: UserDefaultKey.TodaysScheduleDays)
         }
     }
     
@@ -108,35 +107,32 @@ class PersistenceProvider: PersistenceProviding {
         syncQueue.operationCount > 0
     }
     
-    var lastSuccessSyncAt: NSDate? {
-        get { return defaults.objectForKey(UserDefaultKey.LastSuccessSyncAt) as? NSDate }
-        set { defaults.setObject(newValue, forKey: UserDefaultKey.LastSuccessSyncAt) }
+    var lastSuccessSyncAt: Date? {
+        get { return defaults.object(forKey: UserDefaultKey.LastSuccessSyncAt) as? Date }
+        set { defaults.set(newValue, forKey: UserDefaultKey.LastSuccessSyncAt) }
     }
     
     func syncLocalDatastoreWithRemote(
-        resultQueue: NSOperationQueue,
-        result: ( SyncLocalDatastoreWithRemoteResult -> () )? )
+        _ resultQueue: OperationQueue,
+        result: ( (SyncLocalDatastoreWithRemoteResult) -> () )? )
     {
         // Return if sync already in progress
         guard syncing == false else {
-            return resultQueue.addOperationWithBlock { result?(.SyncAlreadyInProgress) }
+            return resultQueue.addOperation { result?(.syncAlreadyInProgress) }
         }
         
-        let cloudDatabase = CKContainer.defaultContainer().publicCloudDatabase
+        let cloudDatabase = CKContainer.default().publicCloudDatabase
         let syncOperation = SyncLocalDatastoreWithRemoteOperation(cloudDatabase: cloudDatabase, persistenceProvider: self)
         
         syncOperation.completionBlock = {
-            self.lastSuccessSyncAt = NSDate()
+            self.lastSuccessSyncAt = Date()
             
             // Should this be more dependency injected styles?
-            NSOperationQueue.mainQueue().addOperationWithBlock {
-                NSNotificationCenter.defaultCenter().postNotificationName(
-                    Notification.LocalDatastoreUpdatedWithNewData,
-                    object: nil
-                )
+            OperationQueue.main.addOperation {
+                NotificationCenter.default.post(name: .localDatastoreUpdatedWithNewData, object: nil)
             }
             
-            resultQueue.addOperationWithBlock { result?(syncOperation.result) }
+            resultQueue.addOperation { result?(syncOperation.result) }
         }
         
         syncQueue.addOperation(syncOperation)
@@ -145,16 +141,16 @@ class PersistenceProvider: PersistenceProviding {
     // Scheduler Access
     
     func determineSchedulerAccess(
-        completionQueue completionQueue: NSOperationQueue,
-        completion: (Bool) -> Void)
+        completionQueue: OperationQueue,
+        completion: @escaping (Bool) -> Void)
     {
-        let publicDatabase = CKContainer.defaultContainer().publicCloudDatabase
+        let publicDatabase = CKContainer.default().publicCloudDatabase
         let predicate = NSPredicate(value: true)
         let query = CKQuery(recordType: "SchedulerRole", predicate: predicate)
         
-        publicDatabase.performQuery(query, inZoneWithID: nil, completionHandler: { records, queryError in
+        publicDatabase.perform(query, inZoneWith: nil, completionHandler: { records, queryError in
             let access = queryError == nil && records != nil
-            completionQueue.addOperationWithBlock { completion(access) }
+            completionQueue.addOperation { completion(access) }
         })
         
     }

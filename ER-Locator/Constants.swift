@@ -9,15 +9,15 @@
 import Foundation
 import CloudKit
 
-enum Error: ErrorType {
-    case UnableToAccessReturnedRecordsOfType(String)
-    case UnableToLoadCKRecord(CKRecord)
+enum SnowError: Error {
+    case unableToAccessReturnedRecordsOfType(String)
+    case unableToLoadCKRecord(CKRecord)
     
-    case OperationNotComplete
-    case OperationCancelled
-    case OperationTimedOut
+    case operationNotComplete
+    case operationCancelled
+    case operationTimedOut
 }
 
-struct Notification {
-    static let LocalDatastoreUpdatedWithNewData = "LocalDatastoreUpdatedWithNewData"
+extension Notification.Name {
+    static let localDatastoreUpdatedWithNewData = Notification.Name("localDatastoreUpdatedWithNewData")
 }

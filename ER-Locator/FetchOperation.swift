@@ -25,7 +25,7 @@ class FetchOperation<T: CloudKitModel>: AsyncOperation {
     // Cancel CloudKit Request after this interval.
     var timeoutIntervalInSeconds: Double = 30
     
-    var result: FetchResult<T> = .Failure(Error.OperationNotComplete)
+    var result: FetchResult<T> = .failure(SnowError.operationNotComplete)
     
     // MARK: - Lifecycle
     
@@ -58,11 +58,11 @@ class FetchOperation<T: CloudKitModel>: AsyncOperation {
         
         queryOperation.queryCompletionBlock = { cursor, error in
             guard error == nil else {
-                return self.completeOperation(.Failure(error!) )
+                return self.completeOperation(.failure(error!) )
             }
             
             let cloudKitRecordables = fetchedRecords.map { T(record: $0) }
-            self.completeOperation(.Success(cloudKitRecordables) )
+            self.completeOperation(.success(cloudKitRecordables) )
         }
         
         queryOperation.start()
@@ -70,14 +70,14 @@ class FetchOperation<T: CloudKitModel>: AsyncOperation {
         // Roll your own timeout... it works.
         delay(inSeconds: self.timeoutIntervalInSeconds) {
             // Timeout operation
-            self.result = .Failure(Error.OperationTimedOut)
+            self.result = .failure(SnowError.operationTimedOut)
             queryOperation.cancel()
         }
     }
     
     // MARK: Helpers
     
-    private func completeOperation(result: FetchResult<T>) {
+    private func completeOperation(_ result: FetchResult<T>) {
         self.result = result
         completeOperation()
     }
@@ -86,15 +86,15 @@ class FetchOperation<T: CloudKitModel>: AsyncOperation {
 // MARK: - Result
 
 enum FetchResult<T: CloudKitModel> {
-    case Failure(ErrorType)
-    case Success([T])
+    case failure(Error)
+    case success([T])
 }
 
 // MARK: - Request
 
 enum RequestPriority {
-    case Normal
-    case High
+    case normal
+    case high
 }
 
 protocol ReprioritizableOperation {
@@ -113,13 +113,13 @@ protocol ReprioritizableRequest {
 
 class FetchRequest<T: ReprioritizableOperation>: ReprioritizableRequest {
     private var operation: T
-    private var queue: NSOperationQueue
+    private var queue: OperationQueue
     
     var finished: Bool {
         return operation.finished
     }
     
-    var priority: RequestPriority = .Normal {
+    var priority: RequestPriority = .normal {
         didSet(oldPriority) {
             guard priority != oldPriority else { return }
             guard operation.executing == false else { return }
@@ -128,13 +128,13 @@ class FetchRequest<T: ReprioritizableOperation>: ReprioritizableRequest {
             
             operation.cancel()
             operation = newOperation
-            if let operation = operation as? NSOperation {
+            if let operation = operation as? Operation {
                 queue.addOperation(operation)
             }
         }
     }
     
-    init(operation: T, queue: NSOperationQueue) {
+    init(operation: T, queue: OperationQueue) {
         self.operation = operation
         self.queue = queue
     }

@@ -63,7 +63,7 @@ class OpenERsVC: UIViewController,
         }
     }
     
-    var error: ErrorType?
+    var error: Error?
     
     // MARK: - Lifecycle
     
@@ -72,46 +72,46 @@ class OpenERsVC: UIViewController,
         
         locationManager.requestWhenInUseAuthorization()
         
-        possiblyClosedERs = erProvider.ers.sort { $0.name < $1.name }
+        possiblyClosedERs = erProvider.ers.sorted { $0.name < $1.name }
         
-        NSNotificationCenter.defaultCenter().addObserver(
+        NotificationCenter.default.addObserver(
             self,
             selector: #selector(reloadERs),
-            name: Notification.LocalDatastoreUpdatedWithNewData,
+            name: .localDatastoreUpdatedWithNewData,
             object: nil
         )
         
-        schedulerButton.enabled = false
+        schedulerButton.isEnabled = false
         setupTableView()
         refreshSyncStatusLabel()
     }
     
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         determineScheduleAccess()
         
         if let indexPath = tableView.indexPathForSelectedRow {
-            tableView.deselectRowAtIndexPath(indexPath, animated: true)
+            tableView.deselectRow(at: indexPath, animated: true)
         }
     }
     
-    override func viewDidAppear(animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
         setupMapView()
     }
     
     deinit {
-        NSNotificationCenter.defaultCenter().removeObserver(self)
+        NotificationCenter.default.removeObserver(self)
     }
     
     // MARK: - Helpers
     
     /// Confirm user currently signed into iCloud on device has Scheduler role to access Scheduler; enabling and disabling the Scheduler button accordingly.
     func determineScheduleAccess() {
-        persistenceProvider.determineSchedulerAccess(completionQueue: NSOperationQueue.mainQueue()) { access in
-            self.schedulerButton.enabled = access
+        persistenceProvider.determineSchedulerAccess(completionQueue: OperationQueue.main) { access in
+            self.schedulerButton.isEnabled = access
         }
     }
     
@@ -123,7 +123,7 @@ class OpenERsVC: UIViewController,
         tableView.rowHeight = UITableViewAutomaticDimension
         
         // Blur tableView background
-        let visualEffect = UIBlurEffect(style: .ExtraLight)
+        let visualEffect = UIBlurEffect(style: .extraLight)
         let visualEffectView = UIVisualEffectView(effect: visualEffect)
         tableView.backgroundView = visualEffectView
     }
@@ -144,13 +144,13 @@ class OpenERsVC: UIViewController,
         mapView.showsUserLocation = true
     }
     
-    func refreshUI(animated animated: Bool) {
+    func refreshUI(animated: Bool) {
         refreshMapViewAnnotations(animated: animated)
         refreshTableView()
         refreshSyncStatusLabel()
     }
     
-    func refreshMapViewAnnotations(animated animated: Bool) {
+    func refreshMapViewAnnotations(animated: Bool) {
         // TODO: Improve experience or reloading
         
         // Remove existing annotations from map.
@@ -173,8 +173,8 @@ class OpenERsVC: UIViewController,
     
     func refreshTableView() {
         let range = NSRange(0..<sections.count)
-        let sectionIndexSet = NSIndexSet(indexesInRange: range)
-        tableView.reloadSections(sectionIndexSet, withRowAnimation: .Fade)
+        let sectionIndexSet = IndexSet(integersIn: range.toRange() ?? 0..<0)
+        tableView.reloadSections(sectionIndexSet, with: .fade)
     }
     
     func refreshSyncStatusLabel() {
@@ -197,7 +197,7 @@ class OpenERsVC: UIViewController,
         }
     }
     
-    func erForIndexPath(indexPath: NSIndexPath) -> ER? {
+    func erForIndexPath(_ indexPath: IndexPath) -> ER? {
         let ers: [ER]
         
         switch sections[indexPath.section] {
@@ -214,24 +214,21 @@ class OpenERsVC: UIViewController,
         return ers.isEmpty ? nil : ers[indexPath.row]
     }
     
-    func indexPath(for er: ER) -> NSIndexPath? {
-        if let
-            section = sections.indexOf(.NearestOpen),
-            row = nearestOpenERs.indexOf(er)
+    func indexPath(for er: ER) -> IndexPath? {
+        if let section = sections.index(of: .NearestOpen),
+            let row = nearestOpenERs.index(of: er)
         {
-            return NSIndexPath(forRow: row, inSection: section)
+            return IndexPath(row: row, section: section)
             
-        } else if let
-            section = sections.indexOf(.AdditionalOpen),
-            row = additionalOpenERs.indexOf(er)
+        } else if let section = sections.index(of: .AdditionalOpen),
+            let row = additionalOpenERs.index(of: er)
         {
-            return NSIndexPath(forRow: row, inSection: section)
+            return IndexPath(row: row, section: section)
             
-        } else if let
-            section = sections.indexOf(.PossiblyClosed),
-            row = possiblyClosedERs.indexOf(er)
+        } else if let section = sections.index(of: .PossiblyClosed),
+            let row = possiblyClosedERs.index(of: er)
         {
-            return NSIndexPath(forRow: row, inSection: section)
+            return IndexPath(row: row, section: section)
             
         } else {
             // ER not found
@@ -253,11 +250,11 @@ class OpenERsVC: UIViewController,
         .PossiblyClosed
     ]
     
-    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    func numberOfSections(in tableView: UITableView) -> Int {
         return sections.count
     }
     
-    func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         switch sections[section] {
         case .NearestOpen:
             return nearestOpenERs.isEmpty ? nil : Section.NearestOpen.rawValue
@@ -270,7 +267,7 @@ class OpenERsVC: UIViewController,
         }
     }
     
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch sections[section] {
         case .NearestOpen:
             return nearestOpenERs.isEmpty ? 0 : nearestOpenERs.count
@@ -283,9 +280,9 @@ class OpenERsVC: UIViewController,
         }
     }
     
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if allERs.isEmpty {
-            let cell = tableView.dequeueReusableCellWithIdentifier("messageCell", forIndexPath: indexPath) as! MessageCell
+            let cell = tableView.dequeueReusableCell(withIdentifier: "messageCell", for: indexPath) as! MessageCell
             
             if persistenceProvider.syncing {
                 cell.messageLabel.text = "Finding emergency rooms..."
@@ -298,7 +295,7 @@ class OpenERsVC: UIViewController,
             return cell
             
         } else {
-            let cell = tableView.dequeueReusableCellWithIdentifier("erCell", forIndexPath: indexPath) as! ERCell
+            let cell = tableView.dequeueReusableCell(withIdentifier: "erCell", for: indexPath) as! ERCell
             
             let er = erForIndexPath(indexPath)!
             cell.configure(for: er, relativeTo: mapView.userLocation.location)
@@ -307,15 +304,15 @@ class OpenERsVC: UIViewController,
         }
     }
     
-    func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return allERs.isEmpty ? tableView.frame.height : UITableViewAutomaticDimension
     }
     
     // MARK: - MKMapViewDelegate
     
-    func mapView(mapView: MKMapView, didUpdateUserLocation userLocation: MKUserLocation) {
+    func mapView(_ mapView: MKMapView, didUpdate userLocation: MKUserLocation) {
         guard shouldUpdateUIOnUserLocationUpdate else { return }
-        guard let location = userLocation.location where location.horizontalAccuracy < minLocationAccuracy else { return }
+        guard let location = userLocation.location , location.horizontalAccuracy < minLocationAccuracy else { return }
         
         shouldUpdateUIOnUserLocationUpdate = false
         
@@ -324,13 +321,13 @@ class OpenERsVC: UIViewController,
         erProvider.fetchERsWithTodaysScheduleDayNearestLocation(
             location,
             limitTo: nil,
-            resultQueue: NSOperationQueue.mainQueue())
+            resultQueue: OperationQueue.main)
         { result in
             switch result {
-            case .Failure(let error):
+            case .failure(let error):
                 self.error = error
                 
-            case .Success(let ers):
+            case .success(let ers):
                 self.error = nil
                 self.allERs = ers
             }
@@ -339,12 +336,12 @@ class OpenERsVC: UIViewController,
         }
     }
     
-    func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
+    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         guard let er = annotation as? ER else { return nil }
         
         let reuseIdentifier = "pinAnnotationView"
         
-        let pinAnnotationView = mapView.dequeueReusableAnnotationViewWithIdentifier(reuseIdentifier) as? MKPinAnnotationView ?? MKPinAnnotationView(annotation: annotation, reuseIdentifier: reuseIdentifier)
+        let pinAnnotationView = mapView.dequeueReusableAnnotationView(withIdentifier: reuseIdentifier) as? MKPinAnnotationView ?? MKPinAnnotationView(annotation: annotation, reuseIdentifier: reuseIdentifier)
         
         pinAnnotationView.canShowCallout = true
         pinAnnotationView.animatesDrop = false
@@ -354,14 +351,14 @@ class OpenERsVC: UIViewController,
             UIColor.pinColorForOpenER() : UIColor.pinColorForClosedER()
         
         // Info Button
-        let infoButton = UIButton(type: .DetailDisclosure)
+        let infoButton = UIButton(type: .detailDisclosure)
         pinAnnotationView.rightCalloutAccessoryView = infoButton
         
         return pinAnnotationView
     }
     
     func mapView(
-        mapView: MKMapView,
+        _ mapView: MKMapView,
         annotationView view: MKAnnotationView,
         calloutAccessoryControlTapped control: UIControl)
     {
@@ -377,15 +374,15 @@ class OpenERsVC: UIViewController,
         }
         
         // Select indexPath in table; required for segue... poor design.
-        tableView.selectRowAtIndexPath(indexPath, animated: true, scrollPosition: .None)
+        tableView.selectRow(at: indexPath, animated: true, scrollPosition: .none)
         
         // Trigger segue
-        performSegueWithIdentifier("showERDetail", sender: view)
+        performSegue(withIdentifier: "showERDetail", sender: view)
     }
     
     // MARK: - Actions
     
-    @IBAction func toolbarTapped(sender: AnyObject) {
+    @IBAction func toolbarTapped(_ sender: AnyObject) {
         self.view.layoutIfNeeded()
         
         let animationClosure: () -> Void = {
@@ -393,15 +390,15 @@ class OpenERsVC: UIViewController,
             
             self.toolbarLabel.text = self.showTableView ? "Hide List" : "Show List"
             
-            self.tableViewTopMapViewCenterConstraint.active = self.showTableView
+            self.tableViewTopMapViewCenterConstraint.isActive = self.showTableView
             self.view.layoutIfNeeded()
             self.adjustMapViewLayoutMargins()
             
             self.refreshMapViewAnnotations(animated: true)
         }
         
-        UIView.animateWithDuration(
-            0.3,
+        UIView.animate(
+            withDuration: 0.3,
             delay: 0.0,
             usingSpringWithDamping: 1.0,
             initialSpringVelocity: 1.0,
@@ -413,22 +410,21 @@ class OpenERsVC: UIViewController,
     
     // MARK: - Segues
     
-    @IBAction func unwindToOpenERsVC(segue: UIStoryboardSegue) {
+    @IBAction func unwindToOpenERsVC(_ segue: UIStoryboardSegue) {
         scheduleDayProvider.clearInMemoryCache()
-        persistenceProvider.syncLocalDatastoreWithRemote(NSOperationQueue.mainQueue(), result: nil)
+        persistenceProvider.syncLocalDatastoreWithRemote(OperationQueue.main, result: nil)
     }
     
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showERDetail" {
             
-            guard let vc = segue.destinationViewController as? ERDetailVC else {
+            guard let vc = segue.destination as? ERDetailVC else {
                 return // Should and will probably crash.
             }
             
             // Triggered by MapView
-            if let
-                annotationView = sender as? MKAnnotationView,
-                er = annotationView.annotation as? ER
+            if let annotationView = sender as? MKAnnotationView,
+                let er = annotationView.annotation as? ER
             {
                 vc.er = er
                 

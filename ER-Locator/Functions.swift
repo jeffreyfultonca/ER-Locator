@@ -10,23 +10,19 @@ import Foundation
 
 /// Execute the supplied closure on the main queue
 /// after the specified number of seconds.
-func delay(inSeconds delay:Double, closure:()->()) {
-    dispatch_after(
-        dispatch_time(
-            DISPATCH_TIME_NOW,
-            Int64(delay * Double(NSEC_PER_SEC))
-        ),
-        dispatch_get_main_queue(),
-        closure
-    )
+func delay(inSeconds delay:Double, closure: @escaping ()->()) {
+    //TODO: Confirm this works.
+    let dispatchTime = DispatchTime.now() + Double(Int64(delay * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC)
+    DispatchQueue.main.asyncAfter(deadline: dispatchTime, execute: closure)
 }
 
-func runOnMainQueue(closure: ()->() ) {
-    NSOperationQueue.mainQueue().addOperationWithBlock(closure)
+func runOnMainQueue(_ closure: @escaping ()->() ) {
+    OperationQueue.main.addOperation(closure)
 }
 
 /// True if user has enabled system wide 24-Hour Time in Date & Time settings.
 var userHas24HourTimeEnabled: Bool {
-    let formatString = NSDateFormatter.dateFormatFromTemplate("j", options: 0, locale: NSLocale.currentLocale())!
-    return !formatString.containsString("a")
+    //TODO: Confirm this works.
+    let formatString = DateFormatter.dateFormat(fromTemplate: "j", options: 0, locale: Locale.current)!
+    return !formatString.contains("a")
 }

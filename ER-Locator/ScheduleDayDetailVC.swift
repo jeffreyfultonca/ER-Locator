@@ -40,13 +40,15 @@ class ScheduleDayDetailVC: UIViewController {
     // MARK: - Helpers
     
     func configureNavBar() {
-        let df = NSDateFormatter()
+        let df = DateFormatter()
         df.dateFormat = "MMMM d"
         
-        navigationItem.title = df.stringFromDate(scheduleDay.date)
+        navigationItem.title = df.string(from: scheduleDay.date)
     }
     
     func configurePresentControls() {
+        // TODO: Document why this is needed.
+        // TODO: Convert to forEach.
         for imageView in [closedImageView, customImageView] {
             let tintColor = imageView.tintColor
             imageView.tintColor = nil
@@ -72,7 +74,7 @@ class ScheduleDayDetailVC: UIViewController {
 
     // MARK: - Actions
     
-    @IBAction func open24Tapped(sender: AnyObject) {
+    @IBAction func open24Tapped(_ sender: AnyObject) {
         scheduleDay.firstOpen = scheduleDay.date.beginningOfDay
         scheduleDay.firstClose = scheduleDay.date.endOfDay
         
@@ -80,7 +82,7 @@ class ScheduleDayDetailVC: UIViewController {
         updateRangeSliders()
     }
     
-    @IBAction func open12Tapped(sender: AnyObject) {
+    @IBAction func open12Tapped(_ sender: AnyObject) {
         scheduleDay.firstOpen = scheduleDay.date.atHour(8)
         scheduleDay.firstClose = scheduleDay.date.atHour(20)
         
@@ -88,7 +90,7 @@ class ScheduleDayDetailVC: UIViewController {
         updateRangeSliders()
     }
     
-    @IBAction func closedTapped(sender: AnyObject) {
+    @IBAction func closedTapped(_ sender: AnyObject) {
         scheduleDay.firstOpen = nil
         scheduleDay.firstClose = nil
         
@@ -97,7 +99,7 @@ class ScheduleDayDetailVC: UIViewController {
     }
     
     
-    @IBAction func rangeSliderValueChanged(rangeSlider: RangeSlider) {
+    @IBAction func rangeSliderValueChanged(_ rangeSlider: RangeSlider) {
         let firstOpen = rangeSlider.lowerTime
         let firstClosed = rangeSlider.upperTime
         

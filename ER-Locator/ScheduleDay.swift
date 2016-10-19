@@ -23,16 +23,16 @@ class ScheduleDay: NSObject, CloudKitModel, NSCoding {
     
     // MARK: - Computed Properties
     
-    var date: NSDate {
-        get { return record["date"] as! NSDate }
+    var date: Date {
+        get { return record["date"] as! Date }
         set { record["date"] = newValue }
     }
-    var firstOpen: NSDate? {
-        get { return record["firstOpen"] as? NSDate }
+    var firstOpen: Date? {
+        get { return record["firstOpen"] as? Date }
         set { record["firstOpen"] = newValue }
     }
-    var firstClose: NSDate? {
-        get { return record["firstClose"] as? NSDate }
+    var firstClose: Date? {
+        get { return record["firstClose"] as? Date }
         set { record["firstClose"] = newValue }
     }
     
@@ -44,11 +44,11 @@ class ScheduleDay: NSObject, CloudKitModel, NSCoding {
     
     /// Representation of an Open/Close date pair. Currently there is only one, but future versions may have more.
     /// Makes display in UI easier.
-    typealias TimeSlot = (open: NSDate, close: NSDate)
+    typealias TimeSlot = (open: Date, close: Date)
     
     /// See TimeSlot definition for additional details.
     var firstTimeSlot: TimeSlot? {
-        guard let open = firstOpen, close = firstClose else { return nil }
+        guard let open = firstOpen, let close = firstClose else { return nil }
         return TimeSlot(open: open, close: close)
     }
     
@@ -58,12 +58,12 @@ class ScheduleDay: NSObject, CloudKitModel, NSCoding {
         static let Record = "RecordKey"
     }
     
-    func encodeWithCoder(aCoder: NSCoder) {
-        aCoder.encodeObject(record, forKey: PropertyKey.Record)
+    func encode(with aCoder: NSCoder) {
+        aCoder.encode(record, forKey: PropertyKey.Record)
     }
     
     required convenience init?(coder aDecoder: NSCoder) {
-        let record = aDecoder.decodeObjectForKey(PropertyKey.Record) as! CKRecord
+        let record = aDecoder.decodeObject(forKey: PropertyKey.Record) as! CKRecord
         self.init(record: record)
     }
     
@@ -75,7 +75,7 @@ class ScheduleDay: NSObject, CloudKitModel, NSCoding {
     }
     
     // Required for ==
-    override func isEqual(object: AnyObject?) -> Bool {
+    override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? ScheduleDay else { return false }
         return self.recordID == rhs.recordID
     }
@@ -84,7 +84,7 @@ class ScheduleDay: NSObject, CloudKitModel, NSCoding {
     
     /// Uses current time on device to determine open/closed status.  
     static var OpenNowPredicate: NSPredicate {
-        let now = NSDate()
+        let now = Date()
         return NSPredicate(format: "firstOpen <= %@ AND firstClose > %@", now, now)
     }
 }

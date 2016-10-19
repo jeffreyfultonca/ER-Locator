@@ -26,11 +26,11 @@ class RangeSlider: UIControl {
     var upperValue = 1.0
     
     /// Represents the Date component; ignoring time
-    var date: NSDate = NSDate()
+    var date: Date = Date()
     
     /// An NSDate used to determine time; date component is ignored when setting this value.
     /// Date component from RangeSlider.date property is used when getting this value.
-    var lowerTime: NSDate? {
+    var lowerTime: Date? {
         get { return dateForValue(lowerValue) }
         set {
             lowerValue = valueForDate(newValue) ?? minValue
@@ -39,7 +39,7 @@ class RangeSlider: UIControl {
     }
     /// An NSDate used to determine time; date component is ignored when setting this value.
     /// Date component from RangeSlider.date property is used when getting this value.
-    var upperTime: NSDate? {
+    var upperTime: Date? {
         get { return dateForValue(upperValue) }
         set {
             upperValue = valueForDate(newValue) ?? maxValue
@@ -81,7 +81,7 @@ class RangeSlider: UIControl {
     
     var trackTintColor = UIColor(white: 0.75, alpha: 1.0)
     var trackHighlightTintColor: UIColor { return tintColor }
-    var thumbTintColor = UIColor.whiteColor()
+    var thumbTintColor = UIColor.white
     
     var curvaceousness: CGFloat = 1.0
     
@@ -113,23 +113,23 @@ class RangeSlider: UIControl {
     func configureLayers() {
         // Track Layer
         trackLayer.rangeSlider = self
-        trackLayer.contentsScale = UIScreen.mainScreen().scale
+        trackLayer.contentsScale = UIScreen.main.scale
         layer.addSublayer(trackLayer)
         
         //Thumb Layers
         lowerThumbLayer.rangeSlider = self
-        lowerThumbLayer.contentsScale = UIScreen.mainScreen().scale
+        lowerThumbLayer.contentsScale = UIScreen.main.scale
         layer.addSublayer(lowerThumbLayer)
         
         upperThumbLayer.rangeSlider = self
-        upperThumbLayer.contentsScale = UIScreen.mainScreen().scale
+        upperThumbLayer.contentsScale = UIScreen.main.scale
         layer.addSublayer(upperThumbLayer)
         
         // Set default state
         lastThumbLayerHighlighted = lowerThumbLayer
     }
     
-    override func intrinsicContentSize() -> CGSize {
+    override var intrinsicContentSize: CGSize {
         return CGSize(width: UIViewNoIntrinsicMetric, height: thumbWidth)
     }
     
@@ -170,21 +170,21 @@ class RangeSlider: UIControl {
         CATransaction.commit()
     }
     
-    func positionForValue(value: Double) -> Double {
+    func positionForValue(_ value: Double) -> Double {
         return Double(bounds.width - thumbKnobWidth) * (value - minValue) / (maxValue - minValue) + Double(thumbKnobWidth / 2.0)
     }
     
-    func valueForPosition(position: CGFloat) -> Double {
+    func valueForPosition(_ position: CGFloat) -> Double {
         return Double(position - (thumbKnobWidth / 2.0) ) / Double(bounds.width - thumbKnobWidth)
     }
     
     // Prevent value from going below min or above max.
-    func boundValue(value: Double, toLowerValue lowerValue: Double, upperValue: Double) -> Double {
+    func boundValue(_ value: Double, toLowerValue lowerValue: Double, upperValue: Double) -> Double {
         let maxLower = max( value, lowerValue )
         return min( maxLower, upperValue )
     }
     
-    func steppedValue(value: Double) -> Double {
+    func steppedValue(_ value: Double) -> Double {
         let stepDouble = Double(steps) * value
         let step = round(stepDouble)
         let steppedValue = step/Double(steps)
@@ -192,14 +192,14 @@ class RangeSlider: UIControl {
         return steppedValue
     }
     
-    func dateForValue(value: Double) -> NSDate {
-        return NSDate(timeInterval: value * Double(totalMins) * 60, sinceDate: date.beginningOfDay)
+    func dateForValue(_ value: Double) -> Date {
+        return Date(timeInterval: value * Double(totalMins) * 60, since: date.beginningOfDay)
     }
     
-    func valueForDate(date: NSDate?) -> Double? {
+    func valueForDate(_ date: Date?) -> Double? {
         guard let date = date else { return nil }
         
-        let secondsSinceBeginningOfDay = date.timeIntervalSinceDate(self.date.beginningOfDay)
+        let secondsSinceBeginningOfDay = date.timeIntervalSince(self.date.beginningOfDay)
         let minutesSinceBeginningOfDay = secondsSinceBeginningOfDay / 60
         let value = minutesSinceBeginningOfDay / Double(totalMins)
         
@@ -209,8 +209,8 @@ class RangeSlider: UIControl {
     
     // MARK: - UIControl
     
-    override func beginTrackingWithTouch(touch: UITouch, withEvent event: UIEvent?) -> Bool {
-        let touchPoint = touch.locationInView(self)
+    override func beginTracking(_ touch: UITouch, with event: UIEvent?) -> Bool {
+        let touchPoint = touch.location(in: self)
         
         // Give priority to last highlighted thumb layer incase they are overlapping.
         let otherThumbLayer: RangeSliderThumbLayer
@@ -242,8 +242,8 @@ class RangeSlider: UIControl {
         return lastThumbLayerHighlighted.highlighted
     }
     
-    override func continueTrackingWithTouch(touch: UITouch, withEvent event: UIEvent?) -> Bool {
-        let touchPoint = touch.locationInView(self)
+    override func continueTracking(_ touch: UITouch, with event: UIEvent?) -> Bool {
+        let touchPoint = touch.location(in: self)
         
         // Calc value for location?
         let position = touchPoint.x + touchPointXOffset
@@ -272,12 +272,12 @@ class RangeSlider: UIControl {
         // Update the UI
         updateLayerFrames()
         
-        sendActionsForControlEvents(.ValueChanged)
+        sendActions(for: .valueChanged)
         
         return true
     }
     
-    override func endTrackingWithTouch(touch: UITouch?, withEvent event: UIEvent?) {
+    override func endTracking(_ touch: UITouch?, with event: UIEvent?) {
         lastThumbLayerHighlighted.highlighted = false
     }
 }

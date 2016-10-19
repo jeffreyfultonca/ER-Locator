@@ -25,7 +25,7 @@ class ERCell: UITableViewCell {
         
         // Distance
         if let location = location {
-            let distanceInMeters = er.location.distanceFromLocation(location)
+            let distanceInMeters = er.location.distance(from: location)
             distanceLabel.text = String.localizedStringWithFormat("%.1f km", distanceInMeters / 1000)
         } else {
             distanceLabel.text = "???"

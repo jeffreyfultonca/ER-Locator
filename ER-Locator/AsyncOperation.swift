@@ -21,14 +21,14 @@ import Foundation
  Subclasses must call completeOperation()
  when finished working.
  */
-class AsyncOperation: NSOperation {
+class AsyncOperation: Operation {
     
     // MARK: - Overrides
     
-    override var asynchronous: Bool { return true }
+    override var isAsynchronous: Bool { return true }
     
     override func start() {
-        guard !cancelled else {
+        guard !isCancelled else {
             _finished = true
             return
         }
@@ -40,17 +40,17 @@ class AsyncOperation: NSOperation {
     
     // MARK: - State Management
     
-    private var _executing: Bool = false {
-        willSet { willChangeValueForKey("isExecuting") }
-        didSet { didChangeValueForKey("isExecuting") }
+    fileprivate var _executing: Bool = false {
+        willSet { willChangeValue(forKey: "isExecuting") }
+        didSet { didChangeValue(forKey: "isExecuting") }
     }
-    override var executing: Bool { return _executing }
+    override var isExecuting: Bool { return _executing }
     
-    private var _finished: Bool = false {
-        willSet { willChangeValueForKey("isFinished") }
-        didSet { didChangeValueForKey("isFinished") }
+    fileprivate var _finished: Bool = false {
+        willSet { willChangeValue(forKey: "isFinished") }
+        didSet { didChangeValue(forKey: "isFinished") }
     }
-    override var finished: Bool { return _finished }
+    override var isFinished: Bool { return _finished }
     
     // MARK: - Completion
     

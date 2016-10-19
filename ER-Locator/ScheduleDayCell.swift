@@ -53,7 +53,7 @@ class ScheduleDayCell: UITableViewCell {
     
     // MARK: - Configuration
     
-    private func configure(for date: NSDate) {
+    private func configure(for date: Date) {
         // Hide all.
         hideAllTimeSlots()
         
@@ -61,12 +61,12 @@ class ScheduleDayCell: UITableViewCell {
         monthLabel.text = date.monthAbbreviationString
     }
     
-    func configure(for date: NSDate, as state: TimeSlotView.State) {
+    func configure(for date: Date, as state: TimeSlotView.State) {
         configure(for: date)
         firstTimeSlotView.state = state
     }
     
-    func configure(for date: NSDate, with error: ErrorType) {
+    func configure(for date: Date, with error: Error) {
         configure(for: date)
         firstTimeSlotView.state = .Error
         firstTimeSlotView.timesLabel.text = "\(error)"
@@ -128,7 +128,7 @@ class ScheduleDayCell: UITableViewCell {
     
     // MARK: - Helpers
     
-    private func setAllTimeSlots(hidden hidden: Bool) {
+    private func setAllTimeSlots(hidden: Bool) {
         firstTimeSlotView.isHidden = hidden
         secondTimeSlotView.isHidden = hidden
         thirdTimeSlotView.isHidden = hidden

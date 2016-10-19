@@ -13,13 +13,13 @@ class FetchScheduleDaysForERForDatesOperation: AsyncOperation, ReprioritizableOp
     // MARK: - Stored Properties
     private let cloudDatabase: CKDatabase
     private let er: ER
-    private let dates: [NSDate]
+    private let dates: [Date]
     
-    private var queue = NSOperationQueue()
+    private var queue = OperationQueue()
     
-    var result: FetchResult<ScheduleDay> = .Failure(Error.OperationNotComplete)
+    var result: FetchResult<ScheduleDay> = .failure(SnowError.operationNotComplete)
     override func cancel() {
-        result = .Failure(Error.OperationCancelled)
+        result = .failure(SnowError.operationCancelled)
         super.cancel()
     }
     
@@ -28,8 +28,8 @@ class FetchScheduleDaysForERForDatesOperation: AsyncOperation, ReprioritizableOp
     init(
         cloudDatabase: CKDatabase,
         er: ER,
-        dates: [NSDate],
-        priority: RequestPriority = .Normal)
+        dates: [Date],
+        priority: RequestPriority = .normal)
     {
         self.cloudDatabase = cloudDatabase
         self.er = er
@@ -39,13 +39,13 @@ class FetchScheduleDaysForERForDatesOperation: AsyncOperation, ReprioritizableOp
         
         // TODO: This is duplicated between all the CloudKitRecordableOperationable classes. Move somewhere common?
         switch priority {
-        case .Normal:
-            qualityOfService = .Utility
-            queuePriority = .Normal
+        case .normal:
+            qualityOfService = .utility
+            queuePriority = .normal
             
-        case .High:
-            qualityOfService = .UserInitiated
-            queuePriority = .High
+        case .high:
+            qualityOfService = .userInitiated
+            queuePriority = .high
         }
     }
     
@@ -77,11 +77,11 @@ class FetchScheduleDaysForERForDatesOperation: AsyncOperation, ReprioritizableOp
         
         fetchScheduleDays.completionBlock = {
             switch fetchScheduleDays.result {
-            case .Failure(let error):
-                self.completeOperation(.Failure(error))
+            case .failure(let error):
+                self.completeOperation(.failure(error))
             
-            case .Success(let scheduleDays):
-                self.completeOperation(.Success(scheduleDays))
+            case .success(let scheduleDays):
+                self.completeOperation(.success(scheduleDays))
             }
         }
         
@@ -97,7 +97,7 @@ class FetchScheduleDaysForERForDatesOperation: AsyncOperation, ReprioritizableOp
         ], waitUntilFinished: false)
     }
     
-    private func completeOperation(result: FetchResult<ScheduleDay>) {
+    private func completeOperation(_ result: FetchResult<ScheduleDay>) {
         self.result = result
         completeOperation()
     }

@@ -9,7 +9,7 @@
 import MapKit
 
 extension MKMapView {
-    func adjustRegionToDisplayAnnotations(annotations: [MKAnnotation], animated: Bool) {
+    func adjustRegionToDisplayAnnotations(_ annotations: [MKAnnotation], animated: Bool) {
         var zoomRect = MKMapRectNull
         
         for annotation in annotations {
@@ -30,67 +30,63 @@ extension MKMapView {
 
 // MARK: - NSDate
 
-extension NSDate: Comparable {}
-public func ==(lhs: NSDate, rhs: NSDate) -> Bool { return lhs.compare(rhs) == .OrderedSame }
-public func <(lhs: NSDate, rhs: NSDate) -> Bool { return lhs.compare(rhs) == .OrderedAscending }
-
-extension NSDate {
-    static var now: NSDate { return NSDate() }
+extension Date {
+    static var now: Date { return Date() }
     
     // MARK: Calendar
-    var calendar: NSCalendar { return NSCalendar.currentCalendar() }
+    var calendar: Calendar { return Calendar.current }
     
     // MARK: Month
     
     var monthAbbreviationString: String {
-        let formatter = NSDateFormatter()
+        let formatter = DateFormatter()
         formatter.dateFormat = "MMM"
         
-        return formatter.stringFromDate(self)
+        return formatter.string(from: self)
     }
     
     var monthFullName: String {
-        let formatter = NSDateFormatter()
+        let formatter = DateFormatter()
         formatter.dateFormat = "MMMM"
         
-        return formatter.stringFromDate(self)
+        return formatter.string(from: self)
     }
     
     var monthOrdinal: Int {
-        return calendar.ordinalityOfUnit(.Month, inUnit: .Year, forDate: self)
+        return calendar.ordinality(of: .month, in: .year, for: self)
     }
     
     var monthOrdinalForEra: Int {
-        return calendar.ordinalityOfUnit(.Month, inUnit: .Era, forDate: self)
+        return calendar.ordinality(of: .month, in: .era, for: self)
     }
     
-    var datesInMonth: [NSDate] {
-        let calendar = NSCalendar.currentCalendar()
-        let components = calendar.components([.Month, .Year], fromDate: self)
+    var datesInMonth: [Date] {
+        let calendar = Calendar.current
+        var components = calendar.components([.month, .year], from: self)
         
-        let startDate = calendar.dateFromComponents(components)!
+        let startDate = calendar.date(from: components)!
         
         components.month += 1
         components.day = 0 // Results in last day of previous month
         
-        let endDate = calendar.dateFromComponents(components)!
+        let endDate = calendar.date(from: components)!
         
         let dateRange = DateRange(
             calendar: calendar,
             startDate: startDate,
             endDate: endDate,
-            stepUnits: .Day,
+            stepUnits: .day,
             stepValue: 1
         )
         
-        return Array<NSDate>(dateRange)
+        return Array<Date>(dateRange)
     }
     
     // MARK: Day
     
-    var beginningOfDay: NSDate {
-        let components = calendar.components([.Year, .Month, .Day], fromDate: self)
-        return calendar.dateFromComponents(components)!
+    var beginningOfDay: Date {
+        let components = calendar.components([.year, .month, .day], from: self)
+        return calendar.date(from: components)!
     }
     
     var isBeginningOfDay: Bool {
@@ -98,39 +94,39 @@ extension NSDate {
     }
     
     /// Represented as 00:00 of next day
-    var endOfDay: NSDate {
-        let components = NSDateComponents()
+    var endOfDay: Date {
+        var components = DateComponents()
         components.day = 1
-        return calendar.dateByAddingComponents(components, toDate: self.beginningOfDay, options: [])!
+        return calendar.date(byAdding: components, to: self.beginningOfDay, options: [])!
     }
     
     /// Represented as 00:00 of next day
-    func isEndOf(date: NSDate) -> Bool {
+    func isEndOf(_ date: Date) -> Bool {
         return self == date.endOfDay
     }
     
     var dayOrdinalInMonth: Int {
-        return calendar.ordinalityOfUnit(.Day, inUnit: .Month, forDate: self)
+        return calendar.ordinality(of: .day, in: .month, for: self)
     }
     
     var dayOrdinalInMonthString: String {
         return dayOrdinalInMonth.description
     }
     
-    func plusDays(days: Int) -> NSDate {
-        return calendar.dateByAddingUnit(.Day, value: days, toDate: self, options: [])!
+    func plusDays(_ days: Int) -> Date {
+        return calendar.date(byAdding: .day, value: days, to: self, options: [])!
     }
     
     /// Returns the first day of the offset month.
     /// i.e. Count up `offset` number of months from date, then return first day of that month.
-    func firstDayOfMonthWithOffset(offset: Int) -> NSDate {
-        let components = calendar.components([.Year, .Month], fromDate: self)
+    func firstDayOfMonthWithOffset(_ offset: Int) -> Date {
+        var components = calendar.components([.year, .month], from: self)
         components.month += offset
-        return calendar.dateFromComponents(components)!
+        return calendar.date(from: components)!
     }
     
     var numberOfDaysInMonth: Int {
-        return calendar.rangeOfUnit(.Day, inUnit: .Month, forDate: self).length
+        return calendar.range(of: .day, in: .month, for: self).length
     }
     
     /**
@@ -142,40 +138,35 @@ extension NSDate {
      - returns:
      NSDate at the specified hour, or `self` if new date could not be calculated.
     */
-    func atHour(hour: Int) -> NSDate {
+    func atHour(_ hour: Int) -> Date {
         guard hour >= 0 && hour < 24 else { return self }
-        return calendar.dateBySettingHour(hour, minute: 0, second: 0, ofDate: self, options: .MatchFirst) ?? self
+        return calendar.date(bySettingHour: hour, minute: 0, second: 0, of: self, options: .matchFirst) ?? self
     }
     
     // MARK: Time
     
     var time: String {
-        let formatter = NSDateFormatter()
+        let formatter = DateFormatter()
         
         // Use alternate format string if user has 24-Hour Time enabled
         if userHas24HourTimeEnabled {
             formatter.dateFormat = "h:mm" // i.e. 07:00, 19:00
-            
         } else {
-//            let components = calendar.components(.Minute, fromDate: self)
-//            if components.minute % 60 == 0 {
-//                formatter.dateFormat = "ha" // i.e. 7AM, 7PM
-//            } else {
-                formatter.dateFormat = "h:mma" // i.e. 7:30AM, 7:00PM
-//            }
+            formatter.dateFormat = "h:mma" // i.e. 7:30AM, 7:00PM
         }
         
-        return formatter.stringFromDate(self).lowercaseString
+        return formatter.string(from: self).lowercased()
     }
 }
 
 extension UIColor {
+    // TODO: Make these static vars if possible.
     static func pinColorForOpenER() -> UIColor {
-        return UIColor.redColor()
+        return UIColor.red
     }
     
     static func pinColorForClosedER() -> UIColor {
-        return UIColor.redColor().colorWithAlphaComponent(0.25)
+        return UIColor.red.withAlphaComponent(0.25)
     }
     
     static func saving() -> UIColor {
@@ -195,33 +186,33 @@ extension UIColor {
     }
     
     static func warning() -> UIColor {
-        return UIColor.orangeColor()
+        return UIColor.orange
     }
 }
 
 extension String {
     func stringByRemovingNonNumericCharacters() -> String {
-        return self.componentsSeparatedByCharactersInSet(NSCharacterSet.decimalDigitCharacterSet().invertedSet).joinWithSeparator("")
+        return self.components(separatedBy: CharacterSet.decimalDigits.inverted).joined(separator: "")
     }
 }
 
-extension SequenceType where Generator.Element: CloudKitModel {
-    var mostRecentlyModifiedAt: NSDate? {
+extension Sequence where Iterator.Element: CloudKitModel {
+    var mostRecentlyModifiedAt: Date? {
         let recordsWithModificationDates = self.filter { $0.record.modificationDate != nil }
         let modificationDates = recordsWithModificationDates.map { $0.record.modificationDate! }
-        let sortedModificationDates = modificationDates.sort(>)
+        let sortedModificationDates = modificationDates.sorted(by: >)
         
         return sortedModificationDates.first
     }
 }
 
-extension SequenceType where Generator.Element: ER {
-    func nearestLocation(location: CLLocation?) -> [ER] {
+extension Sequence where Iterator.Element: ER {
+    func nearestLocation(_ location: CLLocation?) -> [ER] {
         guard let location = location else { return self as! [ER] }
-        return self.sort { $0.location.distanceFromLocation(location) < $1.location.distanceFromLocation(location) }
+        return self.sorted { $0.location.distance(from: location) < $1.location.distance(from: location) }
     }
     
-    func limit(limit: Int?) -> [ER] {
+    func limit(_ limit: Int?) -> [ER] {
         let ers = self as! [ER]
         guard let limit = limit else { return ers }
         return Array(ers.prefix(limit))
@@ -236,21 +227,21 @@ extension SequenceType where Generator.Element: ER {
     }
 }
 
-extension SequenceType where Generator.Element: ScheduleDay {
+extension Sequence where Iterator.Element: ScheduleDay {
     var scheduledToday: Set<ScheduleDay> {
-        let today = NSDate().beginningOfDay
+        let today = Date().beginningOfDay
         let todaysScheduleDays = self.filter { $0.date == today }
         return Set(todaysScheduleDays)
     }
 }
 
-extension NSOperation {
-    func withDependency(dependency: NSOperation) -> Self {
+extension Operation {
+    func withDependency(_ dependency: Operation) -> Self {
         self.addDependency(dependency)
         return self
     }
     
-    func withDependencies(dependencies: [NSOperation]) -> Self {
+    func withDependencies(_ dependencies: [Operation]) -> Self {
         dependencies.forEach { self.addDependency($0) }
         return self
     }

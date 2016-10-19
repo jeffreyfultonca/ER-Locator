@@ -9,7 +9,7 @@
 import Foundation
 import CoreLocation
 
-class FetchERsNearestLocationOperation: NSOperation, ReprioritizableOperation {
+class FetchERsNearestLocationOperation: Operation, ReprioritizableOperation {
     
     // MARK: - Stored Properties
     private var erProvider: ERProviding
@@ -18,9 +18,9 @@ class FetchERsNearestLocationOperation: NSOperation, ReprioritizableOperation {
     private var location: CLLocation
     private var limit: Int?
     
-    var result: FetchResult<ER> = .Failure(Error.OperationNotComplete)
+    var result: FetchResult<ER> = .failure(SnowError.operationNotComplete)
     override func cancel() {
-        result = .Failure(Error.OperationCancelled)
+        result = .failure(SnowError.operationCancelled)
         super.cancel()
     }
     
@@ -31,7 +31,7 @@ class FetchERsNearestLocationOperation: NSOperation, ReprioritizableOperation {
         scheduleDayProvider: ScheduleDayProviding,
         location: CLLocation,
         limitTo limit: Int? = nil,
-        priority: RequestPriority = .Normal)
+        priority: RequestPriority = .normal)
     {
         self.erProvider = erProvider
         self.scheduleDayProvider = scheduleDayProvider
@@ -43,13 +43,13 @@ class FetchERsNearestLocationOperation: NSOperation, ReprioritizableOperation {
         
         // TODO: This is duplicated between all the CloudKitRecordableOperationable classes. Move somewhere common?
         switch priority {
-        case .Normal:
-            qualityOfService = .Utility
-            queuePriority = .Normal
+        case .normal:
+            qualityOfService = .utility
+            queuePriority = .normal
         
-        case .High:
-            qualityOfService = .UserInitiated
-            queuePriority = .High
+        case .high:
+            qualityOfService = .userInitiated
+            queuePriority = .high
         }
     }
     
@@ -76,6 +76,6 @@ class FetchERsNearestLocationOperation: NSOperation, ReprioritizableOperation {
             }.first
         }
         
-        result = .Success(ers)
+        result = .success(ers)
     }
 }

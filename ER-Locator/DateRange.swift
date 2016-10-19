@@ -8,26 +8,26 @@
 
 import Foundation
 
-struct DateRange : SequenceType {
-    var calendar: NSCalendar
-    var startDate: NSDate
-    var endDate: NSDate
-    var stepUnits: NSCalendarUnit
+struct DateRange : Sequence {
+    var calendar: Calendar
+    var startDate: Date
+    var endDate: Date
+    var stepUnits: NSCalendar.Unit
     var stepValue: Int
     
     init(
-        calendar: NSCalendar,
-        startDate: NSDate,
-        endDate: NSDate,
-        stepUnits: NSCalendarUnit,
+        calendar: Calendar,
+        startDate: Date,
+        endDate: Date,
+        stepUnits: NSCalendar.Unit,
         stepValue: Int )
     {
         self.calendar = calendar
         // Less one day to make inclusive
-        self.startDate = calendar.dateByAddingUnit(
-            stepUnits,
+        self.startDate = (calendar as NSCalendar).date(
+            byAdding: stepUnits,
             value: -stepValue,
-            toDate: startDate,
+            to: startDate,
             options: []
         )!
         self.endDate = endDate
@@ -35,19 +35,19 @@ struct DateRange : SequenceType {
         self.stepValue = stepValue
     }
     
-    func generate() -> Generator {
-        return Generator(range: self)
+    func makeIterator() -> Iterator {
+        return Iterator(range: self)
     }
     
-    struct Generator: GeneratorType {
+    struct Iterator: IteratorProtocol {
         
         var range: DateRange
         
-        mutating func next() -> NSDate? {
-            let nextDate = range.calendar.dateByAddingUnit(
-                range.stepUnits,
+        mutating func next() -> Date? {
+            let nextDate = (range.calendar as NSCalendar).date(
+                byAdding: range.stepUnits,
                 value: range.stepValue,
-                toDate: range.startDate,
+                to: range.startDate,
                 options: []
             )!
             

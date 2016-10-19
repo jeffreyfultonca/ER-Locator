@@ -27,18 +27,18 @@ class ERsListVC: UIViewController,
         super.viewDidLoad()
 
         setupTableView()
-        ers = erProvider.ers.sort { $0.name < $1.name }
+        ers = erProvider.ers.sorted { $0.name < $1.name }
         
-        NSNotificationCenter.defaultCenter().addObserver(
+        NotificationCenter.default.addObserver(
             self,
             selector: #selector(reloadERs),
-            name: Notification.LocalDatastoreUpdatedWithNewData,
+            name: .localDatastoreUpdatedWithNewData,
             object: nil
         )
     }
     
     deinit {
-        NSNotificationCenter.defaultCenter().removeObserver(self)
+        NotificationCenter.default.removeObserver(self)
     }
     
     // MARK: - Helpers
@@ -52,18 +52,18 @@ class ERsListVC: UIViewController,
     }
     
     func reloadERs() {
-        ers = erProvider.ers.sort { $0.name < $1.name }
+        ers = erProvider.ers.sorted { $0.name < $1.name }
         tableView.reloadData()
     }
     
     // MARK: - UITableViewDataSource
     
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return ers.count
     }
     
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("erCell", forIndexPath: indexPath)
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "erCell", for: indexPath)
         
         let er = ers[indexPath.row]
         cell.textLabel?.text = er.name
@@ -74,14 +74,13 @@ class ERsListVC: UIViewController,
     
     // MARK: - Navigation
 
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // Get the new view controller using segue.destinationViewController.
         // Pass the selected object to the new view controller.
         
         if segue.identifier == "showScheduleDays" {
-            if let
-                scheduleDaysVC = segue.destinationViewController as? ScheduleDaysVC,
-                selectedIndex = tableView.indexPathForSelectedRow
+            if let scheduleDaysVC = segue.destination as? ScheduleDaysVC,
+                let selectedIndex = tableView.indexPathForSelectedRow
             {
                 scheduleDaysVC.er = ers[selectedIndex.row]
             }

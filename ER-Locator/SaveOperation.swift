@@ -14,7 +14,7 @@ class SaveOperation<T: CloudKitModel>: AsyncOperation {
     let cloudDatabase: CKDatabase
     let recordsToSave: [T]
     
-    var result: SaveResult<T> = .Failure(Error.OperationNotComplete)
+    var result: SaveResult<T> = .failure(SnowError.operationNotComplete)
     
     init(cloudDatabase: CKDatabase, recordsToSave: [T]) {
         self.cloudDatabase = cloudDatabase
@@ -32,19 +32,19 @@ class SaveOperation<T: CloudKitModel>: AsyncOperation {
         )
         
         modifyRecordsOperation.database = cloudDatabase
-        modifyRecordsOperation.savePolicy = .ChangedKeys
+        modifyRecordsOperation.savePolicy = .changedKeys
         
         modifyRecordsOperation.modifyRecordsCompletionBlock = { modifiedRecords, recordIDs, error in
             guard error == nil else {
-                return self.completeOperation(.Failure(error!))
+                return self.completeOperation(.failure(error!))
             }
             
             guard let modifiedRecords = modifiedRecords else {
-                return self.completeOperation(.Failure(Error.UnableToAccessReturnedRecordsOfType(T.recordType)))
+                return self.completeOperation(.failure(SnowError.unableToAccessReturnedRecordsOfType(T.recordType)))
             }
             
             let cloudKitRecordables = modifiedRecords.map { T(record: $0) }
-            self.completeOperation(.Success(cloudKitRecordables))
+            self.completeOperation(.success(cloudKitRecordables))
         }
         
         modifyRecordsOperation.start()
@@ -52,7 +52,7 @@ class SaveOperation<T: CloudKitModel>: AsyncOperation {
     
     // MARK: Helpers
     
-    private func completeOperation(result: SaveResult<T>) {
+    private func completeOperation(_ result: SaveResult<T>) {
         self.result = result
         completeOperation()
     }
@@ -61,7 +61,7 @@ class SaveOperation<T: CloudKitModel>: AsyncOperation {
 // MARK: - Result
 
 enum SaveResult<T: CloudKitModel> {
-    case Failure(ErrorType)
-    case Success([T])
+    case failure(Error)
+    case success([T])
 }
 

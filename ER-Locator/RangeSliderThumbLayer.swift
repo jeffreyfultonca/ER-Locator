@@ -27,7 +27,7 @@ class RangeSliderThumbLayer: CALayer {
     
     // MARK: - Drawing
     
-    override func drawInContext(ctx: CGContext) {
+    override func draw(in ctx: CGContext) {
         guard let slider = rangeSlider else {
             print("\(#function): RangeSlider could not be accessed.")
             return
@@ -43,36 +43,32 @@ class RangeSliderThumbLayer: CALayer {
         let innerShadowInset: CGFloat = 1
         let innerShadowFrame = thumbFrame.insetBy(dx: innerShadowInset, dy: innerShadowInset)
         let innerShadowPath = UIBezierPath(roundedRect: innerShadowFrame, cornerRadius: cornerRadius)
-        CGContextSetShadowWithColor(
-            ctx,
-            CGSize(width: 0.0, height: 4.0),
-            2,
-            innerShadowColor.CGColor
+        ctx.setShadow(offset: CGSize(width: 0.0, height: 4.0),
+            blur: 2,
+            color: innerShadowColor.cgColor
         )
-        CGContextAddPath(ctx, innerShadowPath.CGPath)
-        CGContextFillPath(ctx)
+        ctx.addPath(innerShadowPath.cgPath)
+        ctx.fillPath()
         
         // Outer shadow
         let outerShadowColor = UIColor(white: 0.0, alpha: 0.15)
-        CGContextSetShadowWithColor(
-            ctx,
-            CGSize(width: 0.0, height: 4.0),
-            10,
-            outerShadowColor.CGColor
+        ctx.setShadow(offset: CGSize(width: 0.0, height: 4.0),
+            blur: 10,
+            color: outerShadowColor.cgColor
         )
-        CGContextFillPath(ctx)
+        ctx.fillPath()
         
         // Fill
-        CGContextSetFillColorWithColor(ctx, slider.thumbTintColor.CGColor)
-        CGContextAddPath(ctx, thumbPath.CGPath)
-        CGContextFillPath(ctx)
+        ctx.setFillColor(slider.thumbTintColor.cgColor)
+        ctx.addPath(thumbPath.cgPath)
+        ctx.fillPath()
         
         
         // Outline
         let outlineColor = UIColor(white: 0.0, alpha: 0.1)
-        CGContextSetStrokeColorWithColor(ctx, outlineColor.CGColor)
-        CGContextSetLineWidth(ctx, 0.1)
-        CGContextAddPath(ctx, thumbPath.CGPath)
-        CGContextStrokePath(ctx)        
+        ctx.setStrokeColor(outlineColor.cgColor)
+        ctx.setLineWidth(0.1)
+        ctx.addPath(thumbPath.cgPath)
+        ctx.strokePath()        
     }
 }

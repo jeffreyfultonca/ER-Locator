@@ -15,11 +15,11 @@ class SyncLocalDatastoreWithRemoteOperation: AsyncOperation {
     var persistenceProvider: PersistenceProviding
     
     // MARK: - Stored Properties
-    private var queue = NSOperationQueue()
+    private var queue = OperationQueue()
     
-    var result: SyncLocalDatastoreWithRemoteResult = .Failure(Error.OperationNotComplete)
+    var result: SyncLocalDatastoreWithRemoteResult = .failure(SnowError.operationNotComplete)
     override func cancel() {
-        result = .Failure(Error.OperationCancelled)
+        result = .failure(SnowError.operationCancelled)
         super.cancel()
     }
     
@@ -34,7 +34,7 @@ class SyncLocalDatastoreWithRemoteOperation: AsyncOperation {
         let showNetworkActivityIndicator = NetworkActivityIndicatorOperation(setVisible: true)
         
         // ERs modified  since last sync
-        let ersMostRecentlyModifiedAt = persistenceProvider.ersMostRecentlyModifiedAt ?? NSDate.distantPast()
+        let ersMostRecentlyModifiedAt = persistenceProvider.ersMostRecentlyModifiedAt ?? Date.distantPast
         let ersModifiedSinceDatePredicate = NSPredicate(format: "modificationDate > %@", ersMostRecentlyModifiedAt)
         let fetchERs = FetchOperation<ER>(
             cloudDatabase: cloudDatabase,
@@ -43,8 +43,8 @@ class SyncLocalDatastoreWithRemoteOperation: AsyncOperation {
         
         // Today's ScheduleDays modified since last sync
         // TODO: Limit modificationDate to Today...
-        let todaysScheduleDaysMostRecentlyModifiedAt = persistenceProvider.todaysScheduleDays.mostRecentlyModifiedAt ?? NSDate.distantPast()
-        let todaysScheduleDaysModifiedSinceDatePredicate = NSPredicate(format: "modificationDate > %@ && date == %@", todaysScheduleDaysMostRecentlyModifiedAt, NSDate().beginningOfDay)
+        let todaysScheduleDaysMostRecentlyModifiedAt = persistenceProvider.todaysScheduleDays.mostRecentlyModifiedAt ?? Date.distantPast
+        let todaysScheduleDaysModifiedSinceDatePredicate = NSPredicate(format: "modificationDate > %@ && date == %@", todaysScheduleDaysMostRecentlyModifiedAt, Date().beginningOfDay)
         let fetchScheduleDays = FetchOperation<ScheduleDay>(
             cloudDatabase: cloudDatabase,
             predicate: todaysScheduleDaysModifiedSinceDatePredicate
@@ -52,31 +52,31 @@ class SyncLocalDatastoreWithRemoteOperation: AsyncOperation {
         
         let hideNetworkActivityIndicator = NetworkActivityIndicatorOperation(setVisible: false)
         
-        let completion = NSBlockOperation {
-            if case .Success(let modifiedERs) = fetchERs.result where modifiedERs.count > 0 {
+        let completion = BlockOperation {
+            if case .success(let modifiedERs) = fetchERs.result, modifiedERs.count > 0 {
                 let existingERs = self.persistenceProvider.ers
                 self.persistenceProvider.ers = existingERs.union(modifiedERs)
                 self.persistenceProvider.ersMostRecentlyModifiedAt = modifiedERs.mostRecentlyModifiedAt
             }
             
-            if case .Success(let modifiedScheduleDays) = fetchScheduleDays.result where modifiedScheduleDays.count > 0 {
+            if case .success(let modifiedScheduleDays) = fetchScheduleDays.result, modifiedScheduleDays.count > 0 {
                 let existingScheduleDays = self.persistenceProvider.todaysScheduleDays
                 self.persistenceProvider.todaysScheduleDays = existingScheduleDays.union(modifiedScheduleDays).scheduledToday
             }
             
             switch (fetchERs.result, fetchScheduleDays.result) {
-            case (.Failure(let error), .Failure):
-                self.completeOperationWithResult( .Failure(error) )
+            case (.failure(let error), .failure):
+                self.completeOperationWithResult( .failure(error) )
                 
-            case (.Success, .Failure(let error)):
-                self.completeOperationWithResult( .Failure(error) )
+            case (.success, .failure(let error)):
+                self.completeOperationWithResult( .failure(error) )
                 
-            case (.Failure(let error), .Success):
-                self.completeOperationWithResult( .Failure(error) )
+            case (.failure(let error), .success):
+                self.completeOperationWithResult( .failure(error) )
                 
-            case (.Success(let ers), .Success(let scheduleDays)):
+            case (.success(let ers), .success(let scheduleDays)):
                 let noData = ers.isEmpty && scheduleDays.isEmpty
-                self.completeOperationWithResult( noData ? .NoData : .NewData )
+                self.completeOperationWithResult( noData ? .noData : .newData )
             }
         }
         
@@ -101,7 +101,7 @@ class SyncLocalDatastoreWithRemoteOperation: AsyncOperation {
         ], waitUntilFinished: false)
     }
     
-    private func completeOperationWithResult(result: SyncLocalDatastoreWithRemoteResult) {
+    private func completeOperationWithResult(_ result: SyncLocalDatastoreWithRemoteResult) {
         self.result = result
         completeOperation()
     }

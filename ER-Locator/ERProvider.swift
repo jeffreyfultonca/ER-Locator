@@ -28,9 +28,9 @@ protocol ERProviding {
      - returns: CloudKitRecordableFetchRequest to manage request.
      */
     func fetchERsWithTodaysScheduleDayNearestLocation(
-        location: CLLocation,
+        _ location: CLLocation,
         limitTo: Int?,
-        resultQueue: NSOperationQueue,
+        resultQueue: OperationQueue,
         result: (FetchResult<ER>)->()
         ) -> FetchRequest<FetchERsNearestLocationOperation>
 }
@@ -48,7 +48,7 @@ class ERProvider: ERProviding {
     
     // MARK: - Stored Properties
     
-    private let workQueue = NSOperationQueue()
+    private let workQueue = OperationQueue()
     
     // MARK: - Computed Properties
     
@@ -59,10 +59,10 @@ class ERProvider: ERProviding {
     // MARK: - Required Functions
     
     func fetchERsWithTodaysScheduleDayNearestLocation(
-        location: CLLocation,
+        _ location: CLLocation,
         limitTo limit: Int?,
-        resultQueue: NSOperationQueue,
-        result: (FetchResult<ER>) -> ())
+        resultQueue: OperationQueue,
+        result: @escaping (FetchResult<ER>) -> ())
         -> FetchRequest<FetchERsNearestLocationOperation>
     {
         let fetchERsNearestLocation = FetchERsNearestLocationOperation(
@@ -74,11 +74,11 @@ class ERProvider: ERProviding {
         
         fetchERsNearestLocation.completionBlock = {
             switch fetchERsNearestLocation.result {
-            case .Failure(let error):
-                resultQueue.addOperationWithBlock { result( .Failure(error) ) }
+            case .failure(let error):
+                resultQueue.addOperation { result( .failure(error) ) }
                 
-            case .Success(let ers):
-                resultQueue.addOperationWithBlock { result( .Success(ers)) }
+            case .success(let ers):
+                resultQueue.addOperation { result( .success(ers)) }
             }
         }
         

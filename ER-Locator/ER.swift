@@ -41,24 +41,22 @@ class ER: NSObject, CloudKitModel, MKAnnotation,  NSCoding {
     }
     
     var isOpenNow: Bool {
-        guard let
-            todaysScheduleDay = todaysScheduleDay,
-            firstOpen = todaysScheduleDay.firstOpen,
-            firstClose = todaysScheduleDay.firstClose else
+        guard let todaysScheduleDay = todaysScheduleDay,
+            let firstOpen = todaysScheduleDay.firstOpen,
+            let firstClose = todaysScheduleDay.firstClose else
         {
             return false
         }
         
-        let now = NSDate()
+        let now = Date()
         return firstOpen < now && firstClose > now
     }
     
     /// String indicating "<open time> - <close time>", "24 Hours", or message to "Call Ahead" if ER is possibly closed.
     var hoursOpenMessage: String {
-        guard let
-            todaysScheduleDay = todaysScheduleDay,
-            firstOpen = todaysScheduleDay.firstOpen,
-            firstClose = todaysScheduleDay.firstClose else
+        guard let todaysScheduleDay = todaysScheduleDay,
+            let firstOpen = todaysScheduleDay.firstOpen,
+            let firstClose = todaysScheduleDay.firstClose else
         {
             return "Call Ahead"
         }
@@ -98,12 +96,12 @@ class ER: NSObject, CloudKitModel, MKAnnotation,  NSCoding {
         static let Record = "RecordKey"
     }
     
-    func encodeWithCoder(aCoder: NSCoder) {
-        aCoder.encodeObject(record, forKey: PropertyKey.Record)
+    func encode(with aCoder: NSCoder) {
+        aCoder.encode(record, forKey: PropertyKey.Record)
     }
     
     required convenience init?(coder aDecoder: NSCoder) {
-        let record = aDecoder.decodeObjectForKey(PropertyKey.Record) as! CKRecord
+        let record = aDecoder.decodeObject(forKey: PropertyKey.Record) as! CKRecord
         self.init(record: record)
     }
     
@@ -117,14 +115,14 @@ class ER: NSObject, CloudKitModel, MKAnnotation,  NSCoding {
     // MARK: - Equatable with NSObject subclass
     
     // Required for ==
-    override func isEqual(object: AnyObject?) -> Bool {
+    override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? ER else { return false }
         return self.recordID == rhs.recordID
     }
     
     // MARK: - Sort Descriptors
     // TODO: Move somewhere else
-    static func sortedByProximityToLocation(location: CLLocation) -> CKLocationSortDescriptor {
+    static func sortedByProximityToLocation(_ location: CLLocation) -> CKLocationSortDescriptor {
         return CKLocationSortDescriptor(key: "location", relativeLocation: location)
     }
 }

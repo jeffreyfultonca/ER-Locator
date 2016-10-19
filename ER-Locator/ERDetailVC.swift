@@ -42,12 +42,12 @@ class ERDetailVC: UIViewController,
     
     // MARK: - MKMapViewDelegate
     
-    func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
+    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         guard let er = annotation as? ER else { return nil }
         
         let reuseIdentifier = "pinAnnotationView"
         
-        let pinAnnotationView = mapView.dequeueReusableAnnotationViewWithIdentifier(reuseIdentifier) as? MKPinAnnotationView ?? MKPinAnnotationView(annotation: annotation, reuseIdentifier: reuseIdentifier)
+        let pinAnnotationView = mapView.dequeueReusableAnnotationView(withIdentifier: reuseIdentifier) as? MKPinAnnotationView ?? MKPinAnnotationView(annotation: annotation, reuseIdentifier: reuseIdentifier)
         
         pinAnnotationView.canShowCallout = true
         pinAnnotationView.animatesDrop = false
@@ -61,10 +61,10 @@ class ERDetailVC: UIViewController,
     
     // MARK: - Actions
     
-    @IBAction func callRowTapped(sender: AnyObject) {
-        let sharedApp = UIApplication.sharedApplication()
+    @IBAction func callRowTapped(_ sender: AnyObject) {
+        let sharedApp = UIApplication.shared
         let phoneNumber = er.phone.stringByRemovingNonNumericCharacters()
-        let phoneCallURL = NSURL(string: "tel://\(phoneNumber)")!
+        let phoneCallURL = URL(string: "tel://\(phoneNumber)")!
         
         guard sharedApp.canOpenURL(phoneCallURL) else {
             print("Cannot open tel:// urls on this device.")
@@ -74,14 +74,14 @@ class ERDetailVC: UIViewController,
         sharedApp.openURL(phoneCallURL)
     }
     
-    @IBAction func directionsRowTapped(sender: AnyObject) {
+    @IBAction func directionsRowTapped(_ sender: AnyObject) {
         print(#function)
         
         let placemark = MKPlacemark(coordinate: er.coordinate, addressDictionary: er.addressDictionary)
         let mapItem = MKMapItem(placemark: placemark)
         mapItem.name = er.name
         
-        mapItem.openInMapsWithLaunchOptions([
+        mapItem.openInMaps(launchOptions: [
             MKLaunchOptionsDirectionsModeKey: MKLaunchOptionsDirectionsModeDriving
         ])
     }

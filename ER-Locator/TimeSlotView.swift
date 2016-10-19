@@ -56,9 +56,9 @@ struct TimeSlotView {
     /// Determines whether child views are displayed in UI using UIView.hidden property.
     var isHidden: Bool = false {
         didSet {
-            stateIndicator.hidden = isHidden
-            stateLabel.hidden = isHidden
-            timesLabel.hidden = isHidden
+            stateIndicator.isHidden = isHidden
+            stateLabel.isHidden = isHidden
+            timesLabel.isHidden = isHidden
         }
     }
     

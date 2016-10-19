@@ -31,7 +31,7 @@ extension CloudKitModel {
      
      - Returns: String representation of instance's type by default. i.e. `class Person` will have a recordType of "Person". Override by implementing `static var recordType: String` in conforming type.
     */
-    static var recordType: String { return String(self) }
+    static var recordType: String { return String(describing: self) }
     
     /**
      Convenience accessor to associated `CKRecord`'s `CKRecordID`.

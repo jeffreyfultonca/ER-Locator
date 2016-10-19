@@ -11,14 +11,14 @@ import Foundation
 func ==(lhs: Day, rhs: Day) -> Bool { return lhs.date == rhs.date }
 func <(lhs: Day, rhs: Day) -> Bool { return lhs.date < rhs.date }
 
-struct Day: ForwardIndexType, Comparable, CustomStringConvertible {
-    let date: NSDate
+struct Day: Comparable, CustomStringConvertible {
+    let date: Date
     
     // ForwardIndexType
     
-    func advancedBy(n: Day.Distance) -> Day {
+    func advancedBy(_ n: Day.Distance) -> Day {
         // TODO: Use currentCalendar instead.
-        let nextDate = date.dateByAddingTimeInterval(60*60*24*Double(n))
+        let nextDate = date.addingTimeInterval(60*60*24*Double(n))
         return Day(date: nextDate)
     }
     

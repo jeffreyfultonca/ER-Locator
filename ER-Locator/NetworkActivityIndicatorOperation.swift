@@ -14,7 +14,7 @@ import UIKit
  - Parameters:
     - visible: Determines whether to show or hide indicator.
  */
-class NetworkActivityIndicatorOperation: NSOperation {
+class NetworkActivityIndicatorOperation: Operation {
     
     private let visible: Bool
     
@@ -23,6 +23,6 @@ class NetworkActivityIndicatorOperation: NSOperation {
     }
     
     override func main() {
-        UIApplication.sharedApplication().networkActivityIndicatorVisible = visible
+        UIApplication.shared.isNetworkActivityIndicatorVisible = visible
     }
 }
