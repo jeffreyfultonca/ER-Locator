@@ -312,7 +312,7 @@ class OpenERsVC: UIViewController,
     
     func mapView(_ mapView: MKMapView, didUpdate userLocation: MKUserLocation) {
         guard shouldUpdateUIOnUserLocationUpdate else { return }
-        guard let location = userLocation.location , location.horizontalAccuracy < minLocationAccuracy else { return }
+        guard let location = userLocation.location, location.horizontalAccuracy < minLocationAccuracy else { return }
         
         shouldUpdateUIOnUserLocationUpdate = false
         

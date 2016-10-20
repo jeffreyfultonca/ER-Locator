@@ -71,15 +71,7 @@ extension Date {
         
         let endDate = calendar.date(from: components)!
         
-        let dateRange = DateRange(
-            calendar: calendar,
-            startDate: startDate,
-            endDate: endDate,
-            stepUnits: .day,
-            stepValue: 1
-        )
-        
-        return Array<Date>(dateRange)
+        return Array<Date>(startDate...endDate)
     }
     
     // MARK: Day
@@ -158,6 +150,23 @@ extension Date {
         return formatter.string(from: self).lowercased()
     }
 }
+
+extension Date: Strideable {
+    public typealias Stride = Int
+    
+    public func advanced(by n: Date.Stride) -> Date {
+        let calendar = Calendar.current
+        let nextDate = calendar.date(byAdding: .day, value: 1, to: self, options: [])!
+        return nextDate
+    }
+    
+    public func distance(to other: Date) -> Date.Stride {
+        let calendar = Calendar.current
+        let distance = calendar.components(.day, from: self, to: other, options: []).day ?? 0
+        return distance
+    }
+}
+
 
 extension UIColor {
     // TODO: Make these static vars if possible.

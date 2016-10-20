@@ -146,9 +146,9 @@ class ScheduleDaysVC: UIViewController,
             cell.configure(for: date, as: .Saving)
             return
         
-        } else if var previousFetchRequest = fetchRequests[indexPath.section]
-            , previousFetchRequest.finished == false {
-            
+        } else if var previousFetchRequest = fetchRequests[indexPath.section],
+            previousFetchRequest.finished == false
+        {    
             // Raise request priority so onscreen requests process first
             // Has no effect if request has already started executing.
             previousFetchRequest.priority = .high
