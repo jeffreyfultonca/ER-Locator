@@ -29,11 +29,11 @@ class ER: NSObject, CloudKitModel, MKAnnotation,  NSCoding {
     
     var name: String {
         get { return record["name"] as! String }
-        set { record["name"] = newValue }
+        set { record["name"] = newValue as CKRecordValue? }
     }
     var phone: String {
         get { return record["phone"] as! String }
-        set { record["phone"] = newValue }
+        set { record["phone"] = newValue as CKRecordValue? }
     }
     var location: CLLocation {
         get { return record["location"] as! CLLocation }
@@ -76,7 +76,7 @@ class ER: NSObject, CloudKitModel, MKAnnotation,  NSCoding {
     var estimatedWaitTime: String { return "Estimated wait time" }
     
     /// Used for getting directions in Maps App
-    var addressDictionary: Dictionary<String, AnyObject> {
+    var addressDictionary: Dictionary<String, Any> {
         return [
             CNPostalAddressCityKey: self.name,
             CNPostalAddressStateKey: "Manitoba",

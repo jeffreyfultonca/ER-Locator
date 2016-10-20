@@ -35,7 +35,7 @@ class SyncLocalDatastoreWithRemoteOperation: AsyncOperation {
         
         // ERs modified  since last sync
         let ersMostRecentlyModifiedAt = persistenceProvider.ersMostRecentlyModifiedAt ?? Date.distantPast
-        let ersModifiedSinceDatePredicate = NSPredicate(format: "modificationDate > %@", ersMostRecentlyModifiedAt)
+        let ersModifiedSinceDatePredicate = NSPredicate(format: "modificationDate > %@", argumentArray: [ersMostRecentlyModifiedAt])
         let fetchERs = FetchOperation<ER>(
             cloudDatabase: cloudDatabase,
             predicate: ersModifiedSinceDatePredicate
@@ -44,7 +44,10 @@ class SyncLocalDatastoreWithRemoteOperation: AsyncOperation {
         // Today's ScheduleDays modified since last sync
         // TODO: Limit modificationDate to Today...
         let todaysScheduleDaysMostRecentlyModifiedAt = persistenceProvider.todaysScheduleDays.mostRecentlyModifiedAt ?? Date.distantPast
-        let todaysScheduleDaysModifiedSinceDatePredicate = NSPredicate(format: "modificationDate > %@ && date == %@", todaysScheduleDaysMostRecentlyModifiedAt, Date().beginningOfDay)
+        let todaysScheduleDaysModifiedSinceDatePredicate = NSPredicate(
+            format: "modificationDate > %@ && date == %@",
+            argumentArray: [todaysScheduleDaysMostRecentlyModifiedAt, Date().beginningOfDay]
+        )
         let fetchScheduleDays = FetchOperation<ScheduleDay>(
             cloudDatabase: cloudDatabase,
             predicate: todaysScheduleDaysModifiedSinceDatePredicate
@@ -55,13 +58,17 @@ class SyncLocalDatastoreWithRemoteOperation: AsyncOperation {
         let completion = BlockOperation {
             if case .success(let modifiedERs) = fetchERs.result, modifiedERs.count > 0 {
                 let existingERs = self.persistenceProvider.ers
-                self.persistenceProvider.ers = existingERs.union(modifiedERs)
+                let modifiedSet = Set(modifiedERs)
+                self.persistenceProvider.ers = modifiedSet.union(existingERs)
                 self.persistenceProvider.ersMostRecentlyModifiedAt = modifiedERs.mostRecentlyModifiedAt
             }
             
             if case .success(let modifiedScheduleDays) = fetchScheduleDays.result, modifiedScheduleDays.count > 0 {
                 let existingScheduleDays = self.persistenceProvider.todaysScheduleDays
-                self.persistenceProvider.todaysScheduleDays = existingScheduleDays.union(modifiedScheduleDays).scheduledToday
+                let modifiedSet = Set(modifiedScheduleDays)
+                let unioned = modifiedSet.union(existingScheduleDays)
+                let scheduledToday = unioned.scheduledToday
+                self.persistenceProvider.todaysScheduleDays = scheduledToday
             }
             
             switch (fetchERs.result, fetchScheduleDays.result) {

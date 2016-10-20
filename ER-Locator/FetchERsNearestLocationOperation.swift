@@ -71,9 +71,10 @@ class FetchERsNearestLocationOperation: Operation, ReprioritizableOperation {
         
         // Get todays ScheduleDay for each ER if available.
         ers.forEach { er in
-            er.todaysScheduleDay = todaysScheduleDays.filter { scheduleDay in
+            let scheduleDaysForEr = todaysScheduleDays.filter { scheduleDay in
                 scheduleDay.erReference.recordID == er.recordID
-            }.first
+            }
+            er.todaysScheduleDay = scheduleDaysForEr.first
         }
         
         result = .success(ers)

@@ -53,20 +53,20 @@ extension Date {
     }
     
     var monthOrdinal: Int {
-        return calendar.ordinality(of: .month, in: .year, for: self)
+        return calendar.ordinality(of: .month, in: .year, for: self)!
     }
     
     var monthOrdinalForEra: Int {
-        return calendar.ordinality(of: .month, in: .era, for: self)
+        return calendar.ordinality(of: .month, in: .era, for: self)!
     }
     
     var datesInMonth: [Date] {
         let calendar = Calendar.current
-        var components = calendar.components([.month, .year], from: self)
+        var components = calendar.dateComponents([.month, .year], from: self)
         
         let startDate = calendar.date(from: components)!
         
-        components.month += 1
+        components.month = components.month! + 1
         components.day = 0 // Results in last day of previous month
         
         let endDate = calendar.date(from: components)!
@@ -77,7 +77,7 @@ extension Date {
     // MARK: Day
     
     var beginningOfDay: Date {
-        let components = calendar.components([.year, .month, .day], from: self)
+        let components = calendar.dateComponents([.year, .month, .day], from: self)
         return calendar.date(from: components)!
     }
     
@@ -89,7 +89,8 @@ extension Date {
     var endOfDay: Date {
         var components = DateComponents()
         components.day = 1
-        return calendar.date(byAdding: components, to: self.beginningOfDay, options: [])!
+        
+        return calendar.date(byAdding: components, to: self.beginningOfDay)!
     }
     
     /// Represented as 00:00 of next day
@@ -98,7 +99,7 @@ extension Date {
     }
     
     var dayOrdinalInMonth: Int {
-        return calendar.ordinality(of: .day, in: .month, for: self)
+        return calendar.ordinality(of: .day, in: .month, for: self)!
     }
     
     var dayOrdinalInMonthString: String {
@@ -106,19 +107,20 @@ extension Date {
     }
     
     func plusDays(_ days: Int) -> Date {
-        return calendar.date(byAdding: .day, value: days, to: self, options: [])!
+        return calendar.date(byAdding: .day, value: days, to: self)!
     }
     
     /// Returns the first day of the offset month.
     /// i.e. Count up `offset` number of months from date, then return first day of that month.
     func firstDayOfMonthWithOffset(_ offset: Int) -> Date {
-        var components = calendar.components([.year, .month], from: self)
-        components.month += offset
+        var components = calendar.dateComponents([.year, .month], from: self)
+        components.month = components.month! + offset
+        
         return calendar.date(from: components)!
     }
     
     var numberOfDaysInMonth: Int {
-        return calendar.range(of: .day, in: .month, for: self).length
+        return calendar.range(of: .day, in: .month, for: self)!.count
     }
     
     /**
@@ -132,7 +134,8 @@ extension Date {
     */
     func atHour(_ hour: Int) -> Date {
         guard hour >= 0 && hour < 24 else { return self }
-        return calendar.date(bySettingHour: hour, minute: 0, second: 0, of: self, options: .matchFirst) ?? self
+        
+        return calendar.date(bySetting: .hour, value: hour, of: self)!
     }
     
     // MARK: Time
@@ -156,13 +159,13 @@ extension Date: Strideable {
     
     public func advanced(by n: Date.Stride) -> Date {
         let calendar = Calendar.current
-        let nextDate = calendar.date(byAdding: .day, value: 1, to: self, options: [])!
+        let nextDate = calendar.date(byAdding: .day, value: 1, to: self)!
         return nextDate
     }
     
     public func distance(to other: Date) -> Date.Stride {
         let calendar = Calendar.current
-        let distance = calendar.components(.day, from: self, to: other, options: []).day ?? 0
+        let distance = calendar.dateComponents([.day], from: self, to: other).day ?? 0
         return distance
     }
 }

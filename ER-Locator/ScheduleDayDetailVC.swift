@@ -50,9 +50,9 @@ class ScheduleDayDetailVC: UIViewController {
         // TODO: Document why this is needed.
         // TODO: Convert to forEach.
         for imageView in [closedImageView, customImageView] {
-            let tintColor = imageView.tintColor
-            imageView.tintColor = nil
-            imageView.tintColor = tintColor
+            let tintColor = imageView?.tintColor
+            imageView?.tintColor = nil
+            imageView?.tintColor = tintColor
         }
     }
     

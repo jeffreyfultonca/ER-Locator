@@ -318,7 +318,7 @@ class OpenERsVC: UIViewController,
         
         refreshUI(animated: true)
         
-        erProvider.fetchERsWithTodaysScheduleDayNearestLocation(
+        _ = erProvider.fetchERsWithTodaysScheduleDayNearestLocation(
             location,
             limitTo: nil,
             resultQueue: OperationQueue.main)

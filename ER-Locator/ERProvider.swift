@@ -31,8 +31,8 @@ protocol ERProviding {
         _ location: CLLocation,
         limitTo: Int?,
         resultQueue: OperationQueue,
-        result: (FetchResult<ER>)->()
-        ) -> FetchRequest<FetchERsNearestLocationOperation>
+        result: @escaping (FetchResult<ER>) -> ())
+        -> FetchRequest<FetchERsNearestLocationOperation>
 }
 
 // MARK: - Default Singleton Implementation

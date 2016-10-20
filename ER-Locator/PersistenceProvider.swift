@@ -30,7 +30,10 @@ protocol PersistenceProviding {
     )
     
     // Scheduler Access
-    func determineSchedulerAccess(completionQueue: OperationQueue, completion: (Bool) -> Void )
+    func determineSchedulerAccess(
+        completionQueue: OperationQueue,
+        completion: @escaping (Bool) -> Void
+    )
 }
 
 enum SyncLocalDatastoreWithRemoteResult {

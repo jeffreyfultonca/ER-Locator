@@ -24,13 +24,13 @@ protocol ScheduleDayProviding {
         for _: ER,
         on: [Date],
         resultQueue: OperationQueue,
-        result: (FetchResult<ScheduleDay>)->()
+        result: @escaping (FetchResult<ScheduleDay>) -> ()
     ) -> ReprioritizableRequest
     
     func save(
         _ scheduleDay: ScheduleDay,
         resultQueue: OperationQueue,
-        result: (SaveResult<ScheduleDay>)->()
+        result: @escaping (SaveResult<ScheduleDay>) -> ()
     )
     
     func makeScheduleDay(for _: ER, on: Date) -> ScheduleDay
@@ -168,7 +168,7 @@ class ScheduleDayProvider: ScheduleDayProviding {
         let scheduleDayRecord = CKRecord(recordType: ScheduleDay.recordType)
         
         scheduleDayRecord["er"] = CKReference(record: er.record, action: .deleteSelf)
-        scheduleDayRecord["date"] = date
+        scheduleDayRecord["date"] = date as CKRecordValue?
         
         let scheduleDay = ScheduleDay(record: scheduleDayRecord)
         

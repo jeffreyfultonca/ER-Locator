@@ -25,15 +25,15 @@ class ScheduleDay: NSObject, CloudKitModel, NSCoding {
     
     var date: Date {
         get { return record["date"] as! Date }
-        set { record["date"] = newValue }
+        set { record["date"] = newValue as CKRecordValue? }
     }
     var firstOpen: Date? {
         get { return record["firstOpen"] as? Date }
-        set { record["firstOpen"] = newValue }
+        set { record["firstOpen"] = newValue as CKRecordValue? }
     }
     var firstClose: Date? {
         get { return record["firstClose"] as? Date }
-        set { record["firstClose"] = newValue }
+        set { record["firstClose"] = newValue as CKRecordValue? }
     }
     
     var erReference: CKReference {
@@ -85,6 +85,6 @@ class ScheduleDay: NSObject, CloudKitModel, NSCoding {
     /// Uses current time on device to determine open/closed status.  
     static var OpenNowPredicate: NSPredicate {
         let now = Date()
-        return NSPredicate(format: "firstOpen <= %@ AND firstClose > %@", now, now)
+        return NSPredicate(format: "firstOpen <= %@ AND firstClose > %@", argumentArray: [now, now])
     }
 }
