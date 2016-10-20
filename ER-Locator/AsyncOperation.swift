@@ -40,13 +40,13 @@ class AsyncOperation: Operation {
     
     // MARK: - State Management
     
-    fileprivate var _executing: Bool = false {
+    private var _executing: Bool = false {
         willSet { willChangeValue(forKey: "isExecuting") }
         didSet { didChangeValue(forKey: "isExecuting") }
     }
     override var isExecuting: Bool { return _executing }
     
-    fileprivate var _finished: Bool = false {
+    private var _finished: Bool = false {
         willSet { willChangeValue(forKey: "isFinished") }
         didSet { didChangeValue(forKey: "isFinished") }
     }

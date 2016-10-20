@@ -130,7 +130,7 @@ class ScheduleDaysVC: UIViewController,
         return cell
     }
     
-    fileprivate var inMemoryScheduleDayCache = InMemoryScheduleDayCache()
+    private var inMemoryScheduleDayCache = InMemoryScheduleDayCache()
     
     func tableView(
         _ tableView: UITableView,

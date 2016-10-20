@@ -28,14 +28,12 @@
 		0092C9EC1D09B0C5005EA647 /* FetchOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0092C9EB1D09B0C5005EA647 /* FetchOperation.swift */; };
 		00935E541CB72B9A00A9FF71 /* ScheduleDayDetailVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00935E531CB72B9A00A9FF71 /* ScheduleDayDetailVC.swift */; };
 		009FF64D1D15F820009EC635 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 009FF64C1D15F820009EC635 /* CloudKit.framework */; };
-		00A0747D1D0E2C2D005B9072 /* Day.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00A0747C1D0E2C2D005B9072 /* Day.swift */; };
 		00B3569C1D0C7BFD00B62E0D /* FetchERsNearestLocationOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00B3569B1D0C7BFD00B62E0D /* FetchERsNearestLocationOperation.swift */; };
 		00C197931CB2D39600786B5A /* TimeSlotView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00C197921CB2D39600786B5A /* TimeSlotView.swift */; };
 		00C197971CB2E65200786B5A /* CloudKitModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00C197961CB2E65200786B5A /* CloudKitModel.swift */; };
 		00D397F11D18328200957469 /* RangeSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00D397EE1D18328200957469 /* RangeSlider.swift */; };
 		00D397F21D18328200957469 /* RangeSliderThumbLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00D397EF1D18328200957469 /* RangeSliderThumbLayer.swift */; };
 		00D397F31D18328200957469 /* RangeSliderTrackLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00D397F01D18328200957469 /* RangeSliderTrackLayer.swift */; };
-		00D85D551D108A23008148DB /* DateRange.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00D85D541D108A23008148DB /* DateRange.swift */; };
 		00DC0A981CB1E05800014279 /* ERsListVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00DC0A971CB1E05800014279 /* ERsListVC.swift */; };
 		00DC0A9A1CB1E8C900014279 /* ScheduleDayCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00DC0A991CB1E8C900014279 /* ScheduleDayCell.swift */; };
 		00DC0A9C1CB1E90100014279 /* ScheduleDaysVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00DC0A9B1CB1E90100014279 /* ScheduleDaysVC.swift */; };
@@ -69,14 +67,12 @@
 		0092C9EB1D09B0C5005EA647 /* FetchOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FetchOperation.swift; sourceTree = "<group>"; };
 		00935E531CB72B9A00A9FF71 /* ScheduleDayDetailVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScheduleDayDetailVC.swift; sourceTree = "<group>"; };
 		009FF64C1D15F820009EC635 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
-		00A0747C1D0E2C2D005B9072 /* Day.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Day.swift; sourceTree = "<group>"; };
 		00B3569B1D0C7BFD00B62E0D /* FetchERsNearestLocationOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FetchERsNearestLocationOperation.swift; sourceTree = "<group>"; };
 		00C197921CB2D39600786B5A /* TimeSlotView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimeSlotView.swift; sourceTree = "<group>"; };
 		00C197961CB2E65200786B5A /* CloudKitModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CloudKitModel.swift; sourceTree = "<group>"; };
 		00D397EE1D18328200957469 /* RangeSlider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RangeSlider.swift; sourceTree = "<group>"; };
 		00D397EF1D18328200957469 /* RangeSliderThumbLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RangeSliderThumbLayer.swift; sourceTree = "<group>"; };
 		00D397F01D18328200957469 /* RangeSliderTrackLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RangeSliderTrackLayer.swift; sourceTree = "<group>"; };
-		00D85D541D108A23008148DB /* DateRange.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DateRange.swift; sourceTree = "<group>"; };
 		00DC0A971CB1E05800014279 /* ERsListVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ERsListVC.swift; sourceTree = "<group>"; };
 		00DC0A991CB1E8C900014279 /* ScheduleDayCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScheduleDayCell.swift; sourceTree = "<group>"; };
 		00DC0A9B1CB1E90100014279 /* ScheduleDaysVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScheduleDaysVC.swift; sourceTree = "<group>"; };
@@ -235,8 +231,6 @@
 				00656B5D1CB44DF00000C4D4 /* Constants.swift */,
 				00611C211CB0972B00C08B07 /* Extensions.swift */,
 				00656B5F1CB481DF0000C4D4 /* Functions.swift */,
-				00A0747C1D0E2C2D005B9072 /* Day.swift */,
-				00D85D541D108A23008148DB /* DateRange.swift */,
 			);
 			name = Globals;
 			sourceTree = "<group>";
@@ -344,7 +338,6 @@
 				0092C9EC1D09B0C5005EA647 /* FetchOperation.swift in Sources */,
 				00B3569C1D0C7BFD00B62E0D /* FetchERsNearestLocationOperation.swift in Sources */,
 				00DC0A981CB1E05800014279 /* ERsListVC.swift in Sources */,
-				00D85D551D108A23008148DB /* DateRange.swift in Sources */,
 				00D397F21D18328200957469 /* RangeSliderThumbLayer.swift in Sources */,
 				00611C221CB0972B00C08B07 /* Extensions.swift in Sources */,
 				0032EEA71D065BE9000F9F10 /* ERProvider.swift in Sources */,
@@ -365,7 +358,6 @@
 				00DC0A9E1CB1E9B500014279 /* ScheduleDay.swift in Sources */,
 				00E885291D0D32B100FAD950 /* FetchScheduleDaysForERForDatesOperation.swift in Sources */,
 				00611C011CB080FA00C08B07 /* AppDelegate.swift in Sources */,
-				00A0747D1D0E2C2D005B9072 /* Day.swift in Sources */,
 				00DC0A9C1CB1E90100014279 /* ScheduleDaysVC.swift in Sources */,
 				0032EEAB1D067A8B000F9F10 /* PersistenceProvider.swift in Sources */,
 				00D397F31D18328200957469 /* RangeSliderTrackLayer.swift in Sources */,
